@@ -36,7 +36,11 @@ module ETestament
 
             # GET api/v1/properties
             # Get the list of properties indexes
-            # TODO: Cesar
+            routing.get do
+              response.status = 200
+              output = { property_ids: Property.all }
+              JSON.pretty_generate(output)
+            end
 
             # POST api/v1/properties
             # Creates a new property
