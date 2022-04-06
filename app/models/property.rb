@@ -41,8 +41,11 @@ module ETestament
     def self.find(find_id); end
 
     # Find all property indexes
-    # TODO: Cesar
-    def self.all; end
+    def self.all
+      Dir.glob("#{ETestament::STORE_DIR}/*.txt").map do |file|
+        file.match(%r{#{Regexp.quote(ETestament::STORE_DIR)}/(.*)\.txt})[1]
+      end
+    end
 
     private
 

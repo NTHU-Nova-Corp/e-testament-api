@@ -37,8 +37,16 @@ describe 'Test ETestament Web API' do
     # Test GET api/v1/properties
     # Test Get the list of properties indexes
     describe 'GET api/v1/properties' do
-      # TODO
+      it 'HAPPY: should be able to get list of all properties' do
+        ETestament::Property.new(DATA[0]).save
+        ETestament::Property.new(DATA[1]).save
+
+        get 'api/v1/properties'
+        result = JSON.parse last_response.body
+        _(result['property_ids'].count).must_equal 2
+      end
     end
+
     # Test POST api/v1/properties
     # Test Creates a new property
     describe 'POST api/v1/properties' do
@@ -48,6 +56,7 @@ describe 'Test ETestament Web API' do
 
         _(last_response.status).must_equal 201
       end
+
       it 'SAD: should not be able to create new property when requesting with invalid structure' do
         req_header = { 'CONTENT_TYPE' => 'application/json' }
         post 'api/v1/properties', 'id=100', req_header
