@@ -2,7 +2,7 @@
 
 # Bad request exception
 class BadRequestException < StandardError
-  def initialize(msg = 'This is a custom exception', exception_type = 'custom')
+  def initialize(msg = 'Bad request', exception_type = 'custom')
     @exception_type = exception_type
     super(msg)
   end

@@ -3,6 +3,7 @@
 require 'json'
 require 'base64'
 require 'rbnacl'
+require 'securerandom'
 
 # General ETestament module
 module ETestament
@@ -13,10 +14,10 @@ module ETestament
     # Creates a new property record
     def initialize(new_property)
       @id = new_property['id'] || new_id
-      @name = new_property['name']
+      @name = new_property['name'] || handle_required
       @description = new_property['description']
-      @property_type = new_property['property_type']
-      @heir_users_assigned = new_property['heir_users_assigned']
+      @property_type = new_property['property_type'] || handle_required
+      @heir_users_assigned = new_property['heir_users_assigned'] || false
     end
 
     attr_reader :id, :name, :description, :property_type, :heir_users_assigned
@@ -31,7 +32,6 @@ module ETestament
     end
 
     # Stores a property record
-    # TODO: Ernesto
     def save
       File.write("#{ETestament::STORE_DIR}/#{id}.txt", to_json)
     end
@@ -47,8 +47,11 @@ module ETestament
     private
 
     def new_id
-      timestamp = Time.now.to_f.to_s
-      Base64.urlsafe_encode64(RbNaCl::Hash.sha256(timestamp))[0..9]
+      SecureRandom.uuid
+    end
+
+    def handle_required
+      raise BadRequestException
     end
   end
 end

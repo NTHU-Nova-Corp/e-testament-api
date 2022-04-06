@@ -18,10 +18,6 @@ module ETestament
       Property.setup
     end
 
-    def validate_new_property(new_property)
-      !(new_property.name.nil? || new_property.property_type.nil?)
-    end
-
     route do |routing|
       response['Content-Type'] = 'application/json'
 
@@ -44,19 +40,18 @@ module ETestament
 
             # POST api/v1/properties
             # Creates a new property
-            # TODO: Ernesto
             routing.post do
               new_data = JSON.parse(routing.body.read)
               new_property = Property.new(new_data)
-              raise BadRequestException unless validate_new_property(new_property)
-
-              raise BadRequestException, 'Could not save property' unless new_property.save
+              new_property.save
 
               response.status = 201
               { message: 'Property saved', id: new_property.id }.to_json
 
             rescue BadRequestException, JSON::ParserError
               routing.halt 400, { message: 'Bad request' }.to_json
+            rescue StandardError
+              routing.halt 500, { message: 'Could not save property' }.to_json
             end
           end
         end
