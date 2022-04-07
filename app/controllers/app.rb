@@ -34,6 +34,11 @@ module ETestament
             # GET api/v1/properties/[id]
             # Get a specific property record
             # TODO: Daniel
+            routing.get String do |id|
+              Property.find(id).to_json
+            rescue StandardError
+              routing.halt 404, { message: 'Property not found' }.to_json
+            end
 
             # GET api/v1/properties
             # Get the list of properties indexes

@@ -29,11 +29,6 @@ describe 'Test ETestament Web API' do
   end
 
   describe 'Handle properties' do
-    # Test GET api/v1/properties/[id]
-    # Test Get a specific property record
-    describe 'GET api/v1/properties/[id]' do
-      # TODO
-    end
     # Test GET api/v1/properties
     # Test Get the list of properties indexes
     describe 'GET api/v1/properties' do
@@ -44,6 +39,27 @@ describe 'Test ETestament Web API' do
         get 'api/v1/properties'
         result = JSON.parse last_response.body
         _(result['property_ids'].count).must_equal 2
+      end
+    end
+
+    # Test GET api/v1/properties/[id]
+    # Test Get a specific property record
+    describe 'GET api/v1/properties/[id]' do
+      it 'HAPPY: should be able to get details of a single property' do
+        ETestament::Property.new(DATA[1]).save
+        id = Dir.glob('app/db/store/*.txt').first.split(%r{[/\.]})[3]
+
+        get "api/v1/properties/#{id}"
+        result = JSON.parse last_response.body
+
+        _(last_response.status).must_equal 200
+        _(result['id']).must_equal id
+      end
+
+      it 'SAD: should return error if unknown document is requested' do
+        get 'api/v1/properties/supermaxwdc'
+
+        _(last_response.status).must_equal 404
       end
     end
 

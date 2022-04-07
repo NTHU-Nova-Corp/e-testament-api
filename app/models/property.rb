@@ -39,7 +39,10 @@ module ETestament
 
     # Find a property in the storage
     # TODO: Daniel
-    def self.find(find_id); end
+    def self.find(find_id)
+      property_file = File.read("#{ETestament::STORE_DIR}/#{find_id}.txt")
+      Property.new JSON.parse(property_file)
+    end
 
     # Find all property indexes
     def self.all
