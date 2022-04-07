@@ -14,6 +14,7 @@ def app
 end
 
 DATA = YAML.safe_load File.read('app/db/properties/property_list.yml')
+TEST_DATA = YAML.safe_load File.read('spec/test_data.yaml')
 
 describe 'Test ETestament Web API' do
   include Rack::Test::Methods
@@ -73,16 +74,17 @@ describe 'Test ETestament Web API' do
         _(last_response.status).must_equal 201
       end
 
-      it 'SAD: should not be able to create new property when requesting with invalid structure' do
-        req_header = { 'CONTENT_TYPE' => 'application/json' }
-        post 'api/v1/properties', 'id=100', req_header
+      TEST_DATA['failed_428'].each do |test_case|
+        it "SAD: should not be able to create new property and return http status 428 when #{test_case['case']}" do
+          req_header = { 'CONTENT_TYPE' => 'application/json' }
+          post 'api/v1/properties', test_case['body'].to_json, req_header
 
-        _(last_response.status).must_equal 400
+          _(last_response.status).must_equal 428
+        end
       end
 
-      empty_bodies = ['', '{}', nil]
-      empty_bodies.each do |body|
-        it 'SAD: should not be able to create new property when requesting with empty body' do
+      TEST_DATA['failed_400'].each do |body|
+        it 'SAD: should not be able to create new property when requesting with invalid body structure' do
           req_header = { 'CONTENT_TYPE' => 'application/json' }
           post 'api/v1/properties', body, req_header
 
