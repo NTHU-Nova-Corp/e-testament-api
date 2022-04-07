@@ -9,6 +9,7 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - spec/**/*
+    - app/controllers/**/*
 
 Security/YAMLLoad:
   Enabled: true

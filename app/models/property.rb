@@ -58,7 +58,7 @@ module ETestament
     end
 
     def handle_required(error_message)
-      raise PreConditionRequireException, msg = error_message
+      raise PreConditionRequireException, error_message
     end
   end
 end

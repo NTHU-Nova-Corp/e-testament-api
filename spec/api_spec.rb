@@ -48,7 +48,7 @@ describe 'Test ETestament Web API' do
     describe 'GET api/v1/properties/[id]' do
       it 'HAPPY: should be able to get details of a single property' do
         ETestament::Property.new(DATA[1]).save
-        id = Dir.glob('app/db/store/*.txt').first.split(%r{[/\.]})[3]
+        id = Dir.glob('app/db/store/*.txt').first.split(%r{[/.]})[3]
 
         get "api/v1/properties/#{id}"
         result = JSON.parse last_response.body
