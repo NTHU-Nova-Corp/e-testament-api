@@ -4,6 +4,7 @@ require 'roda'
 require 'json'
 
 require_relative '../exception/bad_request_exception'
+require_relative '../exception/pre_condition_required_exception'
 
 require_relative '../models/property'
 
@@ -39,6 +40,7 @@ module ETestament
             routing.get do
               response.status = 200
               output = { property_ids: Property.all }
+
               JSON.pretty_generate(output)
             end
 
@@ -51,13 +53,17 @@ module ETestament
 
               response.status = 201
               { message: 'Property saved', id: new_property.id }.to_json
-
-            rescue BadRequestException, JSON::ParserError
-              routing.halt 400, { message: 'Bad request' }.to_json
-            rescue StandardError
-              routing.halt 500, { message: 'Could not save property' }.to_json
             end
           end
+
+        rescue PreConditionRequireException => e
+          routing.halt 428, { code: 428, message: "Error: #{e.message}" }.to_json
+
+        rescue BadRequestException, JSON::ParserError => e
+          routing.halt 400, { code: 400, message: "Error: #{e.message}" }.to_json
+
+        rescue StandardError => e
+          routing.halt 500, { code: 500, message: "Error: #{e.message}" }.to_json
         end
       end
     end

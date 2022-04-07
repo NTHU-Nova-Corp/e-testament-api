@@ -4,6 +4,7 @@ require 'json'
 require 'base64'
 require 'rbnacl'
 require 'securerandom'
+require_relative '../exception/pre_condition_required_exception'
 
 # General ETestament module
 module ETestament
@@ -14,9 +15,9 @@ module ETestament
     # Creates a new property record
     def initialize(new_property)
       @id = new_property['id'] || new_id
-      @name = new_property['name'] || handle_required
+      @name = new_property['name'] || handle_required('Property name required')
       @description = new_property['description']
-      @property_type = new_property['property_type'] || handle_required
+      @property_type = new_property['property_type'] || handle_required('Property type required')
       @heir_users_assigned = new_property['heir_users_assigned'] || false
     end
 
@@ -53,8 +54,8 @@ module ETestament
       SecureRandom.uuid
     end
 
-    def handle_required
-      raise BadRequestException
+    def handle_required(error_message)
+      raise PreConditionRequireException, msg = error_message
     end
   end
 end
