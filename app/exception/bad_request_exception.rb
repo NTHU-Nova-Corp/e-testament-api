@@ -4,6 +4,7 @@
 class BadRequestException < StandardError
   def initialize(msg = 'Bad request', exception_type = 'custom')
     @exception_type = exception_type
+    @status_code = 428
     super(msg)
   end
 end
