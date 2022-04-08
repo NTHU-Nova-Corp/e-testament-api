@@ -1,0 +1,17 @@
+---
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable # enable new upcoming cops for rubocop
+  Exclude:
+    - _snippets/**/*
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+    - app/controllers/**/*
+
+Security/YAMLLoad:
+  Enabled: true
+  Exclude:
+    - spec/**/*

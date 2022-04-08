@@ -1,0 +1,23 @@
+---
+failed_428:
+  - case: 'missing property name'
+    body:
+      description: 'test description'
+      property_type: 'test_type'
+      heir_users_assigned: false
+  - case: 'missing property type'
+    body:
+      name: 'test name'
+      description: 'test description'
+      heir_users_assigned: false
+  - case: 'missing all required fields'
+    body:
+      description: 'test description'
+      heir_users_assigned: false
+  - case: 'sending empty request body'
+    body: nil
+
+failed_400:
+  - ''
+  - 'id=100'
+  - nil
