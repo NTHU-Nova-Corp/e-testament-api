@@ -20,8 +20,8 @@ module ETestament
       routing.root do
         response.status = 200
         { message: 'ETestamentAPI up at /api/v1' }.to_json
-      end   
-      
+      end
+
       @api_root = 'api/v1'
       routing.on @api_root do
         routing.on 'properties' do
@@ -41,7 +41,7 @@ module ETestament
                 # Gets an specific document related with a property
                 # TODO Daniel
               end
-  
+
               # POST api/v1/properties/[property_id]/documents
               # Creates a new document related with a property
               # TODO Daniel
@@ -64,8 +64,8 @@ module ETestament
             routing.get do
               property = Property.first(id: property_id)
               property ? property.to_json : raise('Property not found')
-              rescue StandardError => e
-                routing.halt 404, { message: e.message }.to_json
+            rescue StandardError => e
+              routing.halt 404, { message: e.message }.to_json
             end
           end
 
@@ -86,8 +86,8 @@ module ETestament
           routing.get do
             output = { data: Property.all }
             JSON.pretty_generate(output)
-            rescue StandardError
-              routing.halt 404, { message: 'Could not find properties' }.to_json
+          rescue StandardError
+            routing.halt 404, { message: 'Could not find properties' }.to_json
           end
         end
 
