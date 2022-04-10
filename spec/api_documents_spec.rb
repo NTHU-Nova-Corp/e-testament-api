@@ -9,7 +9,7 @@ describe 'Test Document Handling' do
     wipe_database
 
     DATA[:properties].each do |property_data|
-      Credence::Property.create(property_data)
+      ETestament::Property.create(property_data)
     end
   end
 
