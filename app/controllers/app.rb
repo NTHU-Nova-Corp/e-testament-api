@@ -31,9 +31,8 @@ module ETestament
       routing.on 'api' do
         routing.on 'v1' do
           routing.on 'properties' do
-            # GET api/v1/properties/[id]
+            # GET api/v1/properties/[property_id]
             # Get a specific property record
-            # TODO: Daniel
             routing.get String do |id|
               Property.find(id).to_json
             rescue StandardError
@@ -58,6 +57,36 @@ module ETestament
 
               response.status = 201
               { message: 'Property saved', id: new_property.id }.to_json
+            end
+
+            # PUT api/v1/properties/[property_id]
+            # Updates an existing property
+            # TODO Cesar
+
+            # DELETE api/v1/properties/[property_id]
+            # Deleted an existing property and the documents related with
+            # TODO Cesar
+
+            routing.on 'documents' do
+              # GET api/v1/properties/[property_id]/documents/[document_id]
+              # Gets an specific document related with a property
+              # TODO Ernesto
+
+              # GET api/v1/properties/[property_id]/documents
+              # Gets the list of documents related with a proeprty
+              # TODO Ernesto
+
+              # POST api/v1/properties/[property_id]/documents/[document_id]
+              # Creates a new document related with a property
+              # TODO Daniel
+
+              # PUT api/v1/properties/[property_id]/documents/[document_id]
+              # Updates a document related with a property
+              # TODO Daniel
+
+              # DELETE api/v1/properties/[property_id]/documents/[document_id]
+              # Deleted a document related with a property
+              # TODO Daniel
             end
           end
 
