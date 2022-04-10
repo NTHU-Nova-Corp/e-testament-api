@@ -25,43 +25,51 @@ module ETestament
       routing.on 'api' do
         routing.on 'v1' do
           routing.on 'properties' do
-            # GET api/v1/properties/[property_id]
-            # Get a specific property record
-            # TODO Cesar
+            routing.on String do |property_id|
+              routing.on 'documents' do
+                routing.on String do |property_id|
+                  # GET api/v1/properties/[property_id]/documents/[document_id]
+                  # Gets an specific document related with a property
+                  # TODO Ernesto
+    
+                  # PUT api/v1/properties/[property_id]/documents/[document_id]
+                  # Updates a document related with a property
+                  # TODO Daniel
+    
+                  # DELETE api/v1/properties/[property_id]/documents/[document_id]
+                  # Deleted a document related with a property
+                  # TODO Daniel
+                end
+    
+                # POST api/v1/properties/[property_id]/documents
+                # Creates a new document related with a property
+                # TODO Daniel
+  
+                # GET api/v1/properties/[property_id]/documents
+                # Gets the list of documents related with a proeprty
+                # TODO Ernesto
+              end
 
+              # GET api/v1/properties/[property_id]
+              # Get a specific property record
+              # TODO Cesar
+
+              # PUT api/v1/properties/[property_id]
+              # Updates an existing property
+              # TODO Cesar
+
+              # DELETE api/v1/properties/[property_id]
+              # Deleted an existing property and the documents related with
+              # TODO Ernesto
+  
+            end
             # POST api/v1/properties
             # Creates a new property
             # TODO Cesar
 
-            # PUT api/v1/properties/[property_id]
-            # Updates an existing property
+            # GET api/v1/properties
+            # Gets the list of properties
             # TODO Cesar
-
-            # DELETE api/v1/properties/[property_id]
-            # Deleted an existing property and the documents related with
-            # TODO Ernesto
-
-            routing.on 'documents' do
-              # GET api/v1/properties/[property_id]/documents/[document_id]
-              # Gets an specific document related with a property
-              # TODO Ernesto
-
-              # GET api/v1/properties/[property_id]/documents
-              # Gets the list of documents related with a proeprty
-              # TODO Ernesto
-
-              # POST api/v1/properties/[property_id]/documents/[document_id]
-              # Creates a new document related with a property
-              # TODO Daniel
-
-              # PUT api/v1/properties/[property_id]/documents/[document_id]
-              # Updates a document related with a property
-              # TODO Daniel
-
-              # DELETE api/v1/properties/[property_id]/documents/[document_id]
-              # Deleted a document related with a property
-              # TODO Daniel
-            end
           end
 
         rescue PreConditionRequireException => e
