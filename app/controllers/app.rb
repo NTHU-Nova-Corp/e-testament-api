@@ -33,31 +33,11 @@ module ETestament
           routing.on 'properties' do
             # GET api/v1/properties/[property_id]
             # Get a specific property record
-            routing.get String do |id|
-              Property.find(id).to_json
-            rescue StandardError
-              routing.halt 404, { message: 'Property not found' }.to_json
-            end
-
-            # GET api/v1/properties
-            # Get the list of properties indexes
-            routing.get do
-              response.status = 200
-              output = { property_ids: Property.all }
-
-              JSON.pretty_generate(output)
-            end
+            # TODO Cesar
 
             # POST api/v1/properties
             # Creates a new property
-            routing.post do
-              new_data = JSON.parse(routing.body.read)
-              new_property = Property.new(new_data)
-              new_property.save
-
-              response.status = 201
-              { message: 'Property saved', id: new_property.id }.to_json
-            end
+            # TODO Cesar
 
             # PUT api/v1/properties/[property_id]
             # Updates an existing property
@@ -65,7 +45,7 @@ module ETestament
 
             # DELETE api/v1/properties/[property_id]
             # Deleted an existing property and the documents related with
-            # TODO Cesar
+            # TODO Ernesto
 
             routing.on 'documents' do
               # GET api/v1/properties/[property_id]/documents/[document_id]
