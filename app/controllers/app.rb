@@ -28,16 +28,16 @@ module ETestament
             routing.on String do |property_id|
               routing.on 'documents' do
                 routing.on String do |property_id|
-                  # GET api/v1/properties/[property_id]/documents/[document_id]
-                  # Gets an specific document related with a property
-                  # TODO Ernesto
-    
+                  # DELETE api/v1/properties/[property_id]/documents/[document_id]
+                  # Deleted a document related with a property
+                  # TODO Daniel
+
                   # PUT api/v1/properties/[property_id]/documents/[document_id]
                   # Updates a document related with a property
                   # TODO Daniel
-    
-                  # DELETE api/v1/properties/[property_id]/documents/[document_id]
-                  # Deleted a document related with a property
+
+                  # GET api/v1/properties/[property_id]/documents/[document_id]
+                  # Gets an specific document related with a property
                   # TODO Daniel
                 end
     
@@ -50,19 +50,19 @@ module ETestament
                 # TODO Ernesto
               end
 
-              # GET api/v1/properties/[property_id]
-              # Get a specific property record
-              # TODO Cesar
-
-              # PUT api/v1/properties/[property_id]
-              # Updates an existing property
-              # TODO Cesar
-
               # DELETE api/v1/properties/[property_id]
               # Deleted an existing property and the documents related with
               # TODO Ernesto
-  
+
+              # PUT api/v1/properties/[property_id]
+              # Updates an existing property
+              # TODO Ernesto
+
+              # GET api/v1/properties/[property_id]
+              # Get a specific property record
+              # TODO Cesar
             end
+
             # POST api/v1/properties
             # Creates a new property
             # TODO Cesar
