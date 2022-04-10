@@ -4,7 +4,7 @@ require 'sequel'
 
 Sequel.migration do
   change do
-    create_table(:projects) do
+    create_table(:properties) do
       primary_key :id
 
       String :name, unique: true, null: false

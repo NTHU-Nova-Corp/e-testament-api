@@ -6,18 +6,12 @@ require 'json'
 require_relative '../exception/bad_request_exception'
 require_relative '../exception/pre_condition_required_exception'
 
-require_relative '../models/property'
-
 # General ETestament module
 module ETestament
   # Web controller for ETestament API
   class Api < Roda
-    plugin :environments
+    # plugin :environments
     plugin :halt
-
-    configure do
-      Property.setup
-    end
 
     route do |routing|
       response['Content-Type'] = 'application/json'
