@@ -55,7 +55,7 @@ namespace :db do
     Sequel::Migrator.run(@app.DB, 'app/db/migrations')
   end
 
-  desc 'Destroy data in database; maintain tables'
+  # desc 'Destroy data in database; maintain tables'
   # task :delete => :load do
   #   ETestament::Account.dataset.destroy
   # end
