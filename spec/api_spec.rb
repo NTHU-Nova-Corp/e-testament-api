@@ -13,9 +13,6 @@ def app
   ETestament::Api
 end
 
-DATA = YAML.safe_load File.read('app/db/properties/property_list.yml')
-TEST_DATA = YAML.safe_load File.read('spec/test_data.yaml')
-
 describe 'Test ETestament Web API' do
   include Rack::Test::Methods
 
