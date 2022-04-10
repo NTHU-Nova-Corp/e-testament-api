@@ -10,7 +10,7 @@ require_relative '../models/property'
 
 # General ETestament module
 module ETestament
-  # Web controller for Credence API
+  # Web controller for ETestament API
   class Api < Roda
     plugin :environments
     plugin :halt
