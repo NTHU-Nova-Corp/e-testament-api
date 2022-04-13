@@ -4,6 +4,7 @@ require 'roda'
 require 'json'
 
 require_relative '../exception/bad_request_exception'
+require_relative '../exception/not_found_exception'
 require_relative '../exception/pre_condition_required_exception'
 
 # General ETestament module
@@ -47,25 +48,47 @@ module ETestament
               # TODO Daniel
 
               # GET api/v1/properties/[property_id]/documents
-              # Gets the list of documents related with a proeprty
-              # TODO Ernesto
+              # Gets the list of documents related with a property
+              routing.get do
+                documents = Document.where(property_id:).all
+                documents ? documents.to_json : raise('Document not found')
+              rescue StandardError => e
+                routing.halt 404, { message: e.message }.to_json
+              end
             end
 
-            # DELETE api/v1/properties/[property_id]
+            # DELETE api/v1/properties/[property_id]/delete
             # Deleted an existing property and the documents related with
-            # TODO Ernesto
+            routing.on 'delete' do
+              routing.post do
+                raise('Could not update property') unless Property.where(id: property_id).delete
 
-            # PUT api/v1/properties/[property_id]
-            # Updates an existing property
-            # TODO Ernesto
+                response.status = 200
+                response['Location'] = "#{@properties_route}/#{property_id}/delete"
+                { message: 'Property has been deleted' }.to_json
+              end
+            end
 
             # GET api/v1/properties/[property_id]
             # Get a specific property record
             routing.get do
               property = Property.first(id: property_id)
-              property ? property.to_json : raise('Property not found')
-            rescue StandardError => e
-              routing.halt 404, { message: e.message }.to_json
+              raise NotFoundException if property.nil?
+
+              property.to_json
+            end
+
+            # POST api/v1/properties/[property_id]
+            # Updates an existing property
+            routing.post do
+              updated_data = JSON.parse(routing.body.read)
+              updated_data['updated_at'] = Time.now.to_s
+              update_result = Property.where(id: property_id).update(updated_data)
+              raise NotFoundException if update_result != 1
+
+              response.status = 200
+              response['Location'] = "#{@properties_route}/#{property_id}"
+              { message: 'Property is updated', data: updated_data }.to_json
             end
           end
 
@@ -90,18 +113,17 @@ module ETestament
             output = { data: Property.all }
             JSON.pretty_generate(output)
           rescue StandardError
-            routing.halt 404, { message: 'Could not find properties' }.to_json
+            raise NotFoundException('Could not find properties')
           end
         end
 
-      rescue PreConditionRequireException => e
-        routing.halt 428, { code: 428, message: "Error: #{e.message}" }.to_json
-
-      rescue BadRequestException, JSON::ParserError => e
-        routing.halt 400, { code: 400, message: "Error: #{e.message}" }.to_json
+      rescue NotFoundException, PreConditionRequireException, BadRequestException, JSON::ParserError => e
+        status_code = e.instance_variable_get(:@status_code)
+        routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
 
       rescue StandardError => e
-        routing.halt 500, { code: 500, message: "Error: #{e.message}" }.to_json
+        status_code = 500
+        routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
       end
     end
   end

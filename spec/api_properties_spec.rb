@@ -66,14 +66,52 @@ describe 'Test Property Handling' do
   end
 
   it 'HAPPY: should be able to delete existing property' do
-  end
+    data = ETestament::Property.create(DATA[:properties][0]).values
+    id = data[:id]
+    get "/api/v1/properties/#{id}"
+    _(last_response.status).must_equal 200
 
-  it 'SAD: should return 404 when try to delete a property that doesnt exists' do
+    post "/api/v1/properties/#{id}/delete"
+    _(last_response.status).must_equal 200
+
+    get "/api/v1/properties/#{id}"
+    _(last_response.status).must_equal 404
   end
 
   it 'HAPPY: should be able to update existing property' do
+    request = DATA[:properties][0]
+    data = ETestament::Property.create(request).values
+    id = data[:id]
+
+    update_request = {}
+    update_request[:name] = 'Test update_name'
+    update_request[:description] = 'Test description'
+
+    get "/api/v1/properties/#{id}"
+    _(last_response.status).must_equal 200
+    result = JSON.parse(last_response.body)['data']['attributes']
+    _(result['name']).wont_equal update_request[:name]
+    _(result['description']).wont_equal update_request[:description]
+
+    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    post "/api/v1/properties/#{id}", update_request.to_json, req_header
+    _(last_response.status).must_equal 200
+    updated = JSON.parse(last_response.body)['data']
+    _(updated['name']).must_equal update_request[:name]
+    _(updated['description']).must_equal update_request[:description]
+
+    get "/api/v1/properties/#{id}"
+    _(last_response.status).must_equal 200
+    updated = JSON.parse(last_response.body)['data']['attributes']
+    _(updated['name']).must_equal update_request[:name]
+    _(updated['description']).must_equal update_request[:description]
+
   end
 
   it 'SAD: should return 404 when try to update a property that doesnt exists' do
+    new_property = DATA[:properties][1]
+    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    post '/api/v1/properties/122', new_property.to_json, req_header
+    _(last_response.status).must_equal 404
   end
 end

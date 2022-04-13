@@ -57,7 +57,7 @@ namespace :db do
 
   # desc 'Destroy data in database; maintain tables'
   # task :delete => :load do
-  #   ETestament::Account.dataset.destroy
+  #   ETestament::Document.dataset.destroy
   # end
 
   desc 'Delete dev or test database file'
