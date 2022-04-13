@@ -50,7 +50,7 @@ describe 'Test Property Handling' do
 
     _(created['id']).must_equal property.id
     _(created['name']).must_equal new_property['name']
-    _(created['repo_url']).must_equal new_property['repo_url']
+    _(created['description']).must_equal new_property['description']
   end
 
   it 'SAD: should not be able to create two properties with the same name' do
