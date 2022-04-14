@@ -37,30 +37,24 @@ describe 'Test Document Handling' do
 
     result = JSON.parse last_response.body
     _(result['data']['attributes']['id']).must_equal test_doc.id
-    _(result['data']['attributes']['property_id']).must_equal property.id
+    _(result['included']['property']['data']['attributes']['id']).must_equal property.id
   end
 
   it 'SAD: should return 404 if document requested is not related with the property indicated' do
-    
   end
 
   it 'HAPPY: should be able to create new documents' do
-    
   end
 
   it 'HAPPY: should be able to delete existing document' do
-    
   end
 
   it 'SAD: should return 404 when try to delete a document that doesnt exists' do
-    
   end
 
   it 'HAPPY: should be able to update existing document' do
-    
   end
 
   it 'SAD: should return 404 when try to update a document that doesnt exists' do
-    
   end
 end
