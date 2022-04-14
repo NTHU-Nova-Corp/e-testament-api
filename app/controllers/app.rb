@@ -29,23 +29,59 @@ module ETestament
           @properties_route = "#{@api_root}/properties"
           routing.on String do |property_id|
             routing.on 'documents' do
+              @documents_route = "#{@properties_route}/#{property_id}/documents"
               routing.on String do |document_id|
-                # DELETE api/v1/properties/[property_id]/documents/[document_id]
+                # DELETE api/v1/properties/[property_id]/documents/[document_id]/delete
                 # Deleted a document related with a property
-                # TODO Daniel
+                routing.on 'delete' do
+                  routing.post do
+                    raise('Could not delete document associated with property') unless Document.where(
+                      property_id:, id: document_id
+                    ).delete
+
+                    response.status = 200
+                    response['Location'] = "#{@documents_route}/#{document_id}/delete"
+                    { message: 'Document associated with property has been deleted' }.to_json
+                  end
+                end
 
                 # PUT api/v1/properties/[property_id]/documents/[document_id]
                 # Updates a document related with a property
-                # TODO Daniel
+                routing.post do
+                  updated_data = JSON.parse(routing.body.read)
+                  updated_data['updated_at'] = Time.now.to_s
+                  update_result = Document.where(property_id:, id: document_id).update(updated_data)
+                  raise NotFoundException if update_result != 1
+
+                  response.status = 200
+                  response['Location'] = "#{@documents_route}/#{document_id}"
+                  { message: 'Document is updated', data: updated_data }.to_json
+                end
 
                 # GET api/v1/properties/[property_id]/documents/[document_id]
                 # Gets an specific document related with a property
-                # TODO Daniel
+                routing.get do
+                  document = Document.where(property_id:, id: document_id).first
+                  raise NotFoundException if document.nil?
+
+                  document.to_json
+                end
               end
 
               # POST api/v1/properties/[property_id]/documents
               # Creates a new document related with a property
-              # TODO Daniel
+              routing.post do
+                new_data = JSON.parse(routing.body.read)
+                new_document = Document.new(new_data)
+                raise('Could not save document') unless new_document.save
+
+                response.status = 201
+                response['Location'] = "#{@documents_route}/#{new_document.id}"
+                { message: 'Property saved', data: new_document }.to_json
+
+              rescue StandardError => e
+                routing.halt 400, { message: e.message }.to_json
+              end
 
               # GET api/v1/properties/[property_id]/documents
               # Gets the list of documents related with a property
@@ -61,7 +97,7 @@ module ETestament
             # Deleted an existing property and the documents related with
             routing.on 'delete' do
               routing.post do
-                raise('Could not update property') unless Property.where(id: property_id).delete
+                raise('Could not delete property') unless Property.where(id: property_id).delete
 
                 response.status = 200
                 response['Location'] = "#{@properties_route}/#{property_id}/delete"

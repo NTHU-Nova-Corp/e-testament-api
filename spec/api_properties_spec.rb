@@ -105,7 +105,6 @@ describe 'Test Property Handling' do
     updated = JSON.parse(last_response.body)['data']['attributes']
     _(updated['name']).must_equal update_request[:name]
     _(updated['description']).must_equal update_request[:description]
-
   end
 
   it 'SAD: should return 404 when try to update a property that doesnt exists' do
