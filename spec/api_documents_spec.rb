@@ -43,10 +43,9 @@ describe 'Test Document Handling' do
   end
 
   it 'SAD: should return 404 if unknown document is requested or is not related with the property indicated' do
-    document_data = ETestament::Document.create(DATA[:documents][1]).save
+    ETestament::Document.create(DATA[:documents][1]).save
     actual_test_doc = ETestament::Document.create(DATA[:documents][2]).save
     property = ETestament::Property.first
-    test_doc = property.add_document(document_data)
 
     get "api/v1/properties/#{property.id}/documents/#{actual_test_doc.id}"
     _(last_response.status).must_equal 404

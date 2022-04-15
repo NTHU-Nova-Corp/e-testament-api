@@ -37,7 +37,7 @@ module ETestament
               routing.on String do |document_id|
                 routing.on 'delete' do
                   routing.post do
-                    current_document = Document.where(id: document_id, property_id: property_id)
+                    current_document = Document.where(id: document_id, property_id:)
                     raise NotFoundException if current_document.first.nil?
                     raise('Could not delete document associated with property') unless current_document.delete
 
@@ -46,14 +46,14 @@ module ETestament
                     { message: 'Document associated with property has been deleted' }.to_json
                   end
                 end
-              
+
                 # PUT api/v1/properties/[property_id]/documents/[document_id]
                 # Updates a document related with a property
                 routing.post do
                   updated_data = JSON.parse(routing.body.read)
                   updated_data['updated_at'] = Time.now.to_s
-                  update_result = Document.where(property_id: property_id, id: document_id).update(updated_data)
-                  raise NotFoundException if update_result != 1
+                  update_result = Document.where(property_id:, id: document_id).update(updated_data)
+                  raise NotFoundException if update_result.zero?
 
                   response.status = 200
                   response['Location'] = "#{@documents_route}/#{document_id}"
@@ -63,8 +63,9 @@ module ETestament
                 # GET api/v1/properties/[property_id]/documents/[document_id]
                 # Gets an specific document related with a property
                 routing.get do
-                  document = Document.first(id: document_id, property_id: property_id)
-                  raise NotFoundException if (document.nil? or document.property_id.to_s != property_id)
+                  document = Document.first(id: document_id, property_id:)
+                  raise NotFoundException if document.nil? || (document.property_id.to_s != property_id)
+
                   document.to_json
                 end
               end
@@ -87,7 +88,7 @@ module ETestament
               # GET api/v1/properties/[property_id]/documents
               # Gets the list of documents related with a property
               routing.get do
-                documents = Document.where(property_id: property_id).all
+                documents = Document.where(property_id:).all
                 documents ? documents.to_json : raise('Document not found')
               rescue StandardError => e
                 routing.halt 404, { message: e.message }.to_json
@@ -121,7 +122,7 @@ module ETestament
               updated_data = JSON.parse(routing.body.read)
               updated_data['updated_at'] = Time.now.to_s
               update_result = Property.where(id: property_id).update(updated_data)
-              raise NotFoundException if update_result != 1
+              raise NotFoundException if update_result.zero?
 
               response.status = 200
               response['Location'] = "#{@properties_route}/#{property_id}"
