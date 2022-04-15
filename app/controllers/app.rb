@@ -37,10 +37,9 @@ module ETestament
               routing.on String do |document_id|
                 routing.on 'delete' do
                   routing.post do
-                    raise NotFoundException if Document.where(id: document_id).first.nil?
-                    raise('Could not delete document associated with property') unless Document.where(
-                      id: document_id, property_id: property_id
-                    ).delete
+                    current_document = Document.where(id: document_id, property_id: property_id)
+                    raise NotFoundException if current_document.first.nil?
+                    raise('Could not delete document associated with property') unless current_document.delete
 
                     response.status = 200
                     response['Location'] = "#{@documents_route}/#{document_id}/delete"
@@ -64,7 +63,7 @@ module ETestament
                 # GET api/v1/properties/[property_id]/documents/[document_id]
                 # Gets an specific document related with a property
                 routing.get do
-                  document = Document.where(id: document_id, property_id: property_id).first
+                  document = Document.first(id: document_id, property_id: property_id)
                   raise NotFoundException if (document.nil? or document.property_id.to_s != property_id)
                   document.to_json
                 end
