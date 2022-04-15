@@ -37,6 +37,7 @@ module ETestament
               routing.on String do |document_id|
                 routing.on 'delete' do
                   routing.post do
+                    raise NotFoundException if Document.where(id: document_id).first.nil?
                     raise('Could not delete document associated with property') unless Document.where(
                       id: document_id, property_id: property_id
                     ).delete
