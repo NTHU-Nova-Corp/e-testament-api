@@ -38,7 +38,7 @@ module ETestament
                 routing.on 'delete' do
                   routing.post do
                     raise('Could not delete document associated with property') unless Document.where(
-                      property_id: property_id, id: document_id
+                      id: document_id, property_id: property_id
                     ).delete
 
                     response.status = 200
@@ -64,7 +64,7 @@ module ETestament
                 # Gets an specific document related with a property
                 routing.get do
                   document = Document.where(id: document_id, property_id: property_id).first
-                  raise NotFoundException if document.nil?
+                  raise NotFoundException if (document.nil? or document.property_id.to_s != property_id)
                   document.to_json
                 end
               end
