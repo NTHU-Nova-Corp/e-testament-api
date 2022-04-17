@@ -10,8 +10,8 @@ Sequel.migration do
 
       String :file_name, null: false
       String :relative_path, null: false, default: ''
-      String :description
-      String :content, null: false, default: ''
+      String :description_secure
+      String :content_secure, null: false, default: ''
 
       DateTime :created_at
       DateTime :updated_at
