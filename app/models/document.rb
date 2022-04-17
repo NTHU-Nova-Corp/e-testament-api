@@ -11,7 +11,7 @@ module ETestament
     plugin :uuid, field: :id
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :name, :description
+    set_allowed_columns :file_name, :relative_path, :description, :content
 
     # Secure getters and setters
     def description
