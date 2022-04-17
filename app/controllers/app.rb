@@ -73,9 +73,7 @@ module ETestament
               # Creates a new document related with a property
               routing.post do
                 new_data = JSON.parse(routing.body.read)
-                print(property_id)
                 existing_property = Property.first(id: property_id)
-                print(existing_property)
                 new_document = existing_property.add_document(new_data)
                 raise('Could not save document') unless new_document.save
 
@@ -161,9 +159,13 @@ module ETestament
         status_code = e.instance_variable_get(:@status_code)
         routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
 
+      # rescue Sequel::MassAssignmentRestriction
+      #   Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+      #   routing.halt 400, { message: 'Illegal Attributes' }.to_json
       rescue StandardError => e
         status_code = 500
-        routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
+        Api.logger.error "UNKOWN ERROR: #{e.message}"
+        routing.halt status_code, { code: status_code, message: 'Error: Unknown server error' }.to_json
       end
     end
   end
