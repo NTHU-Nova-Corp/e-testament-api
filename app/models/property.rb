@@ -11,6 +11,7 @@ module ETestament
     # many_to_one :user
     plugin :association_dependencies, documents: :destroy
 
+    plugin :uuid, field: :id
     plugin :timestamps
     plugin :whitelist_security
     set_allowed_columns :name, :description
