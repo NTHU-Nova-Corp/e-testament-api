@@ -52,9 +52,10 @@ module ETestament
                 routing.post do
                   updated_data = JSON.parse(routing.body.read)
                   updated_data['updated_at'] = Time.now.to_s
-                  update_result = Document.where(property_id:, id: document_id).update(updated_data)
-                  raise NotFoundException if update_result.zero?
+                  document = Document.first(id: document_id, property_id:)
+                  raise NotFoundException if document.nil?
 
+                  document.update(updated_data)
                   response.status = 200
                   response['Location'] = "#{@documents_route}/#{document_id}"
                   { message: 'Document is updated', data: updated_data }.to_json
