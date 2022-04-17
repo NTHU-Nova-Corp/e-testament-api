@@ -6,8 +6,8 @@ require 'rack/test'
 require 'yaml'
 require 'json'
 
-require_relative '../app/controllers/app'
-require_relative '../app/models/property'
+require_relative '../../app/controllers/app'
+require_relative '../../app/models/property'
 
 def app
   ETestament::Api

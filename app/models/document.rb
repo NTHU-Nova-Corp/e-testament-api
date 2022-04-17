@@ -8,6 +8,7 @@ module ETestament
   class Document < Sequel::Model
     many_to_one :property
 
+    plugin :uuid, field: :id
     plugin :timestamps
 
     # rubocop:disable Metrics/MethodLength

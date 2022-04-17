@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './spec_helper'
+require_relative '../spec_helper'
 
 describe 'Test Document Handling' do
   include Rack::Test::Methods
@@ -65,6 +65,8 @@ describe 'Test Document Handling' do
     created = JSON.parse(last_response.body)['data']['data']['attributes']
     document = ETestament::Document.where(property_id: ETestament::Property.first.id).first
 
+    print(created['id'])
+    # _(created['id']).is_a(Integer)
     _(created['id']).must_equal document.id
     _(created['file_name']).must_equal new_document['file_name']
     _(created['relative_path']).must_equal new_document['relative_path']
@@ -106,6 +108,8 @@ describe 'Test Document Handling' do
     update_request = {}
     update_request[:file_name] = 'Test update_name'
     update_request[:description] = 'Test description'
+
+    print(id)
 
     # Fetch document before update
     get "/api/v1/properties/#{property.id}/documents/#{id}"

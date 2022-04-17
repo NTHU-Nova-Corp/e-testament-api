@@ -11,6 +11,7 @@ module ETestament
     # many_to_one :user
     plugin :association_dependencies, documents: :destroy
 
+    plugin :uuid, field: :id
     plugin :timestamps
 
     # rubocop:disable Metrics/MethodLength
