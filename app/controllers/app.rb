@@ -73,7 +73,9 @@ module ETestament
               # Creates a new document related with a property
               routing.post do
                 new_data = JSON.parse(routing.body.read)
+                print(property_id)
                 existing_property = Property.first(id: property_id)
+                print(existing_property)
                 new_document = existing_property.add_document(new_data)
                 raise('Could not save document') unless new_document.save
 
