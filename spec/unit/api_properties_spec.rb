@@ -113,4 +113,22 @@ describe 'Test Property Handling' do
     post '/api/v1/properties/122', new_property.to_json, req_header
     _(last_response.status).must_equal 404
   end
+
+  it 'SAD: should prevent edits to unauthorized fields' do
+    request = DATA[:properties][0]
+    data = ETestament::Property.create(request).values
+    id = data[:id]
+
+    update_request = {}
+    update_request[:name] = 'Test update_name'
+    update_request[:description] = 'Test description'
+
+    # Hacker wants to commemorate the Xinhai Revolution :)
+    update_request[:created_at] = '1911-10-10'
+
+    # Try to update property with unauthorized field
+    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    post "/api/v1/properties/#{id}", update_request.to_json, req_header
+    _(last_response.status).must_equal 400
+  end
 end

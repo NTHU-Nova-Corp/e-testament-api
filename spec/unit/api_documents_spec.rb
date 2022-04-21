@@ -145,4 +145,26 @@ describe 'Test Document Handling' do
     post "/api/v1/properties/#{property.id}/documents/69420", update_request.to_json, req_header
     _(last_response.status).must_equal 404
   end
+
+  it 'SAD: should prevent edits to unauthorized fields' do
+    # Set up properties and documents
+    property = ETestament::Property.first
+    request = DATA[:documents][0]
+    data = ETestament::Document.create(request).save
+    property.add_document(data)
+    id = data.id
+
+    # Update parameters
+    update_request = {}
+    update_request[:file_name] = 'Test update_name'
+    update_request[:description] = 'Test description'
+
+    # Hacker wants to commemorate the Xinhai Revolution :)
+    update_request[:created_at] = '1911-10-10'
+
+    # Try to update document with unauthorized field
+    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    post "/api/v1/properties/#{property.id}/documents/#{id}", update_request.to_json, req_header
+    _(last_response.status).must_equal 400
+  end
 end

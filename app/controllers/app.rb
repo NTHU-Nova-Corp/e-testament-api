@@ -51,11 +51,11 @@ module ETestament
                 # Updates a document related with a property
                 routing.post do
                   updated_data = JSON.parse(routing.body.read)
-                  updated_data['updated_at'] = Time.now.to_s
                   document = Document.first(id: document_id, property_id:)
                   raise NotFoundException if document.nil?
 
-                  document.update(updated_data)
+                  raise(updated_data.keys.to_s) unless document.update(updated_data)
+
                   response.status = 200
                   response['Location'] = "#{@documents_route}/#{document_id}"
                   { message: 'Document is updated', data: updated_data }.to_json
@@ -121,11 +121,11 @@ module ETestament
             # Updates an existing property
             routing.post do
               updated_data = JSON.parse(routing.body.read)
-              updated_data['updated_at'] = Time.now.to_s
               property = Property.first(id: property_id)
               raise NotFoundException if property.nil?
 
-              property.update(updated_data)
+              raise(updated_data.keys.to_s) unless property.update(updated_data)
+
               response.status = 200
               response['Location'] = "#{@properties_route}/#{property_id}"
               { message: 'Property is updated', data: updated_data }.to_json
@@ -161,9 +161,9 @@ module ETestament
         status_code = e.instance_variable_get(:@status_code)
         routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
 
-      # rescue Sequel::MassAssignmentRestriction
-      #   Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-      #   routing.halt 400, { message: 'Illegal Attributes' }.to_json
+      rescue Sequel::MassAssignmentRestriction => e
+        Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
+        routing.halt 400, { message: 'Illegal Attributes' }.to_json
       rescue StandardError => e
         status_code = 500
         Api.logger.error "UNKOWN ERROR: #{e.message}"
