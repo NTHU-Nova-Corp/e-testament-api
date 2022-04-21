@@ -54,6 +54,22 @@ describe 'Test Document Handling' do
     _(last_response.status).must_equal 404
   end
 
+  it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+    property = ETestament::Property.first
+    new_document = DATA[:documents][0]
+    new_document2 = DATA[:documents][1]
+
+    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    post "/api/v1/properties/#{property.id}/documents", new_document.to_json, req_header
+    post "/api/v1/properties/#{property.id}/documents", new_document2.to_json, req_header
+
+    get "api/v1/properties/#{property.id}/documents/2%20or%20TRUE"
+
+    # deliberately not reporting error -- don't give attacker information
+    _(last_response.status).must_equal 404
+    _(last_response.body['data']).must_be_nil
+  end
+
   it 'HAPPY: should be able to create new documents' do
     property = ETestament::Property.first
     new_document = DATA[:documents][0]

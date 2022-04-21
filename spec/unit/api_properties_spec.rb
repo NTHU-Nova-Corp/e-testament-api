@@ -39,6 +39,16 @@ describe 'Test Property Handling' do
     _(last_response.status).must_equal 404
   end
 
+  it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+    ETestament::Property.create(name: 'New Project')
+    ETestament::Property.create(name: 'Newer Project')
+    get 'api/v1/properties/2%20or%20TRUE'
+
+    # deliberately not reporting error -- don't give attacker information
+    _(last_response.status).must_equal 404
+    _(last_response.body['data']).must_be_nil
+  end
+
   it 'HAPPY: should be able to create new property' do
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
