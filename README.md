@@ -7,13 +7,13 @@ API to store and retrieve properties files (documents, electronic accounts)
 All routes return Json
 
 - GET `/`: Root route shows if Web API is running
-- GET `api/v1/properties/`: returns all properties IDs
-- GET `api/v1/properties/[ID]`: returns details about a single property with given ID
-- POST `api/v1/properties/`: creates a new property
+- GET `api/v1/accounts/[username]/properties/`: returns all properties IDs
+- GET `api/v1/accounts/[username]/properties/[ID]`: returns details about a single property with given ID
+- POST `api/v1/accounts/[username]/properties/`: creates a new property
 
 ## Install
 
-Install this API by cloning the *relevant branch* and installing required gems from `Gemfile.lock`:
+Install this API by cloning the _relevant branch_ and installing required gems from `Gemfile.lock`:
 
 ```shell
 bundle install
