@@ -9,10 +9,19 @@ require 'yaml'
 require_relative 'test_load_all'
 
 def wipe_database
-  app.DB[:documents].delete
-  app.DB[:properties].delete
+  ETestament::Account.map(&:destroy)
+  ETestament::Document.map(&:destroy)
+  ETestament::Property.map(&:destroy)
 end
 
-DATA = {} # rubocop:disable Style/MutableConstant
-DATA[:documents] = YAML.safe_load File.read('app/db/seeds/document_seeds.yml')
-DATA[:properties] = YAML.safe_load File.read('app/db/seeds/property_seeds.yml')
+def seed_accounts
+  DATA[:accounts].each do |account|
+    ETestament::Account.create(account)
+  end
+end
+
+DATA = {
+  accounts: YAML.load(File.read('app/db/seeds/account_seeds.yml')),
+  properties: YAML.load(File.read('app/db/seeds/property_seeds.yml')),
+  documents: YAML.load(File.read('app/db/seeds/document_seeds.yml'))
+}.freeze

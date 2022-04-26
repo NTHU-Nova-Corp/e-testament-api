@@ -4,12 +4,13 @@ require 'sequel'
 
 Sequel.migration do
   change do
-    create_table(:properties) do
+    create_table(:accounts) do
       uuid :id, primary_key: true
 
-      String :name, unique: true, null: false
-      String :description, unique: false, default: ''
-
+      String :first_name, null: false
+      String :last_name, null: false
+      String :email, null: false, unique: true
+      String :password_digest
       DateTime :created_at
       DateTime :updated_at
     end

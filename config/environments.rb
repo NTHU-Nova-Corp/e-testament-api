@@ -26,14 +26,14 @@ module ETestament
       DB = Sequel.connect("#{db_url}?encoding=utf8")
       def self.DB = DB # rubocop:disable Naming/MethodName
 
+      # Logger setup
+      LOGGER = Logger.new($stderr)
+      def self.logger = LOGGER
+
       # Load crypto keys
       SecureDB.setup(ENV.delete('DB_KEY'))
     end
     # rubocop:enable Lint/ConstantDefinitionInBlock
-
-    # Logger setup
-    LOGGER = Logger.new($stderr)
-    def self.logger = LOGGER
 
     configure :development, :test do
       require 'pry'

@@ -30,9 +30,9 @@ module ETestament
           # GET api/v1/accounts
           # TODO
 
-          routing.on String do |username|
-            @account_route = "#{@accounts_route}/#{username}"
-            # GET api/v1/accounts/[username]
+          routing.on String do |user_id|
+            @account_route = "#{@accounts_route}/#{user_id}"
+            # GET api/v1/accounts/[user_id]
             # TODO
 
             routing.on 'properties' do
@@ -44,7 +44,7 @@ module ETestament
                 routing.on 'documents' do
                   @documents_route = "#{@property_route}/documents"
 
-                  # DELETE api/v1/accounts/[username]/properties/[property_id]/documents/[document_id]
+                  # DELETE api/v1/accounts/[user_id]/properties/[property_id]/documents/[document_id]
                   # Deleted a document related with a property
                   routing.on String do |document_id|
                     @document_route = "#{@documents_route}/#{document_id}"
@@ -61,7 +61,7 @@ module ETestament
                       end
                     end
 
-                    # GET api/v1/accounts/[username]/properties/[property_id]/documents/[document_id]
+                    # GET api/v1/accounts/[user_id]/properties/[property_id]/documents/[document_id]
                     # Gets an specific document related with a property
                     routing.get do
                       document = Document.first(id: document_id, property_id:)
@@ -70,7 +70,7 @@ module ETestament
                       document.to_json
                     end
 
-                    # PUT api/v1/accounts/[username]/properties/[property_id]/documents/[document_id]
+                    # PUT api/v1/accounts/[user_id]/properties/[property_id]/documents/[document_id]
                     # Updates a document related with a property
                     routing.post do
                       updated_data = JSON.parse(routing.body.read)
@@ -85,7 +85,7 @@ module ETestament
                     end
                   end
 
-                  # GET api/v1/accounts/[username]/properties/[property_id]/documents
+                  # GET api/v1/accounts/[user_id]/properties/[property_id]/documents
                   # Gets the list of documents related with a property
                   routing.get do
                     documents = Document.where(property_id:).all
@@ -94,7 +94,7 @@ module ETestament
                     routing.halt 404, { message: e.message }.to_json
                   end
 
-                  # POST api/v1/accounts/[username]/properties/[property_id]/documents
+                  # POST api/v1/accounts/[user_id]/properties/[property_id]/documents
                   # Creates a new document related with a property
                   routing.post do
                     new_data = JSON.parse(routing.body.read)
@@ -111,7 +111,7 @@ module ETestament
                   end
                 end
 
-                # DELETE api/v1/accounts/[username]/properties/[property_id]/delete
+                # DELETE api/v1/accounts/[user_id]/properties/[property_id]/delete
                 # Deleted an existing property and the documents related with
                 routing.on 'delete' do
                   routing.post do
@@ -123,7 +123,7 @@ module ETestament
                   end
                 end
 
-                # GET api/v1/accounts/[username]/properties/[property_id]
+                # GET api/v1/accounts/[user_id]/properties/[property_id]
                 # Get a specific property record
                 routing.get do
                   property = Property.first(id: property_id)
@@ -132,7 +132,7 @@ module ETestament
                   property.to_json
                 end
 
-                # POST api/v1/accounts/[username]/properties/[property_id]
+                # POST api/v1/accounts/[user_id]/properties/[property_id]
                 # Updates an existing property
                 routing.post do
                   updated_data = JSON.parse(routing.body.read)
@@ -147,7 +147,7 @@ module ETestament
                 end
               end
 
-              # GET api/v1/accounts/[username]/properties
+              # GET api/v1/accounts/[user_id]/properties
               # Gets the list of properties
               routing.get do
                 output = { data: Property.all }
@@ -156,12 +156,14 @@ module ETestament
                 raise NotFoundException('Could not find properties')
               end
 
-              # POST api/v1/accounts/[username]/properties
+              # POST api/v1/accounts/[user_id]/properties
               # Creates a new property
               routing.post do
                 new_data = JSON.parse(routing.body.read)
-                new_property = Property.new(new_data)
-                raise('Could not save property') unless new_property.save
+                account = Account.first(id: user_id)
+                new_property = account.add_property(new_data)
+                # new_property = Property.new(new_data)
+                raise('Could not save property') if new_property.nil?
 
                 response.status = 201
                 response['Location'] = "#{@properties_route}/#{new_property.id}"

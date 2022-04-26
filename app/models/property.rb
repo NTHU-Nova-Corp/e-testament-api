@@ -7,8 +7,8 @@ module ETestament
   # Models a property
   class Property < Sequel::Model
     one_to_many :documents
+    many_to_one :account
     # many_to_one :property_type
-    # many_to_one :user
     plugin :association_dependencies, documents: :destroy
 
     plugin :uuid, field: :id
@@ -27,6 +27,9 @@ module ETestament
               name:,
               description:
             }
+          },
+          included: {
+            account:
           }
         }, options
       )
