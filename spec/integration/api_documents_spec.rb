@@ -22,7 +22,7 @@ describe 'Test Document Handling' do
       property.add_document(ETestament::Document.create(document).save)
     end
 
-    get "api/v1/accounts/username/properties/#{property.id}/documents"
+    get "api/v1/accounts/account_id/properties/#{property.id}/documents"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -34,7 +34,7 @@ describe 'Test Document Handling' do
     property = ETestament::Property.first
     test_doc = property.add_document(document_data)
 
-    get "api/v1/accounts/username/properties/#{property.id}/documents/#{test_doc.id}"
+    get "api/v1/accounts/account_id/properties/#{property.id}/documents/#{test_doc.id}"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -47,10 +47,10 @@ describe 'Test Document Handling' do
     actual_test_doc = ETestament::Document.create(DATA[:documents][2]).save
     property = ETestament::Property.first
 
-    get "api/v1/accounts/username/properties/#{property.id}/documents/#{actual_test_doc.id}"
+    get "api/v1/accounts/account_id/properties/#{property.id}/documents/#{actual_test_doc.id}"
     _(last_response.status).must_equal 404
 
-    get "api/v1/accounts/username/properties/#{property.id}/documents/69420"
+    get "api/v1/accounts/account_id/properties/#{property.id}/documents/69420"
     _(last_response.status).must_equal 404
   end
 
@@ -60,10 +60,10 @@ describe 'Test Document Handling' do
     new_document2 = DATA[:documents][1]
 
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/username/properties/#{property.id}/documents", new_document.to_json, req_header
-    post "/api/v1/accounts/username/properties/#{property.id}/documents", new_document2.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents", new_document.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents", new_document2.to_json, req_header
 
-    get "api/v1/accounts/username/properties/#{property.id}/documents/2%20or%20TRUE"
+    get "api/v1/accounts/account_id/properties/#{property.id}/documents/2%20or%20TRUE"
 
     # deliberately not reporting error -- don't give attacker information
     _(last_response.status).must_equal 404
@@ -75,7 +75,7 @@ describe 'Test Document Handling' do
     new_document = DATA[:documents][0]
 
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/username/properties/#{property.id}/documents", new_document.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents", new_document.to_json, req_header
     _(last_response.status).must_equal 201
 
     created = JSON.parse(last_response.body)['data']['data']['attributes']
@@ -94,20 +94,20 @@ describe 'Test Document Handling' do
 
     id = document.id
 
-    get "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}"
+    get "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}"
     _(last_response.status).must_equal 200
 
-    post "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}/delete"
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}/delete"
     _(last_response.status).must_equal 200
 
-    get "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}"
+    get "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}"
     _(last_response.status).must_equal 404
   end
 
   it 'SAD: should return 404 when try to delete a document that doesnt exists' do
     property = ETestament::Property.first
 
-    delete "/api/v1/accounts/username/properties/#{property.id}/documents/69420/delete"
+    delete "/api/v1/accounts/account_id/properties/#{property.id}/documents/69420/delete"
     _(last_response.status).must_equal 404
   end
 
@@ -125,7 +125,7 @@ describe 'Test Document Handling' do
     update_request[:description] = 'Test description'
 
     # Fetch document before update
-    get "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}"
+    get "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}"
     _(last_response.status).must_equal 200
     result = JSON.parse(last_response.body)['data']['attributes']
     _(result['file_name']).wont_equal update_request[:file_name]
@@ -133,14 +133,14 @@ describe 'Test Document Handling' do
 
     # Update the document
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}", update_request.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}", update_request.to_json, req_header
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']
     _(updated['file_name']).must_equal update_request[:file_name]
     _(updated['description']).must_equal update_request[:description]
 
     # Fetch document after update
-    get "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}"
+    get "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}"
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']['attributes']
     _(updated['file_name']).must_equal update_request[:file_name]
@@ -158,7 +158,7 @@ describe 'Test Document Handling' do
 
     # Try to update nonexistent document
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/username/properties/#{property.id}/documents/69420", update_request.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents/69420", update_request.to_json, req_header
     _(last_response.status).must_equal 404
   end
 
@@ -180,7 +180,7 @@ describe 'Test Document Handling' do
 
     # Try to update document with unauthorized field
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/username/properties/#{property.id}/documents/#{id}", update_request.to_json, req_header
+    post "/api/v1/accounts/account_id/properties/#{property.id}/documents/#{id}", update_request.to_json, req_header
     _(last_response.status).must_equal 400
   end
 end
