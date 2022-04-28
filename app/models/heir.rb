@@ -13,7 +13,7 @@ module ETestament
                  left_key: :heir_id, right_key: :property_id
 
     plugin :association_dependencies,
-           properties: :nullify, 
+           properties: :nullify
 
     plugin :uuid, field: :id
     plugin :whitelist_security
@@ -31,7 +31,7 @@ module ETestament
               relation_id:,
               first_name:,
               last_name:,
-              email:,
+              email:
             }
           }
         }, options
