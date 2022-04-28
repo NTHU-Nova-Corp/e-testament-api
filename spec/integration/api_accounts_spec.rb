@@ -64,7 +64,7 @@ describe 'Test Accounts Handling' do
       _(profile['email']).must_equal new_account['email']
     end
 
-    it 'SAD: should not be able to signup with exiting email' do
+    it 'SAD: should not be able to signup with existing email' do
       new_account = DATA[:accounts][0]
       post '/api/v1/accounts', new_account.to_json, req_header
       _(last_response.status).must_equal 201

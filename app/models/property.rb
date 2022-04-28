@@ -8,11 +8,15 @@ module ETestament
   class Property < Sequel::Model
     one_to_many :documents
     many_to_one :account
+    many_to_many :heirs,
+                 class: :'ETestament::Property',
+                 join_table: :heirs_properties,
+                 left_key: :property_id, right_key: :heir_id
     # many_to_one :property_type
-    plugin :association_dependencies, documents: :destroy
+    plugin :association_dependencies, documents: :destroy, heirs: :nullify
 
     plugin :uuid, field: :id
-    plugin :timestamps
+    plugin :timestamps, update_on_create: true
     plugin :whitelist_security
     set_allowed_columns :name, :description
 

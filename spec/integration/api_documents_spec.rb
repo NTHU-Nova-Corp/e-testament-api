@@ -104,7 +104,7 @@ describe 'Test Document Handling' do
     _(last_response.status).must_equal 404
   end
 
-  it 'SAD: should return 404 when try to delete a document that doesnt exists' do
+  it 'SAD: should return 404 when try to delete a document that doesn\'t exist' do
     property = ETestament::Property.first
 
     delete "/api/v1/accounts/account_id/properties/#{property.id}/documents/69420/delete"
@@ -147,7 +147,7 @@ describe 'Test Document Handling' do
     _(updated['description']).must_equal update_request[:description]
   end
 
-  it 'SAD: should return 404 when try to update a document that doesnt exists' do
+  it 'SAD: should return 404 when try to update a document that doesn\'t exist' do
     # Set up properties and documents
     property = ETestament::Property.first
 

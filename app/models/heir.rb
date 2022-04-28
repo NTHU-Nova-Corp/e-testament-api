@@ -2,40 +2,36 @@
 
 require 'sequel'
 require 'json'
-require_relative './password'
 
 module ETestament
   # Account model
-  class Account < Sequel::Model
-    one_to_many :properties
-    one_to_many :heirs
+  class Heir < Sequel::Model
+    many_to_one :accounts
+    many_to_many :properties,
+                 class: :'ETestament::Property',
+                 join_table: :heirs_properties,
+                 left_key: :heir_id, right_key: :property_id
 
-    plugin :association_dependencies, properties: :destroy, heirs: :destroy
+    plugin :association_dependencies,
+           properties: :nullify, 
 
     plugin :uuid, field: :id
     plugin :whitelist_security
     set_allowed_columns :first_name, :last_name, :email, :password
     plugin :timestamps, update_on_create: true
 
-    def password=(new_password)
-      self.password_digest = Password.digest(new_password)
-    end
-
-    def password?(try_password)
-      digest = ETestament::Password.from_digest(password_digest)
-      digest.correct?(try_password)
-    end
-
     def to_json(options = {})
       JSON(
         {
           data: {
-            type: 'account',
+            type: 'heir',
             attributes: {
               id:,
+              account_id:,
+              relation_id:,
               first_name:,
               last_name:,
-              email:
+              email:,
             }
           }
         }, options
