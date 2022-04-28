@@ -20,6 +20,7 @@ module ETestament
     set_allowed_columns :first_name, :last_name, :email, :password
     plugin :timestamps, update_on_create: true
 
+    # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(
         {
@@ -37,5 +38,6 @@ module ETestament
         }, options
       )
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

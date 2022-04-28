@@ -50,7 +50,6 @@ module ETestament
         }, options
       )
     end
-
     # rubocop:enable Metrics/MethodLength
   end
 end

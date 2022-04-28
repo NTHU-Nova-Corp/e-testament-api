@@ -119,7 +119,6 @@ module ETestament
                     response.status = 201
                     response['Location'] = "#{@documents_route}/#{new_document.id}"
                     { message: 'Property saved', data: new_document }.to_json
-
                   end
                 end
 
@@ -178,7 +177,7 @@ module ETestament
                 response.status = 201
                 response['Location'] = "#{@properties_route}/#{new_property.id}"
                 { message: 'Property saved', data: new_property }.to_json
-              rescue StandardError => e
+              rescue StandardError => _e
                 routing.halt 400, { message: 'Could not save property' }.to_json
               end
             end
@@ -192,15 +191,16 @@ module ETestament
             raise BadRequestException, 'Could not create account' if new_account.nil?
 
             response.status = 201
-            response['Location'] = "#{@accounts_route}"
+            response['Location'] = @accounts_route.to_s
             { message: 'Property saved', data: new_account }.to_json
 
-          rescue StandardError => e
+          rescue StandardError => _e
             routing.halt 400, { message: 'Could not signup a new account' }.to_json
           end
         end
 
-      rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException, JSON::ParserError => e
+      rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
+             JSON::ParserError => e
         status_code = e.instance_variable_get(:@status_code)
         routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
       rescue Sequel::MassAssignmentRestriction => e

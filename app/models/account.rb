@@ -26,6 +26,7 @@ module ETestament
       digest.correct?(try_password)
     end
 
+    # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(
         {
@@ -41,5 +42,6 @@ module ETestament
         }, options
       )
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end
