@@ -14,7 +14,7 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     account.add_property(DATA[:properties][0])
     account.add_property(DATA[:properties][1])
-    account.id
+    # account.id
     get "api/v1/accounts/#{account.id}/properties"
     _(last_response.status).must_equal 200
 
@@ -97,7 +97,7 @@ describe 'Test Property Handling' do
   it 'HAPPY: should be able to update existing property' do
     account = ETestament::Account.first
     request = DATA[:properties][0]
-    data = ETestament::Property.create(request).values
+    data = account.add_property(request)
     id = data[:id]
 
     update_request = {}
@@ -136,7 +136,7 @@ describe 'Test Property Handling' do
   it 'SAD: should prevent edits to unauthorized fields' do
     account = ETestament::Account.first
     request = DATA[:properties][0]
-    data = ETestament::Property.create(request).values
+    data = account.add_property(request)
     id = data[:id]
 
     update_request = {}
