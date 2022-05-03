@@ -7,6 +7,11 @@ AllCops:
   Exclude:
     - _snippets/**/*
 
+Metrics/ClassLength:
+  Enabled: true
+  Exclude:
+    - app/controllers/*.rb # Roda's nested controllers require large blocks
+
 Metrics/BlockLength:
   Enabled: true
   Exclude:

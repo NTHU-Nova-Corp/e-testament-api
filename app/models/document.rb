@@ -9,7 +9,7 @@ module ETestament
     many_to_one :property
 
     plugin :uuid, field: :id
-    plugin :timestamps
+    plugin :timestamps, update_on_create: true
     plugin :whitelist_security
     set_allowed_columns :file_name, :relative_path, :description, :content
 
@@ -50,7 +50,6 @@ module ETestament
         }, options
       )
     end
-
     # rubocop:enable Metrics/MethodLength
   end
 end
