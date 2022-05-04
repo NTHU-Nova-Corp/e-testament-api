@@ -15,7 +15,7 @@ describe 'Test Property Handling' do
     account.add_property(DATA[:properties][0])
     account.add_property(DATA[:properties][1])
     # account.id
-    get "api/v1/accounts/#{account.id}/properties"
+    get "api/v1/properties"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -27,7 +27,7 @@ describe 'Test Property Handling' do
     account.add_property(DATA[:properties][1])
     existing_property = account.properties.first
 
-    get "/api/v1/accounts/#{account.id}/properties/#{existing_property.id}"
+    get "/api/v1/properties/#{existing_property.id}"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -37,7 +37,7 @@ describe 'Test Property Handling' do
 
   it 'SAD: should return error if unknown property requested' do
     account = ETestament::Account.first
-    get "/api/v1/accounts/#{account.id}/properties/2"
+    get "/api/v1/properties/2"
 
     _(last_response.status).must_equal 404
   end
@@ -46,7 +46,7 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     ETestament::Property.create(name: 'New Project')
     ETestament::Property.create(name: 'Newer Project')
-    get "api/v1/accounts/#{account.id}/properties/2%20or%20TRUE"
+    get "api/v1/properties/2%20or%20TRUE"
 
     # deliberately not reporting error -- don't give attacker information
     _(last_response.status).must_equal 404
@@ -57,7 +57,7 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties", new_property.to_json, req_header
+    post "/api/v1/properties", new_property.to_json, req_header
     _(last_response.status).must_equal 201
 
     created = JSON.parse(last_response.body)['data']['data']['attributes']
@@ -72,11 +72,11 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties", new_property.to_json, req_header
+    post "/api/v1/properties", new_property.to_json, req_header
     _(last_response.status).must_equal 201
 
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties", new_property.to_json, req_header
+    post "/api/v1/properties", new_property.to_json, req_header
     _(last_response.status).must_equal 400
   end
 
@@ -84,13 +84,13 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     property = account.add_property(DATA[:properties][0])
     id = property.id
-    get "/api/v1/accounts/#{account.id}/properties/#{id}"
+    get "/api/v1/properties/#{id}"
     _(last_response.status).must_equal 200
 
-    post "/api/v1/accounts/#{account.id}/properties/#{id}/delete"
+    post "/api/v1/properties/#{id}/delete"
     _(last_response.status).must_equal 200
 
-    get "/api/v1/accounts/#{account.id}/properties/#{id}"
+    get "/api/v1/properties/#{id}"
     _(last_response.status).must_equal 404
   end
 
@@ -104,20 +104,20 @@ describe 'Test Property Handling' do
     update_request[:name] = 'Test update_name'
     update_request[:description] = 'Test description'
 
-    get "/api/v1/accounts/#{account.id}/properties/#{id}"
+    get "/api/v1/properties/#{id}"
     _(last_response.status).must_equal 200
     result = JSON.parse(last_response.body)['data']['attributes']
     _(result['name']).wont_equal update_request[:name]
     _(result['description']).wont_equal update_request[:description]
 
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties/#{id}", update_request.to_json, req_header
+    post "/api/v1/properties/#{id}", update_request.to_json, req_header
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']
     _(updated['name']).must_equal update_request[:name]
     _(updated['description']).must_equal update_request[:description]
 
-    get "/api/v1/accounts/#{account.id}/properties/#{id}"
+    get "/api/v1/properties/#{id}"
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']['attributes']
     _(updated['name']).must_equal update_request[:name]
@@ -129,7 +129,7 @@ describe 'Test Property Handling' do
 
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties/122", new_property.to_json, req_header
+    post "/api/v1/properties/122", new_property.to_json, req_header
     _(last_response.status).must_equal 404
   end
 
@@ -148,7 +148,7 @@ describe 'Test Property Handling' do
 
     # Try to update property with unauthorized field
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/accounts/#{account.id}/properties/#{id}", update_request.to_json, req_header
+    post "/api/v1/properties/#{id}", update_request.to_json, req_header
     _(last_response.status).must_equal 400
   end
 end

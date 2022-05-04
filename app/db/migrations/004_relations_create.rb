@@ -5,7 +5,7 @@ require 'sequel'
 Sequel.migration do
   change do
     create_table(:relations) do
-      uuid :id, primary_key: true
+      primary_key :id
 
       String :name, null: false
 

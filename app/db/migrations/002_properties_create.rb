@@ -6,7 +6,7 @@ Sequel.migration do
   change do
     create_table(:properties) do
       uuid :id, primary_key: true
-      foreign_key :account_id, table: :accounts, type: :uuid
+      foreign_key :account_id, table: :accounts
 
       String :name, unique: true, null: false
       String :description, unique: false, default: ''
