@@ -10,8 +10,7 @@ module ETestament
 
     one_to_many :propertyHeirs
 
-    plugin :association_dependencies,
-           properties: :nullify
+    plugin :association_dependencies, propertyHeirs: :destroy
 
     plugin :whitelist_security
     set_allowed_columns :first_name, :last_name, :email, :password
