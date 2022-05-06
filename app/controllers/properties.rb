@@ -6,7 +6,6 @@ require_relative './app'
 module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
-    # rubocop:disable Metrics/BlockLength
     route('properties') do |routing|
       @account_id = 'ABC' # TODO: This will came from the headers in the api
 
@@ -20,7 +19,7 @@ module ETestament
             routing.post 'delete' do
               # DELETE api/v1/properties/[property_id]/documents/[document_id]
               # Deleted a document related with a property
-              property = Property.first(id: property_id, ex)
+              property = Property.first(id: property_id)
               raise NotFoundException if property.nil?
 
               current_document = Document.first(id: document_id, property_id:)
@@ -138,6 +137,7 @@ module ETestament
         routing.get do
           property = Property.first(id: property_id)
           raise NotFoundException if property.nil?
+
           property.to_json
         end
 
@@ -178,7 +178,7 @@ module ETestament
       rescue StandardError => _e
         routing.halt 400, { message: 'Could not save property' }.to_json
       end
-    
+
     rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
            JSON::ParserError => e
       status_code = e.instance_variable_get(:@status_code)
@@ -191,6 +191,5 @@ module ETestament
       Api.logger.error "UNKOWN ERROR: #{e.message}"
       routing.halt status_code, { code: status_code, message: 'Error: Unknown server error' }.to_json
     end
-    # rubocop:enable Metrics/BlockLength
   end
 end
