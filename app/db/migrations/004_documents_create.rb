@@ -9,14 +9,14 @@ Sequel.migration do
       foreign_key :property_id, table: :properties, type: :uuid
 
       String :file_name, null: false
-      String :relative_path, null: false, default: ''
+      String :relative_path, unique: true, null: false, default: ''
       String :description_secure
       String :content_secure, null: false, default: ''
 
       DateTime :created_at
       DateTime :updated_at
 
-      unique [:property_id, :file_name, :relative_path]
+      unique [:property_id, :file_name]
     end
   end
 end

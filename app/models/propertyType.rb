@@ -4,15 +4,11 @@ require 'json'
 require 'sequel'
 
 module ETestament
-  # Models a property
-  class Property < Sequel::Model
-    one_to_many :documents
-    one_to_many :propertyHeirs
+  # Models a propertyType
+  class PropertyType < Sequel::Model
+    one_to_many :properties
 
-    many_to_one :account
-    many_to_one :property_type
-
-    plugin :association_dependencies, documents: :destroy, propertyHeirs: :destroy
+    plugin :association_dependencies, properties: :destroy
 
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
@@ -24,7 +20,7 @@ module ETestament
       JSON(
         {
           data: {
-            type: 'property',
+            type: 'propertyType',
             attributes: {
               id:,
               name:,

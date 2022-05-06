@@ -6,11 +6,9 @@ require 'json'
 module ETestament
   # Account model
   class Heir < Sequel::Model
-    many_to_one :accounts
-    many_to_many :properties,
-                 class: :'ETestament::Property',
-                 join_table: :heirs_properties,
-                 left_key: :heir_id, right_key: :property_id
+    many_to_one :account
+
+    one_to_many :propertyHeirs
 
     plugin :association_dependencies,
            properties: :nullify

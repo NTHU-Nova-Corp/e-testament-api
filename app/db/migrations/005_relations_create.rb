@@ -5,9 +5,10 @@ require 'sequel'
 Sequel.migration do
   change do
     create_table(:relations) do
-      primary_key :id
+      uuid :id, primary_key: true
 
-      String :name, null: false
+      String :name, unique: true, null: false
+      String :description, default: ''
 
       DateTime :created_at
       DateTime :updated_at

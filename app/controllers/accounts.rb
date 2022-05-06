@@ -9,11 +9,12 @@ module ETestament
     route('accounts') do |routing|
       @account_route = "#{@api_root}/accounts"
 
-      routing.on String do |username|
+      routing.on String do |_username|
         # GET api/v1/accounts/[username]
         routing.get do
           account = Account.first(:username)
           raise NotFoundException, 'Account not found.' if account.nil?
+
           account.to_json
         end
       end

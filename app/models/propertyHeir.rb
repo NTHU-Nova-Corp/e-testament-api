@@ -5,19 +5,13 @@ require 'sequel'
 
 module ETestament
   # Models a property
-  class Property < Sequel::Model
-    one_to_many :documents
-    one_to_many :propertyHeirs
+  class PropertyHeir < Sequel::Model
+    many_to_one :property
+    many_to_one :heir
 
-    many_to_one :account
-    many_to_one :property_type
-
-    plugin :association_dependencies, documents: :destroy, propertyHeirs: :destroy
-
-    plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
-    set_allowed_columns :name, :description
+    set_allowed_columns :percentage
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
@@ -26,13 +20,12 @@ module ETestament
           data: {
             type: 'property',
             attributes: {
-              id:,
-              name:,
-              description:
+              percentage:
             }
           },
           included: {
-            account:
+            property:,
+            heir:
           }
         }, options
       )
