@@ -11,7 +11,7 @@ module ETestament
       def self.call(email:, property_id:)
         heir = Heir.first(email:)
         property = Property.first(id: property_id)
-        raise(OwnerNotHeirError) if property.owner.id == heir.id
+        raise(OwnerNotHeirError) if property.owner.email == heir.email
   
         property.add_heir(heir)
       end

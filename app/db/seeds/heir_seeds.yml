@@ -1,0 +1,16 @@
+---
+- first_name: Ernesto
+  last_name: Lewis
+  username: ernesto.lewis
+  email: ernesto.sst@mail.com
+  password: mypa$$w0rd1
+- first_name: Cesar
+  last_name: Garcia
+  username: cesar.garcia
+  email: cesar.garcia@mail.com
+  password: mypa$$w0rd2
+- first_name: Daniel
+  last_name: Kong
+  username: daniel.kong
+  email: daniel.kong@mail.com
+  password: mypa$$w0rd3

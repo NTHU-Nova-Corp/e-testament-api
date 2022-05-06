@@ -14,6 +14,7 @@ DIR = File.dirname(__FILE__)
 ACCOUNTS = YAML.load_file("#{DIR}/account_seeds.yml")
 PROPERTIES = YAML.load_file("#{DIR}/property_seeds.yml")
 DOCUMENTS = YAML.load_file("#{DIR}/document_seeds.yml")
+HEIRS = YAML.load_file("#{DIR}/heir_seeds.yml")
 
 def create_accounts
   ACCOUNTS.each do |account|
@@ -38,5 +39,15 @@ def create_documents
     document = documents.next
     property_id = properties.next.id
     ETestament::CreateDocumentForProperty.call(id: property_id, document:)
+  end
+end
+
+def create_heirs
+  heirs = HEIRS.each
+  properties = ETestament::Property.all.cycle
+  loop do
+    heir = heirs.next
+    property_id = properties.next.id
+    ETestament::AddHeirToProperty.call(email:heir.email, property_id:)
   end
 end

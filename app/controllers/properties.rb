@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'roda'
 require_relative './app'
 
 # General ETestament module
@@ -9,6 +8,8 @@ module ETestament
   class Api < Roda
     # rubocop:disable Metrics/BlockLength
     route('properties') do |routing|
+      @account_id = 'ABC' # TODO: This will came from the headers in the api
+
       @properties_route = "#{@account_route}/properties"
 
       routing.on String do |property_id|
@@ -16,13 +17,13 @@ module ETestament
           @documents_route = "#{@properties_route}/#{property_id}/documents"
 
           routing.on String do |document_id|
-            # DELETE api/v1/properties/[property_id]/documents/[document_id]
-            # Deleted a document related with a property
             routing.post 'delete' do
-              property = Property.where(id: property_id).first
+              # DELETE api/v1/properties/[property_id]/documents/[document_id]
+              # Deleted a document related with a property
+              property = Property.first(id: property_id, ex)
               raise NotFoundException if property.nil?
 
-              current_document = Document.where(id: document_id, property_id:).first
+              current_document = Document.first(id: document_id, property_id:)
               raise NotFoundException if current_document.nil?
               raise('Could not delete document associated with property') unless current_document.delete
 
@@ -31,26 +32,26 @@ module ETestament
               { message: 'Document associated with property has been deleted' }.to_json
             end
 
-            # GET api/v1/properties/[property_id]/documents/[document_id]
-            # Gets an specific document related with a property
             routing.get do
-              property = Property.where(id: property_id).first
+              # GET api/v1/properties/[property_id]/documents/[document_id]
+              # Gets an specific document related with a property
+              property = Property.first(id: property_id)
               raise NotFoundException if property.nil?
 
-              document = Document.first(id: document_id)
+              document = Document.first(id: document_id, property_id:)
               raise NotFoundException if document.nil?
 
               document.to_json
             end
 
-            # PUT api/v1/properties/[property_id]/documents/[document_id]
-            # Updates a document related with a property
             routing.post do
+              # PUT api/v1/properties/[property_id]/documents/[document_id]
+              # Updates a document related with a property
               updated_data = JSON.parse(routing.body.read)
               property = Property.where(id: property_id).first
               raise NotFoundException if property.nil?
 
-              document = Document.first(id: document_id)
+              document = Document.first(id: document_id, property_id:)
               raise NotFoundException if document.nil?
 
               raise(updated_data.keys.to_s) unless document.update(updated_data)
@@ -61,26 +62,64 @@ module ETestament
             end
           end
 
-          # GET api/v1/accounts/[account_id]/properties/[property_id]/documents
-          # Gets the list of documents related with a property
           routing.get do
-            documents = Property.where(id: property_id).first.documents
+            # GET api/v1/properties/[property_id]/documents
+            # Gets the list of documents related with a property
+            documents = Property.first(id: property_id).documents
             raise NotFoundException, 'Document not found' if documents.nil?
 
             documents.to_json
           end
 
-          # POST api/v1/accounts/[account_id]/properties/[property_id]/documents
-          # Creates a new document related with a property
           routing.post do
+            # POST api/v1/properties/[property_id]/documents
+            # Creates a new document related with a property
             new_data = JSON.parse(routing.body.read)
-            existing_property = Property.first(id: property_id)
-            new_document = existing_property.add_document(new_data)
+            new_document = CreateDocumentForProperty.call(id: property_id, document: new_data)
             raise BadRequestException, 'Could not save document' unless new_document.save
 
             response.status = 201
             response['Location'] = "#{@documents_route}/#{new_document.id}"
             { message: 'Property saved', data: new_document }.to_json
+          end
+        end
+
+        routing.on 'heirs' do
+          routing.on String do |heir_id|
+            @heirs_route = "#{@properties_route}/#{property_id}/heirs"
+            # GET api/v1/properties/[property_id]/heirs/[heir_id]
+            # Get info on a specific heir to a property
+            property = Property.where(id: property_id)
+            raise NotFoundException if property.nil?
+
+            heir = Heir.first(id: heir_id, property_id:)
+            raise NotFoundException if heir.nil?
+
+            heir.to_json
+          end
+
+          routing.get do
+            # GET api/v1/properties/[property_id]/heirs
+            # Get a list of heirs associated with a property
+            property = Property.first(id: property_id)
+            raise NotFoundException if property.nil?
+
+            heir = Heir.all(id: heir_id, property_id:)
+            raise NotFoundException if heir.nil?
+
+            heir.to_json
+          end
+
+          routing.post do
+            # POST api/v1/properties/[property_id]/heirs
+            # Associate a heir to a property
+            new_data = JSON.parse(routing.body.read)
+            new_heir = AddHeirToProperty.call(new_data, property_id)
+            raise BadRequestException, 'Could not add heir' unless new_heir.save
+
+            response.status = 201
+            response['Location'] = "#{@heirs_route}/#{new_heir.id}"
+            { message: 'Heir saved', data: new_document }.to_json
           end
         end
 

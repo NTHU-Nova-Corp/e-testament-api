@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
-require 'roda'
 require_relative './app'
-
-require_relative '../exception/bad_request_exception'
-require_relative '../exception/unauthorized_exception'
-require_relative '../exception/not_found_exception'
-require_relative '../exception/pre_condition_required_exception'
-require_relative '../exception/unknown_error_exception'
 
 # General ETestament module
 module ETestament
