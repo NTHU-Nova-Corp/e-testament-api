@@ -14,7 +14,7 @@ module ETestament
 
     plugin :uuid, field: :id
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password
+    set_allowed_columns :first_name, :last_name, :email, :password, :username
     plugin :timestamps, update_on_create: true
 
     def password=(new_password)

@@ -11,7 +11,9 @@ module ETestament
 
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
-    set_allowed_columns :percentage
+    set_allowed_columns :percentage, :property_id, :heir_id
+
+    attr_accessor :property_id, :heir_id
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})

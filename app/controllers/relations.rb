@@ -32,6 +32,13 @@ module ETestament
 
       # TODO: POST api/v1/relations
       routing.post do
+        new_data = JSON.parse(routing.body.read)
+        new_relation = Relation.new(new_data)
+        raise BadRequestException, 'Could not save relation' unless new_relation.save
+
+        response.status = 201
+        response['Location'] = "#{@properties_route}/#{new_relation.id}"
+        { message: 'Relation saved', data: new_relation }.to_json
       end
 
       # TODO: GET api/v1/relations

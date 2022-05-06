@@ -4,17 +4,19 @@ require 'sequel'
 require 'json'
 
 module ETestament
-  # Account model
+  # Heir model
   class Heir < Sequel::Model
     many_to_one :account
+    many_to_one :relation
 
     one_to_many :propertyHeirs
 
     plugin :association_dependencies, propertyHeirs: :destroy
 
-    plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password
+    plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
+    plugin :whitelist_security
+    set_allowed_columns :first_name, :last_name, :email, :password, :relation_id
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})

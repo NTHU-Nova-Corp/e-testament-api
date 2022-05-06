@@ -17,7 +17,7 @@ module ETestament
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
-    set_allowed_columns :name, :description
+    set_allowed_columns :name, :description, :property_type_id
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
@@ -28,7 +28,9 @@ module ETestament
             attributes: {
               id:,
               name:,
-              description:
+              description:,
+              account_id:,
+              property_type_id:
             }
           },
           included: {

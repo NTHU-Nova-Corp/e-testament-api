@@ -28,7 +28,7 @@ module ETestament
             }
           },
           included: {
-            account:
+            properties:
           }
         }, options
       )

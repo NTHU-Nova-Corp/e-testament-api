@@ -7,7 +7,7 @@ module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
     route('property_types') do |routing|
-      @account_id = 'ABC' # TODO: This will came from the headers in the api
+      @account_id = '8ddefe77-4bae-4584-9044-de29aee7558a' # TODO: This will came from the headers in the api
       # Web controller for ETestament API, heirs sub-route
       @heirs_route = "#{@api_root}/property_types"
 
@@ -32,6 +32,13 @@ module ETestament
 
       # TODO: POST api/v1/property_types
       routing.post do
+        new_data = JSON.parse(routing.body.read)
+        new_property_type = PropertyType.new(new_data)
+        raise BadRequestException, 'Could not save property type' unless new_property_type.save
+
+        response.status = 201
+        response['Location'] = "#{@properties_route}/#{new_property_type.id}"
+        { message: 'Property type saved', data: new_property_type }.to_json
       end
 
       # TODO: GET api/v1/property_types
