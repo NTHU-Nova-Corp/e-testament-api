@@ -7,9 +7,10 @@ require_relative './app'
 module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
+    plugin :request_headers
     # Web controller for ETestament API, heirs sub-route
     route('heirs') do |routing|
-      @account_id = '70b4347a-d2bc-45f8-9d12-b1047126cb55' # TODO: This will came from the headers in the api
+      @account_id = routing.headers['account_id']
       @heirs_route = "#{@api_root}/heirs"
 
       routing.on String do |heir_id|
