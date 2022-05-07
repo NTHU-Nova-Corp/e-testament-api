@@ -73,7 +73,7 @@ module ETestament
             # POST api/v1/properties/[property_id]/documents
             # Creates a new document related with a property
             new_data = JSON.parse(routing.body.read)
-            new_document = CreateDocumentForProperty.call(id: property_id, document: new_data)
+            new_document = CreateDocumentForProperty.call(property_id:, document: new_data)
             raise BadRequestException, 'Could not save document' unless new_document.save
 
             response.status = 201

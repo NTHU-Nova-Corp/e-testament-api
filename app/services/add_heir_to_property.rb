@@ -8,12 +8,11 @@ module ETestament
       def message = 'The heir cannot be the owner of a property'
     end
 
-    def self.call(email:, property_id:)
-      heir = Heir.first(email:)
-      property = Property.first(id: property_id)
-      raise(OwnerNotHeirError) if property.owner.email == heir.email
-
-      property.add_heir(heir)
+    def self.call(heir_id:, property_id:, property_heir:)
+      property_heir = PropertyHeir.new(property_heir)
+      property_heir.heir_id = heir_id
+      property_heir.property_id = property_id
+      property_heir.save
     end
   end
 end

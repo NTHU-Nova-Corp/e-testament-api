@@ -15,7 +15,7 @@ describe 'Test AddHeirToProperty service' do
     @owner = ETestament::Account.all[0]
     @heir = ETestament::Account.all[1]
     @project = ETestament::CreatePropertyForAccount.call(
-      id: @owner.id, property:
+      account_id: @owner.id, property:
     )
   end
 
