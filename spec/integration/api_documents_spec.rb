@@ -41,7 +41,7 @@ describe 'Test Document Handling' do
 
     result = JSON.parse last_response.body
     _(result['data']['attributes']['id']).must_equal test_doc.id
-    _(result['included']['property']['data']['attributes']['id']).must_equal property.id
+    _(result['data']['attributes']['property_id']).must_equal property.id
   end
 
   it 'SAD: should return 404 if unknown document is requested or is not related with the property indicated' do

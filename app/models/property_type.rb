@@ -20,7 +20,7 @@ module ETestament
       JSON(
         {
           data: {
-            type: 'propertyType',
+            type: 'property_type',
             attributes: {
               id:,
               name:,

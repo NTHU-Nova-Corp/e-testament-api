@@ -10,6 +10,9 @@ module ETestament
       @account_id = routing.headers['account_id']
       @properties_route = "#{@account_route}/properties"
 
+      puts '@account_id'
+      puts @account_id
+
       routing.on String do |property_id|
         routing.on 'documents' do
           @documents_route = "#{@properties_route}/#{property_id}/documents"

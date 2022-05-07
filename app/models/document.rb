@@ -41,7 +41,8 @@ module ETestament
               file_name:,
               relative_path:,
               description:,
-              content:
+              content:,
+              property_id:
             }
           }
         }, options

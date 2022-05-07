@@ -15,7 +15,7 @@ describe 'Test Property Handling' do
     account.add_property(DATA[:properties][0])
     account.add_property(DATA[:properties][1])
     # account.id
-    get "api/v1/properties"
+    get 'api/v1/properties'
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -37,7 +37,7 @@ describe 'Test Property Handling' do
 
   it 'SAD: should return error if unknown property requested' do
     account = ETestament::Account.first
-    get "/api/v1/properties/2"
+    get '/api/v1/properties/2'
 
     _(last_response.status).must_equal 404
   end
@@ -46,7 +46,7 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     ETestament::Property.create(name: 'New Project')
     ETestament::Property.create(name: 'Newer Project')
-    get "api/v1/properties/2%20or%20TRUE"
+    get 'api/v1/properties/2%20or%20TRUE'
 
     # deliberately not reporting error -- don't give attacker information
     _(last_response.status).must_equal 404
@@ -55,9 +55,10 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to create new property' do
     account = ETestament::Account.first
+    puts account.id
     new_property = DATA[:properties][1]
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties", new_property.to_json, req_header
+    req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
+    post '/api/v1/properties', new_property.to_json, req_header
     _(last_response.status).must_equal 201
 
     created = JSON.parse(last_response.body)['data']['data']['attributes']
@@ -71,12 +72,12 @@ describe 'Test Property Handling' do
   it 'SAD: should not be able to create two properties with the same name' do
     account = ETestament::Account.first
     new_property = DATA[:properties][1]
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties", new_property.to_json, req_header
+    req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
+    post '/api/v1/properties', new_property.to_json, req_header
     _(last_response.status).must_equal 201
 
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties", new_property.to_json, req_header
+    post '/api/v1/properties', new_property.to_json, req_header
     _(last_response.status).must_equal 400
   end
 
@@ -129,7 +130,7 @@ describe 'Test Property Handling' do
 
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties/122", new_property.to_json, req_header
+    post '/api/v1/properties/122', new_property.to_json, req_header
     _(last_response.status).must_equal 404
   end
 
