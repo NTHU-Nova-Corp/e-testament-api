@@ -17,10 +17,6 @@ module ETestament
         routing.post 'delete' do
         end
 
-        # TODO: POST api/v1/property_types/[property_type_id]/edit
-        routing.post 'edit' do
-        end
-
         # TODO: POST api/v1/property_types/[property_type_id]
         routing.post do
         end
@@ -30,7 +26,7 @@ module ETestament
         end
       end
 
-      # TODO: POST api/v1/property_types
+      # POST api/v1/property_types
       routing.post do
         new_data = JSON.parse(routing.body.read)
         new_property_type = PropertyType.new(new_data)
@@ -41,9 +37,10 @@ module ETestament
         { message: 'Property type saved', data: new_property_type }.to_json
       end
 
-      # TODO: GET api/v1/property_types
+      # GET api/v1/property_types
       routing.get do
-        # Heir.where(:account_id)
+        output = { data: ETestament::PropertyType.all }
+        JSON.pretty_generate(output)
       end
     end
   end

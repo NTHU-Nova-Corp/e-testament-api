@@ -16,7 +16,7 @@ end
 require 'yaml'
 DIR = File.dirname(__FILE__)
 ACCOUNTS = YAML.load_file("#{DIR}/account_seeds.yml")
-PROPERTY_TYPES = YAML.load_file("#{DIR}/property_types.yml")
+PROPERTY_TYPES = YAML.load_file("#{DIR}/property_type_seeds.yml")
 PROPERTIES = YAML.load_file("#{DIR}/property_seeds.yml")
 DOCUMENTS = YAML.load_file("#{DIR}/document_seeds.yml")
 RELATIONS = YAML.load_file("#{DIR}/relations_seeds.yml")

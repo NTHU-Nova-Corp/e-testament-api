@@ -8,13 +8,20 @@ describe 'Test Property Handling' do
   before do
     wipe_database
     seed_accounts
+    seed_property_types
   end
 
   it 'HAPPY: should be able to get list of all properties' do
     account = ETestament::Account.first
-    account.add_property(DATA[:properties][0])
-    account.add_property(DATA[:properties][1])
-    # account.id
+    property_type = ETestament::PropertyType.first
+    property0 = DATA[:properties][0]
+    property0['property_type_id'] = property_type.id
+    property_type = ETestament::PropertyType.first
+    property1 = DATA[:properties][1]
+    property1['property_type_id'] = property_type.id
+    account.add_property(property0)
+    account.add_property(property1)
+
     get 'api/v1/properties'
     _(last_response.status).must_equal 200
 
@@ -24,7 +31,11 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to get details of a single property' do
     account = ETestament::Account.first
-    account.add_property(DATA[:properties][1])
+    property_type = ETestament::PropertyType.first
+    property0 = DATA[:properties][0]
+    property0['property_type_id'] = property_type.id
+    account.add_property(property0)
+
     existing_property = account.properties.first
 
     get "/api/v1/properties/#{existing_property.id}"
@@ -36,7 +47,6 @@ describe 'Test Property Handling' do
   end
 
   it 'SAD: should return error if unknown property requested' do
-    account = ETestament::Account.first
     get '/api/v1/properties/2'
 
     _(last_response.status).must_equal 404
@@ -44,8 +54,15 @@ describe 'Test Property Handling' do
 
   it 'SECURITY: should prevent basic SQL injection targeting IDs' do
     account = ETestament::Account.first
-    ETestament::Property.create(name: 'New Project')
-    ETestament::Property.create(name: 'Newer Project')
+    property_type = ETestament::PropertyType.first
+    property0 = DATA[:properties][0]
+    property0['property_type_id'] = property_type.id
+    property_type = ETestament::PropertyType.first
+    property1 = DATA[:properties][1]
+    property1['property_type_id'] = property_type.id
+    account.add_property(property0)
+    account.add_property(property1)
+
     get 'api/v1/properties/2%20or%20TRUE'
 
     # deliberately not reporting error -- don't give attacker information
@@ -55,7 +72,9 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to create new property' do
     account = ETestament::Account.first
-    new_property = DATA[:properties][1]
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
     req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
     post '/api/v1/properties', new_property.to_json, req_header
     _(last_response.status).must_equal 201
@@ -70,7 +89,9 @@ describe 'Test Property Handling' do
 
   it 'SAD: should not be able to create two properties with the same name' do
     account = ETestament::Account.first
-    new_property = DATA[:properties][1]
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
     req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
     post '/api/v1/properties', new_property.to_json, req_header
     _(last_response.status).must_equal 201
@@ -82,7 +103,11 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to delete existing property' do
     account = ETestament::Account.first
-    property = account.add_property(DATA[:properties][0])
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
+    property = account.add_property(new_property)
+
     id = property.id
     get "/api/v1/properties/#{id}"
     _(last_response.status).must_equal 200
@@ -96,8 +121,11 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to update existing property' do
     account = ETestament::Account.first
-    request = DATA[:properties][0]
-    data = account.add_property(request)
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
+
+    data = account.add_property(new_property)
     id = data[:id]
 
     update_request = {}
@@ -126,17 +154,23 @@ describe 'Test Property Handling' do
 
   it 'SAD: should return 404 when try to update a property that doesnt exists' do
     account = ETestament::Account.first
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
 
     new_property = DATA[:properties][1]
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
     post '/api/v1/properties/122', new_property.to_json, req_header
     _(last_response.status).must_equal 404
   end
 
   it 'SAD: should prevent edits to unauthorized fields' do
     account = ETestament::Account.first
-    request = DATA[:properties][0]
-    data = account.add_property(request)
+    property_type = ETestament::PropertyType.first
+    new_property = DATA[:properties][0]
+    new_property['property_type_id'] = property_type.id
+
+    data = account.add_property(new_property).save
     id = data[:id]
 
     update_request = {}
@@ -147,7 +181,7 @@ describe 'Test Property Handling' do
     update_request[:created_at] = '1911-10-10'
 
     # Try to update property with unauthorized field
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
     post "/api/v1/properties/#{id}", update_request.to_json, req_header
     _(last_response.status).must_equal 400
   end

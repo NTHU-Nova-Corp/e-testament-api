@@ -46,7 +46,7 @@ describe 'Test Account Handling' do
       _(account.password?('not_really_the_password')).must_equal false
     end
 
-    it 'BAD: should not create account with illegal attributes' do
+    it 'SECURITY: should not create account with illegal attributes' do
       bad_data = @account_data.clone
       bad_data['created_at'] = '1900-01-01'
       post 'api/v1/accounts', bad_data.to_json, @req_header

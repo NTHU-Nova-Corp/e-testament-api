@@ -18,10 +18,6 @@ module ETestament
         routing.post 'delete' do
         end
 
-        # TODO: POST api/v1/relations/[relation_id]/edit
-        routing.post 'edit' do
-        end
-
         # TODO: POST api/v1/relations/[relation_id]
         routing.post do
         end

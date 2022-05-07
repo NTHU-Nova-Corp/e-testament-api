@@ -53,12 +53,8 @@ module ETestament
         routing.post 'delete' do
         end
 
-        # TODO: POST api/v1/heirs/[heir_id]/edit
-        routing.post 'edit' do
-        end
-
         # TODO: POST api/v1/heirs/[heir_id]
-        routing.post do
+        routing.post 'edit' do
         end
 
         # TODO: GET api/v1/heirs/[heir_id]
@@ -80,7 +76,7 @@ module ETestament
 
       # TODO: GET api/v1/heirs
       routing.get do
-        output = { data: ETestament::Heir.all }
+        output = { data: ETestament::Heir.where(account_id: @account_id) }
         JSON.pretty_generate(output)
       rescue StandardError
         raise NotFoundException('Could not find heirs')

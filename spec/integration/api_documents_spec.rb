@@ -8,12 +8,8 @@ describe 'Test Document Handling' do
   before do
     wipe_database
     seed_accounts
-
-    # Create properties with which documents will interact
-    DATA[:properties].each do |property_data|
-      account = ETestament::Account.first
-      account.add_property(property_data).save
-    end
+    seed_property_types
+    seed_properties
   end
 
   it 'HAPPY: should be able to get list of all documents related with a property' do
