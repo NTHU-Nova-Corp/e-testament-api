@@ -2,10 +2,14 @@
 
 Sequel.seed(:development) do
   def run
-    puts 'Seeding accounts, properties, documents'
+    puts 'Seeding davelopment data'
     create_accounts
+    create_property_types
     create_properties
     create_documents
+    create_relations
+    create_heirs
+    create_property_heirs
   end
 end
 
@@ -50,6 +54,12 @@ def create_documents
     document = documents.next
     property_id = properties.next.id
     ETestament::CreateDocumentForProperty.call(property_id:, document:)
+  end
+end
+
+def create_relations
+  RELATIONS.each do |relations|
+    ETestament::Relations.create(relations)
   end
 end
 
