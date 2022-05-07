@@ -7,8 +7,9 @@ module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
     route('relations') do |routing|
-      @account_id = 'ABC' # TODO: This will came from the headers in the api
       # Web controller for ETestament API, heirs sub-route
+      # TODO: Fix it
+      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @heirs_route = "#{@api_root}/relations"
 
       routing.on String do |_relation_id|

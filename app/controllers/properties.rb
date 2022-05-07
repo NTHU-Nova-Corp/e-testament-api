@@ -6,12 +6,12 @@ require_relative './app'
 module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
-    route('properties') do |routing|
-      @account_id = routing.headers['account_id']
-      @properties_route = "#{@account_route}/properties"
+    plugin :request_headers
 
-      puts '@account_id'
-      puts @account_id
+    route('properties') do |routing|
+      # TODO: Fix it
+      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
+      @properties_route = "#{@account_route}/properties"
 
       routing.on String do |property_id|
         routing.on 'documents' do

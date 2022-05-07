@@ -55,7 +55,6 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to create new property' do
     account = ETestament::Account.first
-    puts account.id
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json', 'account_id' => account.id }
     post '/api/v1/properties', new_property.to_json, req_header

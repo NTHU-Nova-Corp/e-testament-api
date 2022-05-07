@@ -16,6 +16,12 @@ module ETestament
     # plugin :environments
     plugin :halt
     plugin :multi_route
+    plugin :default_headers, {
+      'Access-Control-Allow-Origin' => '*',
+      'Access-Control-Allow-Headers' => '*',
+      'Access-Control-Allow-Credentials' => 'true',
+      'Accept' => '*/*'
+    }
 
     def secure_request?(routing)
       routing.scheme.casecmp(Api.config.SECURE_SCHEME).zero?

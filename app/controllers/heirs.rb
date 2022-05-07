@@ -10,7 +10,8 @@ module ETestament
     plugin :request_headers
     # Web controller for ETestament API, heirs sub-route
     route('heirs') do |routing|
-      @account_id = routing.headers['account_id']
+      # TODO: Fix it
+      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @heirs_route = "#{@api_root}/heirs"
 
       routing.on String do |heir_id|
