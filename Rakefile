@@ -60,9 +60,13 @@ namespace :db do
 
   desc 'Delete database'
   task :delete do
-    app.DB[:accounts].delete
+    app.DB[:property_heirs].delete
+    app.DB[:heirs].delete
+    app.DB[:relations].delete
     app.DB[:documents].delete
-    app.DB[:projects].delete
+    app.DB[:properties].delete
+    app.DB[:property_types].delete
+    app.DB[:accounts].delete
   end
 
   desc 'Delete dev or test database file'
@@ -81,11 +85,6 @@ namespace :db do
     require_app(%w[lib models services])
   end
 
-  task :reset_seeds => [:load_models] do
-    app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
-    ETestament::Account.dataset.destroy
-  end
-
   desc 'Seeds the development database'
   task :seed => [:load_models] do
     require 'sequel/extensions/seed'
@@ -95,7 +94,7 @@ namespace :db do
   end
 
   desc 'Delete all data and reseed'
-  task reseed: [:reset_seeds, :seed]
+  task reseed: [:delete, :seed]
 end
 
 namespace :newkey do
@@ -113,4 +112,3 @@ namespace :run do
     sh 'rackup -p 3000'
   end
 end
-# rubocop:enable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength
