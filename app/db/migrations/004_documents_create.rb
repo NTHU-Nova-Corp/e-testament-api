@@ -6,7 +6,7 @@ Sequel.migration do
   change do
     create_table(:documents) do
       uuid :id, primary_key: true
-      foreign_key :property_id, table: :properties, type: :uuid
+      foreign_key :property_id, table: :properties, type: :uuid, null: false
 
       String :file_name, null: false
       String :relative_path, unique: true, null: false, default: ''
