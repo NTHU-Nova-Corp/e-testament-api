@@ -43,9 +43,6 @@ module ETestament
               description:,
               content:
             }
-          },
-          included: {
-            property:
           }
         }, options
       )

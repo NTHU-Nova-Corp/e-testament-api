@@ -7,12 +7,12 @@ module ETestament
   # Models a property
   class Property < Sequel::Model
     one_to_many :documents
-    one_to_many :propertyHeirs
+    one_to_many :property_heirs
 
     many_to_one :account
     many_to_one :property_type
 
-    plugin :association_dependencies, documents: :destroy, propertyHeirs: :destroy
+    plugin :association_dependencies, documents: :destroy, property_heirs: :destroy
 
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
@@ -32,9 +32,6 @@ module ETestament
               account_id:,
               property_type_id:
             }
-          },
-          included: {
-            account:
           }
         }, options
       )

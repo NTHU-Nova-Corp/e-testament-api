@@ -9,9 +9,9 @@ module ETestament
     many_to_one :account
     many_to_one :relation
 
-    one_to_many :propertyHeirs
+    one_to_many :property_heirs
 
-    plugin :association_dependencies, propertyHeirs: :destroy
+    plugin :association_dependencies, property_heirs: :destroy
 
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true

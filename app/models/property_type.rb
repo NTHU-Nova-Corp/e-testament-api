@@ -26,9 +26,6 @@ module ETestament
               name:,
               description:
             }
-          },
-          included: {
-            properties:
           }
         }, options
       )

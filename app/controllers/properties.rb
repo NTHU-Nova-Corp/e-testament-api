@@ -7,7 +7,7 @@ module ETestament
   # Web controller for ETestament API, properties sub-route
   class Api < Roda
     route('properties') do |routing|
-      @account_id = '8ddefe77-4bae-4584-9044-de29aee7558a' # TODO: This will came from the headers in the api
+      @account_id = '70b4347a-d2bc-45f8-9d12-b1047126cb55' # TODO: This will came from the headers in the api
 
       @properties_route = "#{@account_route}/properties"
 

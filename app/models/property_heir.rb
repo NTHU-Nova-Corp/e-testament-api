@@ -9,25 +9,23 @@ module ETestament
     many_to_one :property
     many_to_one :heir
 
+    plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
     set_allowed_columns :percentage, :property_id, :heir_id
-
-    attr_accessor :property_id, :heir_id
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(
         {
           data: {
-            type: 'property',
+            type: 'property_heir',
             attributes: {
+              id:,
+              property_id:,
+              heir_id:,
               percentage:
             }
-          },
-          included: {
-            property:,
-            heir:
           }
         }, options
       )
