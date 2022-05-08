@@ -76,7 +76,7 @@ module ETestament
 
       # TODO: GET api/v1/heirs
       routing.get do
-        output = { data: ETestament::Heir.where(account_id: @account_id) }
+        output = { data: ETestament::Heir.where(account_id: @account_id).all }
         JSON.pretty_generate(output)
       rescue StandardError
         raise NotFoundException('Could not find heirs')

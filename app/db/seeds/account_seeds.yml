@@ -1,9 +1,9 @@
 ---
 - first_name: Ernesto
   last_name: Lewis
-  username: ernesto.lewis
+  username: ernesto
   email: ernesto.sst@mail.com
-  password: mypa$$w0rd1
+  password: admin
 - first_name: Cesar
   last_name: Garcia
   username: cesar.garcia
