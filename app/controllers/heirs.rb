@@ -19,7 +19,6 @@ module ETestament
           routing.on String do |property_id|
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
             # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
-            # TODO Should not enable to delete if there is any property related with
             routing.post 'delete' do
             end
 
