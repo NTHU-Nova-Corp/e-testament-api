@@ -39,4 +39,10 @@ gem 'pry'
 gem 'rerun'
 
 # Quality
-gem 'rubocop'
+group :development do
+  gem 'rubocop'
+end
+
+group :production do
+  gem 'pg'
+end
