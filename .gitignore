@@ -12,6 +12,7 @@ config/secrets.yml
 /test/tmp/
 /test/version_tmp/
 /tmp/
+.bundle/
 
 # Used by dotenv library to load environment variables.
 # .env
