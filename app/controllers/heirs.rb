@@ -19,7 +19,6 @@ module ETestament
           routing.on String do |property_id|
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
             # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
-            # TODO Should not enable to delete if there is any property related with
             routing.post 'delete' do
             end
 
@@ -49,34 +48,16 @@ module ETestament
         end
 
         # TODO: POST api/v1/heirs/[heir_id]/delete
+        # TODO Should not enable to delete if there is any property related with
         routing.post 'delete' do
-          raise('Could not delete heir') unless Heir.where(id: heir_id).delete
-
-          response.status = 200
-          response['Location'] = "#{@heirs_route}/#{heir_id}"
-          { message: 'Heir has been deleted' }.to_json 
         end
 
         # TODO: POST api/v1/heirs/[heir_id]
-        # Updates existing heir
-        routing.post do
-          updated_data = JSON.parse(routing.body.read)
-          heir = Heir.first(id: heir_id)
-          raise NotFoundException if heir.nil?
-
-          raise(updated_data.keys.to_s) unless heir.update(updated_data)
-
-          response.status = 200
-          response['Location'] = "#{@heirs_route}/#{heir_id}"
-          { message: 'Heir is updated', data: updated_data }.to_json
+        routing.post 'edit' do
         end
 
         # TODO: GET api/v1/heirs/[heir_id]
         routing.get do
-          heir = Heir.first(id: heir_id)
-          raise NotFoundException if heir.nil?
-
-          heir.to_json
         end
       end
 
