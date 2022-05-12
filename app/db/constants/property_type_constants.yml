@@ -1,0 +1,21 @@
+---
+- name: Movable
+  description: Corporeal property of every description, except land and things attached to the earth or permanently fastened to anything which is attached to the earth
+- name: Immovable
+  description:  Land, buildings, hereditary allowances, rights to ways, lights, ferries, fisheries, or any other benefit to arise out of the land
+- name: Tangible
+  description: Furniture, Goods, clothes, jewellery, art, books, computer, automobile
+- name: Intangible
+  description: Securities, bonds, patent rights, intellectual property rights, copyright, trademarks, brand name, franchises, computer software
+- name: Private
+  description: Private property designates a legal and non-governmental entity with the ownership of a property
+- name: Public
+  description: Public property as the name signifies belongs to the public and is owned by the state
+- name: Personal
+  description: Personal property is anything of tangible or intangible nature that belongs to an individual
+- name: Real
+  description: The real property/real estate is a much wider concept which includes land, things attached to the land, and any development or improvement is done on that land
+- name: Corporeal
+  description: The corporeal property encompasses the right to ownership of material things. All tangible and visible things which can be touched and felt by senses
+- name: Incorporeal
+  description:  The incorporeal property means the right to ownership of the non-material things. The incorporeal property includes different legally protected valuable interests or intangibles that cannot be touched or felt but carries specific value

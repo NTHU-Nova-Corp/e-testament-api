@@ -2,12 +2,10 @@
 
 Sequel.seed(:development) do
   def run
-    puts 'Seeding davelopment data'
+    puts 'Seeding development data'
     create_accounts
-    create_property_types
     create_properties
     create_documents
-    create_relations
     create_heirs
     create_property_heirs
   end
@@ -16,22 +14,14 @@ end
 require 'yaml'
 DIR = File.dirname(__FILE__)
 ACCOUNTS = YAML.load_file("#{DIR}/account_seeds.yml")
-PROPERTY_TYPES = YAML.load_file("#{DIR}/property_type_seeds.yml")
 PROPERTIES = YAML.load_file("#{DIR}/property_seeds.yml")
 DOCUMENTS = YAML.load_file("#{DIR}/document_seeds.yml")
-RELATIONS = YAML.load_file("#{DIR}/relations_seeds.yml")
 HEIRS = YAML.load_file("#{DIR}/heir_seeds.yml")
 PROPERTY_HEIRS = YAML.load_file("#{DIR}/property_heir_seeds.yml")
 
 def create_accounts
   ACCOUNTS.each do |account|
     ETestament::Account.create(account)
-  end
-end
-
-def create_property_types
-  PROPERTY_TYPES.each do |property_type|
-    ETestament::PropertyType.create(property_type)
   end
 end
 
@@ -54,12 +44,6 @@ def create_documents
     document = documents.next
     property_id = properties.next.id
     ETestament::CreateDocumentForProperty.call(property_id:, document:)
-  end
-end
-
-def create_relations
-  RELATIONS.each do |relations|
-    ETestament::Relation.create(relations)
   end
 end
 
