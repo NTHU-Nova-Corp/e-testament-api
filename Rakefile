@@ -12,6 +12,8 @@ end
 
 desc 'Test all the specs'
 Rake::TestTask.new(:spec) do |t|
+  puts "Environment: #{ENV['RACK_ENV'] || 'development'}"
+
   t.pattern = 'spec/**/*_spec.rb'
   t.warning = false
 end

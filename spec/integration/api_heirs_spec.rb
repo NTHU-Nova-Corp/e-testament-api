@@ -15,8 +15,8 @@ describe 'Test Property Handling' do
     account = ETestament::Account.first
     heir0 = DATA[:heirs][0]
     heir1 = DATA[:heirs][1]
-    account.add_heir(property0)
-    account.add_heir(property1)
+    account.add_heir(heir0)
+    account.add_heir(heir1)
 
     get 'api/v1/heirs'
     _(last_response.status).must_equal 200
@@ -27,8 +27,6 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to get details of a single heir' do
     account = ETestament::Account.first
-    heir0 = DATA[:properties][0]
-    account.add_heir(heir0)
 
     existing_heir = account.heirs.first
 

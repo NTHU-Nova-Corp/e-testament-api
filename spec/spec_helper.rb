@@ -12,10 +12,8 @@ require_relative 'test_load_all'
 def wipe_database
   ETestament::PropertyHeir.map(&:destroy)
   ETestament::Heir.map(&:destroy)
-  ETestament::Relation.map(&:destroy)
   ETestament::Document.map(&:destroy)
   ETestament::Property.map(&:destroy)
-  ETestament::PropertyType.map(&:destroy)
   ETestament::Account.map(&:destroy)
 end
 # rubocop:enable Metrics/CyclomaticComplexity
@@ -23,12 +21,6 @@ end
 def seed_accounts
   DATA[:accounts].each do |account|
     ETestament::Account.create(account)
-  end
-end
-
-def seed_property_types
-  DATA[:property_types].each do |property_type|
-    ETestament::PropertyType.create(property_type)
   end
 end
 
@@ -51,12 +43,6 @@ def seed_documents
     document = documents.next
     property_id = properties.next.id
     ETestament::CreateDocumentForProperty.call(property_id:, document:)
-  end
-end
-
-def seed_relations
-  DATA[:relations].each do |relations|
-    ETestament::Relation.create(relations)
   end
 end
 
@@ -86,10 +72,8 @@ end
 
 DATA = {
   accounts: YAML.load(File.read('app/db/seeds/account_seeds.yml')),
-  property_types: YAML.load(File.read('app/db/seeds/property_type_seeds.yml')),
   properties: YAML.load(File.read('app/db/seeds/property_seeds.yml')),
   documents: YAML.load(File.read('app/db/seeds/document_seeds.yml')),
-  relations: YAML.load(File.read('app/db/seeds/relations_seeds.yml')),
   heirs: YAML.load(File.read('app/db/seeds/heir_seeds.yml')),
   property_heris: YAML.load(File.read('app/db/seeds/property_heir_seeds.yml'))
 }.freeze

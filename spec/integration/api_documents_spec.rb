@@ -8,7 +8,6 @@ describe 'Test Document Handling' do
   before do
     wipe_database
     seed_accounts
-    seed_property_types
     seed_properties
   end
 

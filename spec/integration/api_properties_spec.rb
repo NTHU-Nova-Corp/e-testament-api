@@ -8,7 +8,6 @@ describe 'Test Property Handling' do
   before do
     wipe_database
     seed_accounts
-    seed_property_types
   end
 
   it 'HAPPY: should be able to get list of all properties' do

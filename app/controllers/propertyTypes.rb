@@ -11,21 +11,6 @@ module ETestament
       @properties_route = "#{@account_route}/properties"
       @heirs_route = "#{@api_root}/property_types"
 
-      routing.on String do |_property_type_id|
-        # TODO: POST api/v1/property_types/[property_type_id]/delete
-        # TODO Should not enable to delete if there is any property related with
-        routing.post 'delete' do
-        end
-
-        # TODO: POST api/v1/property_types/[property_type_id]
-        routing.post do
-        end
-
-        # TODO: GET api/v1/property_types/[property_type_id]
-        routing.get do
-        end
-      end
-
       # POST api/v1/property_types
       routing.post do
         new_data = JSON.parse(routing.body.read)

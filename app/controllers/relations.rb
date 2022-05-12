@@ -12,22 +12,8 @@ module ETestament
       @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @heirs_route = "#{@api_root}/relations"
 
-      routing.on String do |_relation_id|
-        # TODO: POST api/v1/relations/[relation_id]/delete
-        # TODO Should not enable to delete if there is any property related with
-        routing.post 'delete' do
-        end
-
-        # TODO: POST api/v1/relations/[relation_id]
-        routing.post do
-        end
-
-        # TODO: GET api/v1/relations/[relation_id]
-        routing.get do
-        end
-      end
-
-      # TODO: POST api/v1/relations
+      # POST api/v1/relations
+      # Create new relations
       routing.post do
         new_data = JSON.parse(routing.body.read)
         new_relation = Relation.new(new_data)
@@ -38,9 +24,11 @@ module ETestament
         { message: 'Relation saved', data: new_relation }.to_json
       end
 
-      # TODO: GET api/v1/relations
+      # GET api/v1/relations
+      # Get all relations
       routing.get do
-        # Heir.where(:account_id)
+        output = { data: ETestament::Relation.all }
+        JSON.pretty_generate(output)
       end
     end
   end

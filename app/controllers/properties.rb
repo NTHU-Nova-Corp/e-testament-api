@@ -102,13 +102,13 @@ module ETestament
           routing.get do
             # GET api/v1/properties/[property_id]/heirs
             # Get a list of heirs associated with a property
-            property = Property.first(id: property_id)
-            raise NotFoundException if property.nil?
+            property_heirs = PropertyHeir.where(property_id:).all
+            raise NotFoundException if property_heirs.nil?
 
-            heir = Heir.all(id: heir_id, property_id:)
-            raise NotFoundException if heir.nil?
+            heirs = property_heirs.map { |property| Heir.first(id: property[:heir_id]) }
+            raise NotFoundException if heirs.nil?
 
-            heir.to_json
+            heirs.to_json
           end
 
           routing.post do
@@ -183,7 +183,7 @@ module ETestament
       end
 
     rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
-           JSON::ParserError => e
+      JSON::ParserError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
     rescue Sequel::MassAssignmentRestriction => e
