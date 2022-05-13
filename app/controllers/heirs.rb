@@ -53,7 +53,7 @@ module ETestament
 
           response.status = 200
           response['Location'] = "#{@heirs_route}/#{heir_id}"
-          { message: 'Heir has been deleted' }.to_json 
+          { message: 'Heir has been deleted' }.to_json
         end
 
         # TODO: POST api/v1/heirs/[heir_id]
@@ -100,7 +100,7 @@ module ETestament
       end
 
     rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
-           JSON::ParserError => e
+      JSON::ParserError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
     rescue Sequel::MassAssignmentRestriction => e
