@@ -16,7 +16,7 @@ describe 'Test Document Handling' do
 
     # Create documents and tie them to the property
     DATA[:documents].each do |document|
-      property.add_document(ETestament::Document.create(document).save)
+      property.add_document(document)
     end
 
     get "api/v1/properties/#{property.id}/documents"
@@ -40,14 +40,24 @@ describe 'Test Document Handling' do
   end
 
   it 'SAD: should return 404 if unknown document is requested or is not related with the property indicated' do
-    ETestament::Document.create(DATA[:documents][1]).save
-    actual_test_doc = ETestament::Document.create(DATA[:documents][2]).save
-    property = ETestament::Property.first
+    properties = ETestament::Property.all.cycle
 
-    get "api/v1/properties/#{property.id}/documents/#{actual_test_doc.id}"
+    property = properties.next
+    document = property.add_document( DATA[:documents][0])
+
+    property2 = properties.next
+    document2 = property2.add_document(DATA[:documents][1])
+
+    get "api/v1/properties/#{property.id}/documents/#{document.id}"
+    _(last_response.status).must_equal 200
+
+    get "api/v1/properties/#{property.id}/documents/#{document2.id}"
     _(last_response.status).must_equal 404
 
-    get "api/v1/properties/#{property.id}/documents/69420"
+    get "api/v1/properties/#{property2.id}/documents/#{document2.id}"
+    _(last_response.status).must_equal 200
+
+    get "api/v1/properties/#{property2.id}/documents/#{document.id}"
     _(last_response.status).must_equal 404
   end
 
@@ -87,8 +97,8 @@ describe 'Test Document Handling' do
 
   it 'HAPPY: should be able to delete existing document' do
     property = ETestament::Property.first
-    document = ETestament::Document.create(DATA[:documents][0]).save
-    property.add_document(document)
+    # document = ETestament::Document.create(DATA[:documents][0]).save
+    document = property.add_document(DATA[:documents][0])
 
     id = document.id
 
@@ -112,10 +122,8 @@ describe 'Test Document Handling' do
   it 'HAPPY: should be able to update existing document' do
     # Set up properties and documents
     property = ETestament::Property.first
-    request = DATA[:documents][0]
-    data = ETestament::Document.create(request).save
-    property.add_document(data)
-    id = data.id
+    document = property.add_document(DATA[:documents][0])
+    id = document.id
 
     # Update parameters
     update_request = {}

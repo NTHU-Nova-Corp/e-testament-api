@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-describe 'Test Property Handling' do
+describe 'Test Heir Handling' do
   include Rack::Test::Methods
 
   before do
@@ -13,16 +13,14 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to get list of all heirs' do
     account = ETestament::Account.first
-    heir0 = DATA[:heirs][0]
-    heir1 = DATA[:heirs][1]
-    account.add_heir(heir0)
-    account.add_heir(heir1)
 
-    get 'api/v1/heirs'
+    # post '/api/v1/properties/122', new_property.to_json, req_header
+
+    get 'api/v1/heirs', nil, { 'account_id' => account.id }
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
-    _(result['data'].count).must_equal 2
+    _(result['data'].count).must_equal 1
   end
 
   it 'HAPPY: should be able to get details of a single heir' do
