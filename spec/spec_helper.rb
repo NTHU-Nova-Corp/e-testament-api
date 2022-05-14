@@ -8,7 +8,6 @@ require 'yaml'
 
 require_relative 'test_load_all'
 
-# rubocop:disable Metrics/CyclomaticComplexity
 def wipe_database
   ETestament::PropertyHeir.map(&:destroy)
   ETestament::Heir.map(&:destroy)
@@ -16,7 +15,6 @@ def wipe_database
   ETestament::Property.map(&:destroy)
   ETestament::Account.map(&:destroy)
 end
-# rubocop:enable Metrics/CyclomaticComplexity
 
 def seed_accounts
   DATA[:accounts].each do |account|

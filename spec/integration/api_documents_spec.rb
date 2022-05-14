@@ -43,7 +43,7 @@ describe 'Test Document Handling' do
     properties = ETestament::Property.all.cycle
 
     property = properties.next
-    document = property.add_document( DATA[:documents][0])
+    document = property.add_document(DATA[:documents][0])
 
     property2 = properties.next
     document2 = property2.add_document(DATA[:documents][1])

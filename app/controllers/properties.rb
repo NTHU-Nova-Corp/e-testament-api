@@ -183,7 +183,7 @@ module ETestament
       end
 
     rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
-      JSON::ParserError => e
+           JSON::ParserError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
     rescue Sequel::MassAssignmentRestriction => e

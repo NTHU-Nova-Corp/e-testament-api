@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # DB[:items].insert([:a, :b], [1,2])
 
 require 'sequel'
