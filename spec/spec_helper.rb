@@ -57,7 +57,7 @@ def seed_heirs
 end
 
 def seed_property_heirs
-  property_heirs = DATA[:property_heris].each
+  property_heirs = DATA[:property_heirs].each
   heirs = ETestament::Heir.all.cycle
   properties = ETestament::Property.all.cycle
   loop do
@@ -73,5 +73,5 @@ DATA = {
   properties: YAML.load(File.read('app/db/seeds/property_seeds.yml')),
   documents: YAML.load(File.read('app/db/seeds/document_seeds.yml')),
   heirs: YAML.load(File.read('app/db/seeds/heir_seeds.yml')),
-  property_heris: YAML.load(File.read('app/db/seeds/property_heir_seeds.yml'))
+  property_heirs: YAML.load(File.read('app/db/seeds/property_heir_seeds.yml'))
 }.freeze
