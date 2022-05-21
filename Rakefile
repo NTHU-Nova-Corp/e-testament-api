@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength
 require 'rake/testtask'
 require './require_app'
 
@@ -48,11 +49,17 @@ task console: :print_env do
 end
 
 namespace :db do
-  require_app(nil) # loads config code files only
-  require 'sequel'
+  task :load do
+    require_app(nil) # loads config code files only
+    require 'sequel'
 
-  Sequel.extension :migration
-  app = ETestament::Api
+    Sequel.extension :migration
+    app = ETestament::Api
+  end
+
+  task :load_models => :load do
+    require_app(%w[lib models services])
+  end
 
   desc 'Run migrations'
   task :migrate => :print_env do
@@ -83,10 +90,6 @@ namespace :db do
     puts "Deleted #{db_filename}"
   end
 
-  task :load_models do
-    require_app(%w[lib models services])
-  end
-
   desc 'Seeds the development database'
   task :seed => [:load_models] do
     require 'sequel/extensions/seed'
@@ -105,6 +108,12 @@ namespace :newkey do
     require_app('lib')
     puts "DB_KEY: #{SecureDB.generate_key}"
   end
+
+  desc 'Create sample cryptographic key for tokens and messaging'
+  task :msg do
+    require_app('lib')
+    puts "MSG_KEY: #{AuthToken.generate_key}"
+  end
 end
 
 namespace :run do
@@ -114,3 +123,4 @@ namespace :run do
     sh 'rackup -p 3000'
   end
 end
+# rubocop:enable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength

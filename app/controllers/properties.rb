@@ -158,13 +158,14 @@ module ETestament
         end
       end
 
-      # GET api/v1/properties
+      # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        output = { data: ETestament::Property.all }
-        JSON.pretty_generate(output)
+        account = Account.first(id: @account_id)
+        projects = account.projects
+        JSON.pretty_generate(projects)
       rescue StandardError
-        raise NotFoundException('Could not find properties')
+        raise ForbiddenException('Could not find any properties')
       end
 
       # POST api/v1/properties
@@ -183,7 +184,7 @@ module ETestament
       end
 
     rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
-           JSON::ParserError => e
+           JSON::ParserError, AuthenticateAccount::UnauthorizedError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
     rescue Sequel::MassAssignmentRestriction => e

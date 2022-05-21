@@ -31,8 +31,8 @@ module ETestament
           credentials = JsonRequestBody.parse_symbolize(request.body.read)
           auth_account = AuthenticateAccount.call(credentials)
           auth_account.to_json
-        rescue UnauthorizedError => e
-          puts [e.class, e.message].join ': '
+        rescue AuthenticateAccount::UnauthorizedError => e
+          Api.logger.error [e.class, e.message].join ': '
           routing.halt 403, { message: 'Invalid credentials' }.to_json
         end
       end
