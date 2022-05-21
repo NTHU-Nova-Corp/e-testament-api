@@ -11,8 +11,6 @@ module ETestament
     plugin :request_headers
 
     route('properties') do |routing|
-      # TODO: Fix it
-      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @properties_route = "#{@account_route}/properties"
 
       routing.on String do |property_id|
@@ -163,9 +161,9 @@ module ETestament
       # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        account = Account.first(id: @account_id)
-        projects = account.projects
-        JSON.pretty_generate(projects)
+        account = Account.first(username: @auth_account['username'])
+        output = { data: account.properties }
+        JSON.pretty_generate(output)
       rescue StandardError
         raise ForbiddenException, 'Could not find any properties'
       end
@@ -173,7 +171,7 @@ module ETestament
       # POST api/v1/properties
       # Creates a new property
       routing.post do
-        account = Account.first(id: @account_id)
+        account = Account.first(username: @auth_account['username'])
         new_data = JSON.parse(routing.body.read)
         new_property = account.add_property(new_data)
         raise BadRequestException, 'Could not save property' unless new_property.save
