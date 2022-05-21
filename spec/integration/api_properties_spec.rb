@@ -104,7 +104,7 @@ describe 'Test Property Handling' do
 
   it 'HAPPY: should be able to create new property' do
     account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
+    ETestament::Account.create(account_data)
     property_type = ETestament::PropertyType.first
     new_property = DATA[:properties][0]
     new_property['property_type_id'] = property_type.id
@@ -129,7 +129,7 @@ describe 'Test Property Handling' do
 
   it 'SAD: should not be able to create two properties with the same name' do
     account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
+    ETestament::Account.create(account_data)
     property_type = ETestament::PropertyType.first
     new_property = DATA[:properties][0]
     new_property['property_type_id'] = property_type.id
@@ -221,7 +221,7 @@ describe 'Test Property Handling' do
 
   it 'SAD: should return 404 when try to update a property that doesnt exists' do
     account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
+    ETestament::Account.create(account_data)
     property_type = ETestament::PropertyType.first
     new_property = DATA[:properties][0]
     new_property['property_type_id'] = property_type.id

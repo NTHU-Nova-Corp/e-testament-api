@@ -11,14 +11,17 @@ describe 'Test Heir Handling' do
     seed_properties
     seed_heirs
     seed_property_heirs
+
+    @account_data = DATA[:accounts][0]
+    @auth = ETestament::AuthenticateAccount.call(
+      username: @account_data['username'],
+      password: @account_data['password']
+    )
   end
 
   it 'HAPPY: should be able to get list of all heirs' do
-    account = ETestament::Account.first
-
-    # post '/api/v1/properties/122', new_property.to_json, req_header
-
-    get 'api/v1/heirs', nil, { 'account_id' => account.id }
+    header 'AUTHORIZATION', "Bearer #{@auth[:attributes][:auth_token]}"
+    get 'api/v1/heirs'
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -33,7 +36,8 @@ describe 'Test Heir Handling' do
 
     existing_heir = account.heirs.first
 
-    get "/api/v1/heirs/#{existing_heir.id}", nil, { 'account_id' => account.id }
+    header 'AUTHORIZATION', "Bearer #{@auth[:attributes][:auth_token]}"
+    get "/api/v1/heirs/#{existing_heir.id}"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -42,11 +46,8 @@ describe 'Test Heir Handling' do
   end
 
   it 'SAD: should fail when fetching a nonexistent heir or invalid id' do
-    account = ETestament::Account.first
-
-    existing_heir = account.heirs.first
-
-    get '/api/v1/heirs/69420', nil, { 'account_id' => account.id }
+    header 'AUTHORIZATION', "Bearer #{@auth[:attributes][:auth_token]}"
+    get '/api/v1/heirs/69420'
     _(last_response.status).must_equal 404
   end
 end

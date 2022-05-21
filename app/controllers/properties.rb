@@ -161,7 +161,7 @@ module ETestament
       # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        account = Account.first(username: @auth_account['username'])
+        account = Account.first(id: @auth_account['id'])
         output = { data: account.properties }
         JSON.pretty_generate(output)
       rescue StandardError
@@ -171,7 +171,7 @@ module ETestament
       # POST api/v1/properties
       # Creates a new property
       routing.post do
-        account = Account.first(username: @auth_account['username'])
+        account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
         new_property = account.add_property(new_data)
         raise BadRequestException, 'Could not save property' unless new_property.save

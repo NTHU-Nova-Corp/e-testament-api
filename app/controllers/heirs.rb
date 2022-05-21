@@ -10,8 +10,6 @@ module ETestament
     plugin :request_headers
     # Web controller for ETestament API, heirs sub-route
     route('heirs') do |routing|
-      # TODO: Fix it
-      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @heirs_route = "#{@api_root}/heirs"
 
       routing.on String do |heir_id|
@@ -79,9 +77,9 @@ module ETestament
         end
       end
 
-      # TODO: POST api/v1/heirs
+      # POST api/v1/heirs
       routing.post do
-        account = Account.first(id: @account_id)
+        account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
         new_heir = account.add_heir(new_data)
         raise BadRequestException, 'Could not save heir' unless new_heir.save
@@ -91,9 +89,9 @@ module ETestament
         { message: 'Heir saved', data: new_heir }.to_json
       end
 
-      # TODO: GET api/v1/heirs
+      # GET api/v1/heirs
       routing.get do
-        output = { data: ETestament::Heir.where(account_id: @account_id).all }
+        output = { data: ETestament::Heir.where(account_id: @auth_account['id']).all }
         JSON.pretty_generate(output)
       rescue StandardError
         raise NotFoundException('Could not find heirs')
