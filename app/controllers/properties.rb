@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'roda'
 require_relative './app'
+require_relative '../exception/forbidden_exception'
 
 # General ETestament module
 module ETestament
@@ -165,7 +167,7 @@ module ETestament
         projects = account.projects
         JSON.pretty_generate(projects)
       rescue StandardError
-        raise ForbiddenException('Could not find any properties')
+        raise ForbiddenException, 'Could not find any properties'
       end
 
       # POST api/v1/properties
@@ -183,7 +185,7 @@ module ETestament
         routing.halt 400, { message: e.message }.to_json
       end
 
-    rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
+    rescue ForbiddenException, NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
            JSON::ParserError, AuthenticateAccount::UnauthorizedError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json

@@ -25,7 +25,7 @@ describe 'Test Property Handling' do
       it 'HAPPY: should be able to get list of all properties' do
         auth = ETestament::AuthenticateAccount.call(
           username: @account_data['username'],
-          password: @account_data['password'],
+          password: @account_data['password']
         )
 
         header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"

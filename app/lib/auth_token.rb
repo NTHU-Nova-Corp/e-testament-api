@@ -12,18 +12,18 @@ class AuthToken
   extend Securable
 
   ONE_HOUR = 60 * 60
-  ONE_DAY = 24 * ONE_HOUR
-  ONE_WEEK = 7 * ONE_DAY
-  ONE_MONTH = 4 * ONE_WEEK
-  ONE_YEAR = 12 * ONE_MONTH
+  ONE_DAY = ONE_HOUR * 24
+  ONE_WEEK = ONE_DAY * 7
+  ONE_MONTH = ONE_WEEK * 4
+  ONE_YEAR = ONE_MONTH * 12
 
   class ExpiredTokenError < StandardError; end
   class InvalidTokenError < StandardError; end
 
-  # Extract info from a token
+  # Extract information from a token
   def initialize(token)
     @token = token
-    contents = AuthToken.detokenize(token)
+    contents = AuthToken.detokenize(@token)
     @expiration = contents['exp']
     @payload = contents['payload']
   end
@@ -36,7 +36,6 @@ class AuthToken
   end
 
   # Check if token is not expired
-  # Optional syntactic sugar
   def fresh? = !expired?
 
   # Extract data from token
@@ -49,6 +48,7 @@ class AuthToken
   # Create a token from a Hash payload
   def self.create(payload, expiration = ONE_WEEK)
     contents = { 'payload' => payload, 'exp' => expires(expiration) }
+    AuthToken.new(tokenize(contents))
   end
 
   def self.expires(expiration)

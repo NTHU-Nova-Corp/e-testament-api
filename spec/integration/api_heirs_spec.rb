@@ -17,7 +17,6 @@ describe 'Test Heir Handling' do
     account = ETestament::Account.first
 
     # post '/api/v1/properties/122', new_property.to_json, req_header
-    
 
     get 'api/v1/heirs', nil, { 'account_id' => account.id }
     _(last_response.status).must_equal 200
@@ -27,7 +26,6 @@ describe 'Test Heir Handling' do
   end
 
   it 'HAPPY: should be able to get list of heirs to a property' do
-    
   end
 
   it 'HAPPY: should be able to get details of a single heir' do
@@ -48,9 +46,7 @@ describe 'Test Heir Handling' do
 
     existing_heir = account.heirs.first
 
-    get "/api/v1/heirs/69420", nil, { 'account_id' => account.id }
+    get '/api/v1/heirs/69420', nil, { 'account_id' => account.id }
     _(last_response.status).must_equal 404
   end
-
-
 end

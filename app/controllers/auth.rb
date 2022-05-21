@@ -7,10 +7,8 @@ module ETestament
   # Web controller for ETestament API, auth sub-route
   class Api < Roda
     route('auth') do |routing|
-
       # POST api/v1/auth/register
       routing.post 'register' do
-        # POST api/v1/auth/register
         reg_data = JsonRequestBody.parse_symbolize(request.body.read)
         VerifyRegistration.new(reg_data).call
 

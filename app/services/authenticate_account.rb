@@ -24,7 +24,7 @@ module ETestament
       raise UnauthorizedError, credentials
     end
 
-    def self.account_and_token
+    def self.account_and_token(account)
       {
         type: 'authenticated_account',
         attributes: {
