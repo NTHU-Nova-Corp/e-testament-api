@@ -8,8 +8,6 @@ module ETestament
   class Api < Roda
     route('relations') do |routing|
       # Web controller for ETestament API, heirs sub-route
-      # TODO: Fix it
-      @account_id = routing.headers['account_id'] || routing.headers.instance_variable_get(:@env)['account_id']
       @heirs_route = "#{@api_root}/relations"
 
       # POST api/v1/relations
@@ -28,6 +26,7 @@ module ETestament
       # Get all relations
       routing.get do
         output = { data: ETestament::Relation.all }
+        puts output
         JSON.pretty_generate(output)
       end
     end
