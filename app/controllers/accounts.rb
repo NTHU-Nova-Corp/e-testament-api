@@ -6,8 +6,53 @@ require_relative './app'
 module ETestament
   # Web controller for ETestament API, accounts sub-route
   class Api < Roda
+    # api/v1/accounts
     route('accounts') do |routing|
       @account_route = "#{@api_root}/accounts"
+
+      # POST api/v1/accounts/executors
+      # Sends a request to be executer
+      routing.post 'executors' do
+        executor_data = JSON.parse(routing.body.read)
+        executor_pending = PendingExecutorAccount.new({ executor_email: executor_data['email'] })
+        executor_pending.owner_account_id = @auth_account['id']
+        executor_account = Account.first(email: executor_data['email'])
+        PendingExecutorAccount.where(owner_account_id: @auth_account['id']).delete
+
+        if executor_account.nil?
+          VerifyRegistration.new({
+                                   username: executor_data['email'],
+                                   email: executor_data['email']
+                                 }).call
+        else
+          executor_pending.executor_account_id = executor_account.id
+        end
+
+        executor_pending.save
+        response.status = 200
+        { message: 'Executor Request Sent' }.to_json
+      end
+
+      routing.on 'testors' do
+        routing.on 'pending-requests' do
+          # TODO: GET api/v1/accounts/testors/pending-requests
+          # Returns the list of executor requests pending to be accepted by the current account
+          routing.get do
+          end
+        end
+
+        routing.on String do |_testor_id|
+          # TODO: POST api/v1/accounts/testors/:testor_id/accept
+          # Accepts the request to be executor by a testor
+          routing.post 'accept' do
+          end
+
+          # TODO: POST api/v1/accounts/testors/:testor_id/reject
+          # Rejects the request to be executor by a testor
+          routing.post 'reject' do
+          end
+        end
+      end
 
       routing.on String do |username|
         # GET api/v1/accounts/[username]

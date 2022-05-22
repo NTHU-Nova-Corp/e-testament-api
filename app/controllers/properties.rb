@@ -161,9 +161,7 @@ module ETestament
       # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        account = Account.first(id: @auth_account['id'])
-        output = { data: account.properties }
-        JSON.pretty_generate(output)
+        ETestament::GetPropertiesOfAccount.call(account_id: @auth_account['id'])
       rescue StandardError
         raise ForbiddenException, 'Could not find any properties'
       end
@@ -183,7 +181,8 @@ module ETestament
         routing.halt 400, { message: e.message }.to_json
       end
 
-    rescue ForbiddenException, NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
+    rescue ForbiddenException, NotFoundException, PreConditionRequireException,
+           BadRequestException, UnauthorizedException,
            JSON::ParserError, AuthenticateAccount::UnauthorizedError => e
       status_code = e.instance_variable_get(:@status_code)
       routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json

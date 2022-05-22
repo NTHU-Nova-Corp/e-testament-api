@@ -4,8 +4,6 @@ require 'sequel'
 require 'securerandom'
 require 'yaml'
 
-TYPES = YAML.load_file('app/db/constants/property_type_constants.yml')
-
 Sequel.migration do
   change do
     alter_table(:accounts) do

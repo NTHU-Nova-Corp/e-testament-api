@@ -26,7 +26,6 @@ module ETestament
       # Get all relations
       routing.get do
         output = { data: ETestament::Relation.all }
-        puts output
         JSON.pretty_generate(output)
       end
     end

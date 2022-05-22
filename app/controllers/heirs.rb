@@ -18,6 +18,12 @@ module ETestament
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
             # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
             routing.post 'delete' do
+              raise('Could not disasociate heir from property') unless PropertyHeir.where(property_id:,
+                                                                                          heir_id:).delete
+
+              response.status = 200
+              response['Location'] = "#{@properties_route}/#{property_id}"
+              { message: 'Property has been deleted' }.to_json
             end
 
             # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]
@@ -91,8 +97,7 @@ module ETestament
 
       # GET api/v1/heirs
       routing.get do
-        output = { data: ETestament::Heir.where(account_id: @auth_account['id']).all }
-        JSON.pretty_generate(output)
+        ETestament::GetHeirsOfAccount.call(account_id: @auth_account['id'])
       rescue StandardError
         raise NotFoundException('Could not find heirs')
       end

@@ -10,11 +10,17 @@ module ETestament
     one_to_many :properties
     one_to_many :heirs
 
+    many_to_one :executor, class: self
+    one_to_many :testator, key: :executor_id, class: self
+
+    one_to_many :testators_pending, class: :PendingExecutorAccount, key: :executor_account_id
+    one_to_many :executors_pending, class: :PendingExecutorAccount, key: :owner_account_id
+
     plugin :association_dependencies, properties: :destroy, heirs: :destroy
 
     plugin :uuid, field: :id
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password, :username
+    set_allowed_columns :first_name, :last_name, :email, :password, :username, :executor_id
     plugin :timestamps, update_on_create: true
 
     def password=(new_password)
