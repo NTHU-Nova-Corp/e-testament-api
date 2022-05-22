@@ -11,7 +11,7 @@ module ETestament
       @account_route = "#{@api_root}/accounts"
 
       # POST api/v1/accounts/executors
-      # Sends a request to be executer
+      # Sends a request to be executor
       routing.post 'executors' do
         executor_data = JSON.parse(routing.body.read)
         executor_pending = PendingExecutorAccount.new({ executor_email: executor_data['email'] })
@@ -21,6 +21,7 @@ module ETestament
 
         if executor_account.nil?
           VerifyRegistration.new({
+                                   verification_url: executor_data['verification_url'],
                                    username: executor_data['email'],
                                    email: executor_data['email']
                                  }).call
@@ -67,8 +68,12 @@ module ETestament
       routing.post do
         # POST api/v1/accounts
         new_data = JSON.parse(routing.body.read)
+        raise 'Username exists' unless Account.first(username: new_data['username']).nil?
+
         new_account = Account.new(new_data)
         raise 'Could not save account' unless new_account.save
+
+        PendingExecutorAccount.where(executor_email: new_account.email).update(executor_account_id: new_account.id)
 
         response.status = 201
         response['Location'] = "#{@account_route}/#{new_account.username}"
