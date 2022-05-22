@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength
 require 'rake/testtask'
 require './require_app'
 
@@ -54,7 +53,7 @@ namespace :db do
     require 'sequel'
 
     Sequel.extension :migration
-    app = ETestament::Api
+    @app = ETestament::Api
   end
 
   task :load_models => :load do
@@ -62,9 +61,9 @@ namespace :db do
   end
 
   desc 'Run migrations'
-  task :migrate => :print_env do
+  task :migrate => [:load, :print_env] do
     puts 'Migrating database to latest'
-    Sequel::Migrator.run(app.DB, 'app/db/migrations')
+    Sequel::Migrator.run(@app.DB, 'app/db/migrations')
   end
 
   desc 'Delete database'
@@ -123,4 +122,3 @@ namespace :run do
     sh 'rackup -p 3000'
   end
 end
-# rubocop:enable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength
