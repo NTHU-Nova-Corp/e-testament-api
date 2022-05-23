@@ -39,18 +39,38 @@ module ETestament
           # TODO: GET api/v1/accounts/testors/pending-requests
           # Returns the list of executor requests pending to be accepted by the current account
           routing.get do
+            pending = Account.first(id: @auth_account['id']).executors_pending
+            output = { data: pending }
+            JSON.pretty_generate(output)
           end
         end
 
-        routing.on String do |_testor_id|
+        routing.on String do |testor_id|
           # TODO: POST api/v1/accounts/testors/:testor_id/accept
           # Accepts the request to be executor by a testor
           routing.post 'accept' do
+            pending = PendingExecutorAccount.first(owner_account_id: testor_id,
+                                                   executor_account_id: @auth_account['id'])
+            raise 'Testor not found' if pending.nil?
+
+            testor = Account.first(id: pending.owner_account_id)
+            raise 'Owner not found' if testor.nil?
+
+            testor.update(executor_id: @auth_account['id'])
+            pending.delete
           end
 
           # TODO: POST api/v1/accounts/testors/:testor_id/reject
           # Rejects the request to be executor by a testor
           routing.post 'reject' do
+            pending = PendingExecutorAccount.first(owner_account_id: testor_id,
+                                                   executor_account_id: @auth_account['id'])
+            raise 'Testor not found' if pending.nil?
+
+            testor = Account.first(id: pending.owner_account_id)
+            raise 'Owner not found' if testor.nil?
+
+            pending.delete
           end
         end
       end
