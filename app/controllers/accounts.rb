@@ -10,28 +10,41 @@ module ETestament
     route('accounts') do |routing|
       @account_route = "#{@api_root}/accounts"
 
-      # POST api/v1/accounts/executors
-      # Sends a request to be executor
-      routing.post 'executors' do
-        executor_data = JSON.parse(routing.body.read)
-        executor_pending = PendingExecutorAccount.new({ executor_email: executor_data['email'] })
-        executor_pending.owner_account_id = @auth_account['id']
-        executor_account = Account.first(email: executor_data['email'])
-        PendingExecutorAccount.where(owner_account_id: @auth_account['id']).delete
+      routing.on 'executors' do
+        # GET api/v1/accounts/executors
+        # Sends a request to be executor
+        routing.get do
+          executor_account = Account.first(id: @auth_account['id']).executor
 
-        if executor_account.nil?
-          VerifyRegistration.new({
-                                   verification_url: executor_data['verification_url'],
-                                   username: executor_data['email'],
-                                   email: executor_data['email']
-                                 }).call
-        else
-          executor_pending.executor_account_id = executor_account.id
+          raise 'Not executor associated yet' if executor_account.nil?
+
+          response.status = 200
+          executor_account.to_json
         end
 
-        executor_pending.save
-        response.status = 200
-        { message: 'Executor Request Sent' }.to_json
+        # POST api/v1/accounts/executors
+        # Sends a request to be executor
+        routing.post do
+          executor_data = JSON.parse(routing.body.read)
+          executor_pending = PendingExecutorAccount.new({ executor_email: executor_data['email'] })
+          executor_pending.owner_account_id = @auth_account['id']
+          executor_account = Account.first(email: executor_data['email'])
+          PendingExecutorAccount.where(owner_account_id: @auth_account['id']).delete
+
+          if executor_account.nil?
+            VerifyRegistration.new({
+                                     verification_url: executor_data['verification_url'],
+                                     username: executor_data['email'],
+                                     email: executor_data['email']
+                                   }).call
+          else
+            executor_pending.executor_account_id = executor_account.id
+          end
+
+          executor_pending.save
+          response.status = 200
+          { message: 'Executor Request Sent' }.to_json
+        end
       end
 
       routing.on 'testors' do
@@ -58,6 +71,9 @@ module ETestament
 
             testor.update(executor_id: @auth_account['id'])
             pending.delete
+
+            response.status = 200
+            { message: 'Testor Request Accepted' }.to_json
           end
 
           # TODO: POST api/v1/accounts/testors/:testor_id/reject
@@ -71,6 +87,9 @@ module ETestament
             raise 'Owner not found' if testor.nil?
 
             pending.delete
+
+            response.status = 200
+            { message: 'Testor Request Rejected' }.to_json
           end
         end
       end

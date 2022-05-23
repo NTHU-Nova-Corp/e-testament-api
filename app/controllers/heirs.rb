@@ -88,6 +88,7 @@ module ETestament
         account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
         new_heir = account.add_heir(new_data)
+        puts new_heir
         raise BadRequestException, 'Could not save heir' unless new_heir.save
 
         response.status = 201
