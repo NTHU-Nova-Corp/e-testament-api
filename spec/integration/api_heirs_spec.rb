@@ -32,6 +32,7 @@ describe 'Test Heir Handling' do
       _(result['data'].count).must_equal 1
     end
   end
+
   describe 'GET api/v1/heirs/:heir_id' do
     it 'HAPPY: should be able to get details of a single heir' do
       # given
@@ -56,6 +57,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 404
     end
   end
+
   describe 'POST api/v1/heirs' do
     it 'HAPPY: should be able to create a heir' do
       # given
@@ -114,6 +116,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 400
     end
   end
+
   describe 'POST api/v1/heirs/:heir_id' do
     it 'should be able to update a heir' do
       # given
