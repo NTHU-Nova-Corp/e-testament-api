@@ -16,80 +16,70 @@ module ETestament
         routing.on 'properties' do
           routing.on String do |property_id|
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
-            # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
+            # POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
+            # TODO: Unit-test
             routing.post 'delete' do
-              raise('Could not disasociate heir from property') unless PropertyHeir.where(property_id:,
-                                                                                          heir_id:).delete
+              Services::Heirs::DeleteProperty(heir_id:, property_id:)
 
               response.status = 200
               response['Location'] = "#{@properties_route}/#{property_id}"
               { message: 'Property has been deleted' }.to_json
             end
 
-            # TODO: POST api/v1/heirs/[heir_id]/properties/[property_id]
+            # POST api/v1/heirs/[heir_id]/properties/[property_id]
+            # TODO: Unit-test
             routing.post do
               new_data = JSON.parse(routing.body.read)
-              result = PropertyHeir.new(new_data)
-              raise BadRequestException, 'Could not associate the property with the heir' unless result.save
+              result = Services::Heirs::AddPropertyHeir.call(new_data)
 
               response.status = 201
               response['Location'] = @heirs_property_route.to_s
               { message: 'Property associated with the heir', data: result }.to_json
             end
 
-            # TODO: GET api/v1/heirs/[heir_id]/properties/[property_id]
+            # GET api/v1/heirs/[heir_id]/properties/[property_id]
+            # TODO: Unit-test
             routing.get do
-              output = { data: ETestament::PropertyHeir.first(heir_id:, property_id:) }
-              JSON.pretty_generate(output)
+              Services::Heirs::GetProperty(heir_id:, property_id:)
             end
           end
 
-          # TODO: GET api/v1/heirs/[heir_id]/properties
+          # GET api/v1/heirs/[heir_id]/properties
           routing.get do
-            output = { data: ETestament::PropertyHeir.all }
-            JSON.pretty_generate(output)
+            Services::Heirs::GetProperties.call(heir_id:)
           end
         end
 
-        # TODO: POST api/v1/heirs/[heir_id]/delete
+        # POST api/v1/heirs/[heir_id]/delete
+        # Nice to have :: Rollback PropertyHeir when deleting Heir wrongly
         routing.post 'delete' do
-          raise('Could not delete heir') unless Heir.where(id: heir_id).delete
-
+          Services::Heirs::DeleteHeirsFromProperty.call(heir_id:)
           response.status = 200
           response['Location'] = "#{@heirs_route}/#{heir_id}"
           { message: 'Heir has been deleted' }.to_json
         end
 
-        # TODO: POST api/v1/heirs/[heir_id]
+        # POST api/v1/heirs/[heir_id]
         # Updates existing heir
         routing.post do
           updated_data = JSON.parse(routing.body.read)
-          heir = Heir.first(id: heir_id)
-          raise NotFoundException if heir.nil?
-
-          raise(updated_data.keys.to_s) unless heir.update(updated_data)
+          Services::Heirs::UpdateHeir.call(id: heir_id, updated_data:)
 
           response.status = 200
           response['Location'] = "#{@heirs_route}/#{heir_id}"
           { message: 'Heir is updated', data: updated_data }.to_json
         end
 
-        # TODO: GET api/v1/heirs/[heir_id]
+        # GET api/v1/heirs/[heir_id]
         routing.get do
-          heir = Heir.first(id: heir_id)
-          raise NotFoundException if heir.nil?
-
-          heir.to_json
+          Services::Heirs::GetHeir.call(id: heir_id)
         end
       end
 
       # POST api/v1/heirs
       routing.post do
-        account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
-        new_heir = account.add_heir(new_data)
-        puts new_heir
-        raise BadRequestException, 'Could not save heir' unless new_heir.save
+        new_heir = Services::Heirs::CreateHeir.call(id: @auth_account['id'], new_data:)
 
         response.status = 201
         response['Location'] = "#{@heirs_route}/#{new_heir.id}"
@@ -98,22 +88,10 @@ module ETestament
 
       # GET api/v1/heirs
       routing.get do
-        ETestament::GetHeirsOfAccount.call(account_id: @auth_account['id'])
+        Services::Heirs::GetHeirs.call(account_id: @auth_account['id'])
       rescue StandardError
-        raise NotFoundException('Could not find heirs')
+        raise Exceptions::NotFoundError('Could not find heirs')
       end
-
-    rescue NotFoundException, PreConditionRequireException, BadRequestException, UnauthorizedException,
-           JSON::ParserError => e
-      status_code = e.instance_variable_get(:@status_code)
-      routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
-    rescue Sequel::MassAssignmentRestriction => e
-      Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
-      routing.halt 400, { message: 'Illegal Attributes' }.to_json
-    rescue StandardError => e
-      status_code = 500
-      Api.logger.error "UNKOWN ERROR: #{e.message}"
-      routing.halt status_code, { code: status_code, message: 'Error: Unknown server error' }.to_json
     end
   end
 end

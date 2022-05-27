@@ -2,7 +2,6 @@
 
 require 'roda'
 require_relative './app'
-require_relative '../exception/forbidden_exception'
 
 # General ETestament module
 module ETestament
@@ -22,10 +21,10 @@ module ETestament
               # DELETE api/v1/properties/[property_id]/documents/[document_id]
               # Deleted a document related with a property
               property = Property.first(id: property_id)
-              raise NotFoundException if property.nil?
+              raise Exceptions::NotFoundError if property.nil?
 
               current_document = Document.first(id: document_id, property_id:)
-              raise NotFoundException if current_document.nil?
+              raise Exceptions::NotFoundError if current_document.nil?
               raise('Could not delete document associated with property') unless current_document.delete
 
               response.status = 200
@@ -37,10 +36,10 @@ module ETestament
               # GET api/v1/properties/[property_id]/documents/[document_id]
               # Gets an specific document related with a property
               property = Property.first(id: property_id)
-              raise NotFoundException if property.nil?
+              raise Exceptions::NotFoundError if property.nil?
 
               document = Document.first(id: document_id, property_id:)
-              raise NotFoundException if document.nil?
+              raise Exceptions::NotFoundError if document.nil?
 
               document.to_json
             end
@@ -50,10 +49,10 @@ module ETestament
               # Updates a document related with a property
               updated_data = JSON.parse(routing.body.read)
               property = Property.where(id: property_id).first
-              raise NotFoundException if property.nil?
+              raise Exceptions::NotFoundError if property.nil?
 
               document = Document.first(id: document_id, property_id:)
-              raise NotFoundException if document.nil?
+              raise Exceptions::NotFoundError if document.nil?
 
               raise(updated_data.keys.to_s) unless document.update(updated_data)
 
@@ -67,7 +66,7 @@ module ETestament
             # GET api/v1/properties/[property_id]/documents
             # Gets the list of documents related with a property
             documents = Property.first(id: property_id).documents
-            raise NotFoundException, 'Document not found' if documents.nil?
+            raise Exceptions::NotFoundError, 'Document not found' if documents.nil?
 
             documents.to_json
           end
@@ -77,7 +76,7 @@ module ETestament
             # Creates a new document related with a property
             new_data = JSON.parse(routing.body.read)
             new_document = CreateDocumentForProperty.call(property_id:, document: new_data)
-            raise BadRequestException, 'Could not save document' unless new_document.save
+            raise Exceptions::BadRequestError, 'Could not save document' unless new_document.save
 
             response.status = 201
             response['Location'] = "#{@documents_route}/#{new_document.id}"
@@ -91,10 +90,10 @@ module ETestament
             # GET api/v1/properties/[property_id]/heirs/[heir_id]
             # Get info on a specific heir to a property
             property = Property.where(id: property_id)
-            raise NotFoundException if property.nil?
+            raise Exceptions::NotFoundError if property.nil?
 
             heir = Heir.first(id: heir_id, property_id:)
-            raise NotFoundException if heir.nil?
+            raise Exceptions::NotFoundError if heir.nil?
 
             heir.to_json
           end
@@ -103,10 +102,10 @@ module ETestament
             # GET api/v1/properties/[property_id]/heirs
             # Get a list of heirs associated with a property
             property_heirs = PropertyHeir.where(property_id:).all
-            raise NotFoundException if property_heirs.nil?
+            raise Exceptions::NotFoundError if property_heirs.nil?
 
             heirs = property_heirs.map { |property| Heir.first(id: property[:heir_id]) }
-            raise NotFoundException if heirs.nil?
+            raise Exceptions::NotFoundError if heirs.nil?
 
             heirs.to_json
           end
@@ -116,7 +115,7 @@ module ETestament
             # Associate a heir to a property
             new_data = JSON.parse(routing.body.read)
             new_heir = AddHeirToProperty.call(new_data, property_id)
-            raise BadRequestException, 'Could not add heir' unless new_heir.save
+            raise Exceptions::BadRequestError, 'Could not add heir' unless new_heir.save
 
             response.status = 201
             response['Location'] = "#{@heirs_route}/#{new_heir.id}"
@@ -138,7 +137,7 @@ module ETestament
         # Get a specific property record
         routing.get do
           property = Property.first(id: property_id)
-          raise NotFoundException if property.nil?
+          raise Exceptions::NotFoundError if property.nil?
 
           property.to_json
         end
@@ -148,7 +147,7 @@ module ETestament
         routing.post do
           updated_data = JSON.parse(routing.body.read)
           property = Property.first(id: property_id)
-          raise NotFoundException if property.nil?
+          raise Exceptions::NotFoundError if property.nil?
 
           raise(updated_data.keys.to_s) unless property.update(updated_data)
 
@@ -161,9 +160,9 @@ module ETestament
       # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        ETestament::GetPropertiesOfAccount.call(account_id: @auth_account['id'])
+        Services::Properties::GetProperties.call(account_id: @auth_account['id'])
       rescue StandardError
-        raise ForbiddenException, 'Could not find any properties'
+        raise Exceptions::ForbiddenError, 'Could not find any properties'
       end
 
       # POST api/v1/properties
@@ -172,7 +171,7 @@ module ETestament
         account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
         new_property = account.add_property(new_data)
-        raise BadRequestException, 'Could not save property' unless new_property.save
+        raise Exceptions::BadRequestError, 'Could not save property' unless new_property.save
 
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_property.id}"
@@ -180,19 +179,6 @@ module ETestament
       rescue StandardError => e
         routing.halt 400, { message: e.message }.to_json
       end
-
-    rescue ForbiddenException, NotFoundException, PreConditionRequireException,
-           BadRequestException, UnauthorizedException,
-           JSON::ParserError, AuthenticateAccount::UnauthorizedError => e
-      status_code = e.instance_variable_get(:@status_code)
-      routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
-    rescue Sequel::MassAssignmentRestriction => e
-      Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
-      routing.halt 400, { message: 'Illegal Attributes' }.to_json
-    rescue StandardError => e
-      status_code = 500
-      Api.logger.error "UNKOWN ERROR: #{e.message}"
-      routing.halt status_code, { code: status_code, message: 'Error: Unknown server error' }.to_json
     end
   end
 end

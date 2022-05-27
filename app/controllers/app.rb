@@ -5,11 +5,6 @@ require 'json'
 
 # require_relative '../lib/key_stretch'
 require_relative './helpers'
-require_relative '../exception/bad_request_exception'
-require_relative '../exception/unauthorized_exception'
-require_relative '../exception/forbidden_exception'
-require_relative '../exception/not_found_exception'
-require_relative '../exception/pre_condition_required_exception'
 
 # General ETestament module
 module ETestament
@@ -17,6 +12,7 @@ module ETestament
   class Api < Roda
     # plugin :environments
     plugin :halt
+    plugin :all_verbs
     plugin :multi_route
     plugin :request_headers
     plugin :default_headers, {
@@ -38,6 +34,8 @@ module ETestament
         @auth_account = authenticated_account(routing.headers)
       rescue AuthToken::InvalidTokenError
         routing.halt 403, { message: 'Invalid auth token' }.to_json
+      rescue AuthToken::ExpiredTokenError
+        routing.halt 403, { message: 'Expired auth token' }.to_json
       end
 
       # GET /
@@ -50,6 +48,25 @@ module ETestament
         routing.on 'v1' do
           @api_root = 'api/v1'
           routing.multi_route
+        rescue Sequel::MassAssignmentRestriction => e
+          Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
+          routing.halt 400, { message: 'Illegal Attributes' }.to_json
+        rescue Exceptions::NotFoundError, Exceptions::BadRequestError,
+          JSON::ParserError => e
+          status_code = e.instance_variable_get(:@status_code)
+          routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
+        rescue StandardError => e
+          case e
+          when Sequel::UniqueConstraintViolation
+            status_code = 400
+            error_message = e.wrapped_exception
+            Api.logger.error e.message
+          else
+            error_message = 'Error : Unknown server error'
+            status_code = 500
+            Api.logger.error "UNKNOWN ERROR: #{e.message}"
+          end
+          routing.halt status_code, { code: status_code, message: error_message }.to_json
         end
       end
     end

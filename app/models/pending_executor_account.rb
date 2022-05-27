@@ -31,5 +31,8 @@ module ETestament
       )
     end
     # rubocop:enable Metrics/MethodLength
+    def executor_account_id=
+      # code here
+    end
   end
 end

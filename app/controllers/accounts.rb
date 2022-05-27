@@ -13,35 +13,17 @@ module ETestament
       routing.on 'executors' do
         # GET api/v1/accounts/executors
         # Sends a request to be executor
+        # TODO: Add unit-test
         routing.get do
-          executor_account = Account.first(id: @auth_account['id']).executor
-
-          raise 'Not executor associated yet' if executor_account.nil?
-
-          response.status = 200
-          executor_account.to_json
+          Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
         end
 
         # POST api/v1/accounts/executors
         # Sends a request to be executor
+        # TODO: Add unit-test
         routing.post do
           executor_data = JSON.parse(routing.body.read)
-          executor_pending = PendingExecutorAccount.new({ executor_email: executor_data['email'] })
-          executor_pending.owner_account_id = @auth_account['id']
-          executor_account = Account.first(email: executor_data['email'])
-          PendingExecutorAccount.where(owner_account_id: @auth_account['id']).delete
-
-          if executor_account.nil?
-            VerifyRegistration.new({
-                                     verification_url: executor_data['verification_url'],
-                                     username: executor_data['email'],
-                                     email: executor_data['email']
-                                   }).call
-          else
-            executor_pending.executor_account_id = executor_account.id
-          end
-
-          executor_pending.save
+          Services::Accounts::CreateExecutorRequest.call(executor_data:)
           response.status = 200
           { message: 'Executor Request Sent' }.to_json
         end
@@ -49,70 +31,51 @@ module ETestament
 
       routing.on 'testors' do
         routing.on 'pending-requests' do
-          # TODO: GET api/v1/accounts/testors/pending-requests
+          # GET api/v1/accounts/testors/pending-requests
           # Returns the list of executor requests pending to be accepted by the current account
+          # TODO: Add unit-test
           routing.get do
-            pending = Account.first(id: @auth_account['id']).executors_pending
-            output = { data: pending }
+            output = Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
             JSON.pretty_generate(output)
           end
         end
 
         routing.on String do |testor_id|
-          # TODO: POST api/v1/accounts/testors/:testor_id/accept
+          # POST api/v1/accounts/testors/:testor_id/accept
           # Accepts the request to be executor by a testor
+          # TODO: Add unit-test
           routing.post 'accept' do
-            pending = PendingExecutorAccount.first(owner_account_id: testor_id,
-                                                   executor_account_id: @auth_account['id'])
-            raise 'Testor not found' if pending.nil?
-
-            testor = Account.first(id: pending.owner_account_id)
-            raise 'Owner not found' if testor.nil?
-
-            testor.update(executor_id: @auth_account['id'])
-            pending.delete
-
-            response.status = 200
+            Services::Accounts::AcceptTestorRequest.call(owner_account_id: testor_id,
+                                                         executor_account_id: @auth_account['id'])
             { message: 'Testor Request Accepted' }.to_json
           end
 
-          # TODO: POST api/v1/accounts/testors/:testor_id/reject
+          # POST api/v1/accounts/testors/:testor_id/reject
           # Rejects the request to be executor by a testor
+          # TODO: Add unit-test
           routing.post 'reject' do
-            pending = PendingExecutorAccount.first(owner_account_id: testor_id,
-                                                   executor_account_id: @auth_account['id'])
-            raise 'Testor not found' if pending.nil?
-
-            testor = Account.first(id: pending.owner_account_id)
-            raise 'Owner not found' if testor.nil?
-
-            pending.delete
-
-            response.status = 200
+            Services::Accounts::RejectTestorRequest.call(owner_account_id: testor_id,
+                                                         executor_account_id: @auth_account['id'])
             { message: 'Testor Request Rejected' }.to_json
           end
         end
       end
 
+      # GET api/v1/accounts/:username
+      # Get account profile by username
       routing.on String do |username|
         # GET api/v1/accounts/[username]
         routing.get do
-          account = Account.first(username:)
-          raise NotFoundException, 'Account not found.' if account.nil?
-
-          account.to_json
+          Services::Accounts::GetAccount.call(username:)
         end
       end
 
+      # POST api/v1/accounts
+      # Create new account
+      # TODO: Update unittest
       routing.post do
-        # POST api/v1/accounts
         new_data = JSON.parse(routing.body.read)
-        raise 'Username exists' unless Account.first(username: new_data['username']).nil?
-
-        new_account = Account.new(new_data)
-        raise 'Could not save account' unless new_account.save
-
-        PendingExecutorAccount.where(executor_email: new_account.email).update(executor_account_id: new_account.id)
+        new_account = Services::Accounts::CreateAccount.call(new_data:)
 
         response.status = 201
         response['Location'] = "#{@account_route}/#{new_account.username}"

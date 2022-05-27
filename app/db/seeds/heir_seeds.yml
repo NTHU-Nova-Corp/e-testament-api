@@ -2,12 +2,9 @@
 - first_name: Ernesto
   last_name: Lewis
   email: ernesto.sst@mail.com
-  password: mypa$$w0rd1
 - first_name: Cesar
   last_name: Garcia
   email: cesar.garcia@mail.com
-  password: mypa$$w0rd2
 - first_name: Daniel
   last_name: Kong
   email: daniel.kong@mail.com
-  password: mypa$$w0rd3

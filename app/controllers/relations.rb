@@ -12,10 +12,11 @@ module ETestament
 
       # POST api/v1/relations
       # Create new relations
+      # Hasn't been used yet
       routing.post do
         new_data = JSON.parse(routing.body.read)
         new_relation = Relation.new(new_data)
-        raise BadRequestException, 'Could not save relation' unless new_relation.save
+        raise Exceptions::BadRequestError, 'Could not save relation' unless new_relation.save
 
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_relation.id}"
@@ -25,7 +26,7 @@ module ETestament
       # GET api/v1/relations
       # Get all relations
       routing.get do
-        output = { data: ETestament::Relation.all }
+        output = { data: Relation.all }
         JSON.pretty_generate(output)
       end
     end

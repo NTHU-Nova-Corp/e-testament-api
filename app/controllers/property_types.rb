@@ -12,10 +12,11 @@ module ETestament
       @heirs_route = "#{@api_root}/property_types"
 
       # POST api/v1/property_types
+      # Hasn't been used yet
       routing.post do
         new_data = JSON.parse(routing.body.read)
         new_property_type = PropertyType.new(new_data)
-        raise BadRequestException, 'Could not save property type' unless new_property_type.save
+        raise Exceptions::BadRequestError, 'Could not save property type' unless new_property_type.save
 
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_property_type.id}"
@@ -24,7 +25,7 @@ module ETestament
 
       # GET api/v1/property_types
       routing.get do
-        output = { data: ETestament::PropertyType.all }
+        output = { data: PropertyType.all }
         JSON.pretty_generate(output)
       end
     end

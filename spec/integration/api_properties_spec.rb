@@ -23,7 +23,7 @@ describe 'Test Property Handling' do
       end
 
       it 'HAPPY: should be able to get list of all properties' do
-        auth = ETestament::AuthenticateAccount.call(
+        auth = ETestament::Services::Accounts::Authenticate.call(
           username: @account_data['username'],
           password: @account_data['password']
         )
@@ -57,7 +57,7 @@ describe 'Test Property Handling' do
 
     existing_property = account.properties.first
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -89,7 +89,7 @@ describe 'Test Property Handling' do
     account.add_property(property0)
     account.add_property(property1)
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -110,7 +110,7 @@ describe 'Test Property Handling' do
     new_property['property_type_id'] = property_type.id
     req_header = { 'CONTENT_TYPE' => 'application/json' }
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -135,7 +135,7 @@ describe 'Test Property Handling' do
     new_property['property_type_id'] = property_type.id
     req_header = { 'CONTENT_TYPE' => 'application/json' }
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -159,7 +159,7 @@ describe 'Test Property Handling' do
 
     id = property.id
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -191,7 +191,7 @@ describe 'Test Property Handling' do
     update_request[:name] = 'Test update_name'
     update_request[:description] = 'Test description'
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -229,7 +229,7 @@ describe 'Test Property Handling' do
     new_property = DATA[:properties][1]
     req_header = { 'CONTENT_TYPE' => 'application/json' }
 
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )
@@ -258,7 +258,7 @@ describe 'Test Property Handling' do
 
     # Try to update property with unauthorized field
     req_header = { 'CONTENT_TYPE' => 'application/json' }
-    auth = ETestament::AuthenticateAccount.call(
+    auth = ETestament::Services::Accounts::Authenticate.call(
       username: account_data['username'],
       password: account_data['password']
     )

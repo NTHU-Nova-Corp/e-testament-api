@@ -33,7 +33,7 @@ def create_properties
     property = properties.next
     property['property_type_id'] = property_type.id
     account_id = accounts.next.id
-    ETestament::CreatePropertyForAccount.call(account_id:, property:)
+    ETestament::Services::Accounts::CreateProperty.call(account_id:, property:)
   end
 end
 
@@ -55,7 +55,7 @@ def create_heirs
     heir = heirs.next
     heir['relation_id'] = relation.id
     account_id = accounts.next.id
-    ETestament::CreateHeirForAccount.call(account_id:, heir:)
+    ETestament::Services::Heirs::CreateHeir.call(account_id:, heir:)
   end
 end
 

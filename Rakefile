@@ -57,7 +57,7 @@ namespace :db do
   end
 
   task :load_models => :load do
-    require_app(%w[lib models services])
+    require_app(%w[exception lib models services])
   end
 
   desc 'Run migrations'
@@ -91,10 +91,11 @@ namespace :db do
 
   desc 'Seeds the development database'
   task :seed => [:load_models] do
+    require_app(%w[exception lib models policies services])
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
     Sequel.extension :seed
-    Sequel::Seeder.apply(app.DB, 'app/db/seeds')
+    Sequel::Seeder.apply(@app.DB, 'app/db/seeds')
   end
 
   desc 'Delete all data and reseed'
