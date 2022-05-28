@@ -14,7 +14,7 @@ module ETestament
 
         response.status = 202
         { message: 'Verification email sent' }.to_json
-      rescue Exceptions::InvalidRegistrationError => e
+      rescue Exceptions::BadRequestError => e
         routing.halt 400, { message: e.message }.to_json
       rescue Exceptions::EmailProviderError
         routing.halt 500, { message: 'Error sending email' }.to_json

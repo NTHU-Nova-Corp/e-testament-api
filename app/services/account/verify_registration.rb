@@ -9,23 +9,19 @@ module ETestament
       # params:
       #   - registration: hash with keys :username :email :verification_url
       class VerifyRegistration
-
         def initialize(registration)
           @registration = registration
         end
 
-        # rubocop:disable Layout/EmptyLineBetweenDefs
         def from_email = ENV.fetch('SENDGRID_FROM_EMAIL')
 
         def mail_api_key = ENV.fetch('SENDGRID_API_KEY')
 
-        def mail_url() = ENV['SENDGRID_API_URL']
-
-        # rubocop:enable Layout/EmptyLineBetweenDefs
+        def mail_url = ENV['SENDGRID_API_URL']
 
         def call
-          raise(Exceptions::InvalidRegistrationError, 'Username exists') unless username_available?
-          raise(Exceptions::InvalidRegistrationError, 'Email already used') unless email_available?
+          raise(Exceptions::BadRequestError, 'Username exists') unless username_available?
+          raise(Exceptions::BadRequestError, 'Email already used') unless email_available?
 
           send_email_verification
         end
@@ -66,7 +62,7 @@ module ETestament
                     .post(mail_url, json: mail_json)
           raise Exceptions::EmailProviderError if res.status >= 300
         rescue StandardError
-          raise(Exceptions::InvalidRegistrationError,
+          raise(Exceptions::BadRequestError,
                 'Could not send verification email; please check email address')
         end
       end
