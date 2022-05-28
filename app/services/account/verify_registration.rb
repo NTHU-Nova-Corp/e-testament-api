@@ -20,8 +20,8 @@ module ETestament
         def mail_url = ENV['SENDGRID_API_URL']
 
         def call
-          raise(Exceptions::BadRequestError, 'Username exists') unless username_available?
-          raise(Exceptions::BadRequestError, 'Email already used') unless email_available?
+          raise Exceptions::BadRequestError, 'Username exists' unless username_available?
+          raise Exceptions::BadRequestError, 'Email already used' unless email_available?
 
           send_email_verification
         end
