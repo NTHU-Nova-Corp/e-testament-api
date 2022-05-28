@@ -43,7 +43,7 @@ def create_documents
   loop do
     document = documents.next
     property_id = properties.next.id
-    ETestament::CreateDocumentForProperty.call(property_id:, document:)
+    ETestament::Services::Properties::CreateDocument.call(property_id:, document:)
   end
 end
 
@@ -67,6 +67,6 @@ def create_property_heirs
     property_heir = property_heirs.next
     heir_id = heirs.next.id
     property_id = properties.next.id
-    ETestament::AddHeirToProperty.call(heir_id:, property_id:, property_heir:)
+    ETestament::Services::Properties::AssociateHeir.call(heir_id:, property_id:, property_heir:)
   end
 end

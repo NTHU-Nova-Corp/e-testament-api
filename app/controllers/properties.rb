@@ -17,44 +17,26 @@ module ETestament
           @documents_route = "#{@properties_route}/#{property_id}/documents"
 
           routing.on String do |document_id|
+            # DELETE api/v1/properties/:property_id/documents/:document_id
+            # Deleted a document related with a property
             routing.post 'delete' do
-              # DELETE api/v1/properties/[property_id]/documents/[document_id]
-              # Deleted a document related with a property
-              property = Property.first(id: property_id)
-              raise Exceptions::NotFoundError if property.nil?
-
-              current_document = Document.first(id: document_id, property_id:)
-              raise Exceptions::NotFoundError if current_document.nil?
-              raise('Could not delete document associated with property') unless current_document.delete
-
+              Services::Properties::DeleteDocument.call(property_id:, document_id:)
               response.status = 200
               response['Location'] = "#{@documents_route}/#{document_id}"
               { message: 'Document associated with property has been deleted' }.to_json
             end
 
+            # GET api/v1/properties/:property_id/documents/:document_id
+            # Gets an specific document related with a property
             routing.get do
-              # GET api/v1/properties/[property_id]/documents/[document_id]
-              # Gets an specific document related with a property
-              property = Property.first(id: property_id)
-              raise Exceptions::NotFoundError if property.nil?
-
-              document = Document.first(id: document_id, property_id:)
-              raise Exceptions::NotFoundError if document.nil?
-
-              document.to_json
+              Services::Properties::GetDocument.call(property_id:, document_id:)
             end
 
+            # PUT api/v1/properties/:property_id/documents/:document_id
+            # Updates a document related with a property
             routing.post do
-              # PUT api/v1/properties/[property_id]/documents/[document_id]
-              # Updates a document related with a property
               updated_data = JSON.parse(routing.body.read)
-              property = Property.where(id: property_id).first
-              raise Exceptions::NotFoundError if property.nil?
-
-              document = Document.first(id: document_id, property_id:)
-              raise Exceptions::NotFoundError if document.nil?
-
-              raise(updated_data.keys.to_s) unless document.update(updated_data)
+              Services::Properties::UpdateDocument.call(updated_data:, property_id:, document_id:)
 
               response.status = 200
               response['Location'] = "#{@documents_route}/#{document_id}"
@@ -62,22 +44,18 @@ module ETestament
             end
           end
 
+          # GET api/v1/properties/:property_id/documents
+          # Gets the list of documents related with a property
           routing.get do
-            # GET api/v1/properties/[property_id]/documents
-            # Gets the list of documents related with a property
-            documents = Property.first(id: property_id).documents
-            raise Exceptions::NotFoundError, 'Document not found' if documents.nil?
-
-            documents.to_json
+            Services::Properties::GetDocuments.call(property_id:)
           end
 
+          # POST api/v1/properties/:property_id/documents
+          # Creates a new document related with a property
           routing.post do
-            # POST api/v1/properties/[property_id]/documents
-            # Creates a new document related with a property
             new_data = JSON.parse(routing.body.read)
-            new_document = CreateDocumentForProperty.call(property_id:, document: new_data)
-            raise Exceptions::BadRequestError, 'Could not save document' unless new_document.save
 
+            new_document = Services::Properties::CreateDocument.call(property_id:, new_data:)
             response.status = 201
             response['Location'] = "#{@documents_route}/#{new_document.id}"
             { message: 'Property saved', data: new_document }.to_json
@@ -85,72 +63,54 @@ module ETestament
         end
 
         routing.on 'heirs' do
+          # GET api/v1/properties/:property_id/heirs/[heir_id]
+          # Get info on a specific heir to a property
+          # TODO: unit-test
+          @heirs_route = "#{@properties_route}/#{property_id}/heirs"
           routing.on String do |heir_id|
-            @heirs_route = "#{@properties_route}/#{property_id}/heirs"
-            # GET api/v1/properties/[property_id]/heirs/[heir_id]
-            # Get info on a specific heir to a property
-            property = Property.where(id: property_id)
-            raise Exceptions::NotFoundError if property.nil?
-
-            heir = Heir.first(id: heir_id, property_id:)
-            raise Exceptions::NotFoundError if heir.nil?
-
-            heir.to_json
+            Services::Properties::GetHeir.call(heir_id:, property_id:)
           end
 
+          # GET api/v1/properties/:property_id/heirs
+          # Get a list of heirs associated with a property
+          # TODO: unit-test
           routing.get do
-            # GET api/v1/properties/[property_id]/heirs
-            # Get a list of heirs associated with a property
-            property_heirs = PropertyHeir.where(property_id:).all
-            raise Exceptions::NotFoundError if property_heirs.nil?
-
-            heirs = property_heirs.map { |property| Heir.first(id: property[:heir_id]) }
-            raise Exceptions::NotFoundError if heirs.nil?
-
-            heirs.to_json
+            Services::Properties::GetAssociatedHeirs.call(property_id:)
           end
 
+          # POST api/v1/properties/:property_id/heirs
+          # Associate a heir to a property
+          # TODO: unit-test
           routing.post do
-            # POST api/v1/properties/[property_id]/heirs
-            # Associate a heir to a property
             new_data = JSON.parse(routing.body.read)
-            new_heir = AddHeirToProperty.call(new_data, property_id)
-            raise Exceptions::BadRequestError, 'Could not add heir' unless new_heir.save
+            new_heir = Services::Properties::AssociateHeir.call(new_data, property_id)
 
             response.status = 201
             response['Location'] = "#{@heirs_route}/#{new_heir.id}"
-            { message: 'Heir saved', data: new_document }.to_json
+            { message: 'Heir saved', data: new_heir }.to_json
           end
         end
 
-        # DELETE api/v1/properties/[property_id]/delete
+        # DELETE api/v1/properties/:property_id/delete
         # Deleted an existing property and the documents related with
         routing.post 'delete' do
-          raise('Could not delete property') unless Property.where(id: property_id).delete
-
+          Services::Properties::DeleteProperty.call(property_id:)
           response.status = 200
           response['Location'] = "#{@properties_route}/#{property_id}"
           { message: 'Property has been deleted' }.to_json
         end
 
-        # GET api/v1/properties/[property_id]
+        # GET api/v1/properties/:property_id
         # Get a specific property record
         routing.get do
-          property = Property.first(id: property_id)
-          raise Exceptions::NotFoundError if property.nil?
-
-          property.to_json
+          Services::Properties::GetProperty.call(property_id:)
         end
 
-        # POST api/v1/properties/[property_id]
+        # POST api/v1/properties/:property_id
         # Updates an existing property
         routing.post do
           updated_data = JSON.parse(routing.body.read)
-          property = Property.first(id: property_id)
-          raise Exceptions::NotFoundError if property.nil?
-
-          raise(updated_data.keys.to_s) unless property.update(updated_data)
-
+          Services::Properties::UpdateProperty.call(property_id:, updated_data:)
           response.status = 200
           response['Location'] = "#{@properties_route}/#{property_id}"
           { message: 'Property is updated', data: updated_data }.to_json
@@ -168,10 +128,8 @@ module ETestament
       # POST api/v1/properties
       # Creates a new property
       routing.post do
-        account = Account.first(id: @auth_account['id'])
         new_data = JSON.parse(routing.body.read)
-        new_property = account.add_property(new_data)
-        raise Exceptions::BadRequestError, 'Could not save property' unless new_property.save
+        new_property = Services::Properties::CreateProperty.call(account_id: @auth_account['id'], new_data:)
 
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_property.id}"

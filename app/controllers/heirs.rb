@@ -16,7 +16,7 @@ module ETestament
         routing.on 'properties' do
           routing.on String do |property_id|
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
-            # POST api/v1/heirs/[heir_id]/properties/[property_id]/delete
+            # POST api/v1/heirs/[heir_id]/properties/:property_id/delete
             # TODO: Unit-test
             routing.post 'delete' do
               Services::Heirs::DeleteProperty(heir_id:, property_id:)
@@ -26,7 +26,7 @@ module ETestament
               { message: 'Property has been deleted' }.to_json
             end
 
-            # POST api/v1/heirs/[heir_id]/properties/[property_id]
+            # POST api/v1/heirs/[heir_id]/properties/:property_id
             # TODO: Unit-test
             routing.post do
               new_data = JSON.parse(routing.body.read)
@@ -37,7 +37,7 @@ module ETestament
               { message: 'Property associated with the heir', data: result }.to_json
             end
 
-            # GET api/v1/heirs/[heir_id]/properties/[property_id]
+            # GET api/v1/heirs/[heir_id]/properties/:property_id
             # TODO: Unit-test
             routing.get do
               Services::Heirs::GetProperty(heir_id:, property_id:)

@@ -5,7 +5,7 @@ require_relative '../spec_helper'
 describe 'Test Document Handling' do
   include Rack::Test::Methods
 
-  before do
+  before(:each) do
     wipe_database
     seed_accounts
     seed_properties
@@ -97,7 +97,6 @@ describe 'Test Document Handling' do
 
   it 'HAPPY: should be able to delete existing document' do
     property = ETestament::Property.first
-    # document = ETestament::Document.create(DATA[:documents][0]).save
     document = property.add_document(DATA[:documents][0])
 
     id = document.id

@@ -15,9 +15,7 @@ module ETestament
       # Hasn't been used yet
       routing.post do
         new_data = JSON.parse(routing.body.read)
-        new_property_type = PropertyType.new(new_data)
-        raise Exceptions::BadRequestError, 'Could not save property type' unless new_property_type.save
-
+        new_property_type = Services::PropertyType::CreatePropertyType.call(new_data:)
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_property_type.id}"
         { message: 'Property type saved', data: new_property_type }.to_json
@@ -25,8 +23,7 @@ module ETestament
 
       # GET api/v1/property_types
       routing.get do
-        output = { data: PropertyType.all }
-        JSON.pretty_generate(output)
+        Services::PropertyType::GetPropertyTypes.call
       end
     end
   end
