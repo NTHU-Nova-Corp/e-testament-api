@@ -19,7 +19,7 @@ module ETestament
             # POST api/v1/heirs/[heir_id]/properties/:property_id/delete
             # TODO: Unit-test
             routing.post 'delete' do
-              Services::Heirs::DeleteProperty(heir_id:, property_id:)
+              Services::Heirs::DeleteProperty.call(heir_id:, property_id:)
 
               response.status = 200
               response['Location'] = "#{@properties_route}/#{property_id}"
@@ -40,7 +40,7 @@ module ETestament
             # GET api/v1/heirs/[heir_id]/properties/:property_id
             # TODO: Unit-test
             routing.get do
-              Services::Heirs::GetProperty(heir_id:, property_id:)
+              Services::Heirs::GetProperty.call(heir_id:, property_id:)
             end
           end
 
