@@ -42,7 +42,7 @@ describe 'Test Property Handling' do
         _(last_response.status).must_equal 403
 
         result = JSON.parse last_response.body
-        _(result['data']).must_be_nil
+        assert_nil result['data']
       end
     end
   end
@@ -99,7 +99,7 @@ describe 'Test Property Handling' do
 
     # deliberately not reporting error -- don't give attacker information
     _(last_response.status).must_equal 404
-    _(last_response.body['data']).must_be_nil
+    assert_nil last_response.body['data']
   end
 
   it 'HAPPY: should be able to create new property' do

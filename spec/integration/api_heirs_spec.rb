@@ -118,7 +118,7 @@ describe 'Test Heir Handling' do
       new_heir['email'] = 'new_email@gmail.com'
 
       # when then
-      _(ETestament::Heir.first(email: new_heir['email'])).must_be_nil
+      assert_nil ETestament::Heir.first(email: new_heir['email'])
 
       # when
       post 'api/v1/heirs', new_heir.to_json, @req_header
@@ -394,7 +394,7 @@ describe 'Test Heir Handling' do
 
       # then
       _(last_response.status).must_equal 200
-      _(ETestament::PropertyHeir.where(property_id: associated_property[:id]).first).must_be_nil
+      assert_nil ETestament::PropertyHeir.where(property_id: associated_property[:id]).first
       _(ETestament::Property.where(id: associated_property[:id]).first).wont_be_nil
     end
 

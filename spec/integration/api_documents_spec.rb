@@ -75,7 +75,7 @@ describe 'Test Document Handling' do
 
     # deliberately not reporting error -- don't give attacker information
     _(last_response.status).must_equal 404
-    _(last_response.body['data']).must_be_nil
+    assert_nil last_response.body['data']
   end
 
   it 'HAPPY: should be able to create new documents' do

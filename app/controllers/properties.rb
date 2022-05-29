@@ -13,10 +13,16 @@ module ETestament
       @properties_route = "#{@account_route}/properties"
 
       routing.on String do |property_id|
+        @property = Property.first(id: property_id)
+        raise Exceptions::NotFoundError, 'Property not found' if @property.nil?
+
         routing.on 'documents' do
           @documents_route = "#{@properties_route}/#{property_id}/documents"
 
           routing.on String do |document_id|
+            @document = Document.first(id: document_id)
+            raise Exceptions::NotFoundError, 'Property not found' if @document.nil?
+
             # DELETE api/v1/properties/:property_id/documents/:document_id
             # Deleted a document related with a property
             routing.post 'delete' do

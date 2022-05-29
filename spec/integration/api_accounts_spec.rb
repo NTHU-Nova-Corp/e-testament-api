@@ -44,9 +44,9 @@ describe 'Test Account Handling' do
       attributes = JSON.parse(last_response.body)['data']['attributes']
 
       _(attributes['username']).must_equal @testor_data['username']
-      _(attributes['salt']).must_be_nil
-      _(attributes['password']).must_be_nil
-      _(attributes['password_hash']).must_be_nil
+      assert_nil attributes['password']
+      assert_nil attributes['password_hash']
+      assert_nil attributes['salt']
     end
 
     it 'BAD: should not be able to get details of an account with another account' do
@@ -83,7 +83,7 @@ describe 'Test Account Handling' do
       post 'api/v1/accounts', bad_data.to_json, @req_header
 
       _(last_response.status).must_equal 400
-      _(last_response.header['Location']).must_be_nil
+      assert_nil last_response.header['Location']
     end
   end
 
@@ -128,7 +128,7 @@ describe 'Test Account Handling' do
       pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
 
       # then
-      _(pending_executor_account).must_be_nil
+      assert_nil pending_executor_account
 
       # when
       post 'api/v1/accounts/executors', { email: @executor[:email] }.to_json, @req_header
@@ -152,7 +152,7 @@ describe 'Test Account Handling' do
       pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
 
       # then
-      _(pending_executor_account).must_be_nil
+      assert_nil pending_executor_account
 
       # when
       post 'api/v1/accounts/executors', { email: executor_email }.to_json, @req_header
@@ -170,7 +170,7 @@ describe 'Test Account Handling' do
 
   describe 'Testor flow' do
     before(:each) do
-      _(ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])).must_be_nil
+      assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
 
       post 'api/v1/accounts/executors', { email: @executor[:email] }.to_json, @req_header
     end
@@ -198,14 +198,14 @@ describe 'Test Account Handling' do
         login_account(@executor_data)
 
         # when then
-        _(@testor[:executor_id]).must_be_nil
+        assert_nil @testor[:executor_id]
         _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
 
         # when then
         post "api/v1/accounts/testors/#{@testor[:id]}/accept"
         _(last_response.status).must_equal 200
         _(@testor[:executor_id]).must_equal @executor_data[:id]
-        _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])).must_be_nil
+        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])
       end
     end
 
@@ -215,14 +215,14 @@ describe 'Test Account Handling' do
         login_account(@executor_data)
 
         # when then
-        _(@testor[:executor_id]).must_be_nil
+        assert_nil @testor[:executor_id]
         _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
 
         # when then
         post "api/v1/accounts/testors/#{@testor[:id]}/reject"
         _(last_response.status).must_equal 200
-        _(@testor[:executor_id]).must_be_nil
-        _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])).must_be_nil
+        assert_nil @testor[:executor_id]
+        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])
       end
     end
 

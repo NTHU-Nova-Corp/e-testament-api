@@ -38,7 +38,7 @@ describe 'Test Authentication Routes' do
 
       _(last_response.status).must_equal 403
       _(result['message']).wont_be_nil
-      _(result['attributes']).must_be_nil
+      assert_nil result['attributes']
     end
   end
 end
