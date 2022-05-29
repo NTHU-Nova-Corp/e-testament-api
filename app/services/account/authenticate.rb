@@ -3,7 +3,7 @@
 module ETestament
   module Services
     module Accounts
-      # Find account and check password
+      # Service object to authenticate username and password
       class Authenticate
         def self.call(credentials)
           account = Account.first(username: credentials[:username])

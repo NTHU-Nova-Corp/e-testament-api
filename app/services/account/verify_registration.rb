@@ -7,7 +7,10 @@ module ETestament
     module Accounts
       ## Send email verification email
       # params:
-      #   - registration: hash with keys :username :email :verification_url
+      #  registration: hash with keys
+      #   :username
+      #   :email
+      #   :verification_url
       class VerifyRegistration
         def initialize(registration)
           @registration = registration

@@ -13,6 +13,7 @@ def wipe_database
   ETestament::Heir.map(&:destroy)
   ETestament::Document.map(&:destroy)
   ETestament::Property.map(&:destroy)
+  ETestament::PendingExecutorAccount.map(&:destroy)
   ETestament::Account.map(&:destroy)
 end
 

@@ -3,14 +3,14 @@
 module ETestament
   module Services
     module Accounts
-      # Service object to get the Account Information
+      # Service object to create request to assigned executor email
       # TODO: Handle error
       class CreateExecutorRequest
-        def self.call(executor_data:)
-          executor_pending = PendingExecutorAccount.new(executor_email: executor_data['email'])
-          executor_pending.owner_account_id = @auth_account['id']
+        def self.call(account:, executor_data:)
+          raise 'cannot assign account as an executor' if executor_data['email'].eql?(account['email'])
+
+          PendingExecutorAccount.where(owner_account_id: account['id']).delete
           executor_account = Account.first(email: executor_data['email'])
-          PendingExecutorAccount.where(owner_account_id: @auth_account['id']).delete
 
           if executor_account.nil?
             Services::Accounts::VerifyRegistration.new({
@@ -18,11 +18,15 @@ module ETestament
                                                          username: executor_data['email'],
                                                          email: executor_data['email']
                                                        }).call
-          else
-            executor_pending.executor_account_id = executor_account.id
-          end
 
-          executor_pending.save
+            PendingExecutorAccount.create(owner_account_id: account['id'],
+                                          executor_email: executor_data['email'])
+          else
+            executor_pending = PendingExecutorAccount.new(owner_account_id: account['id'],
+                                                          executor_email: executor_data['email'])
+            executor_pending[:executor_account_id] = executor_account.id
+            executor_pending.save
+          end
         end
       end
     end

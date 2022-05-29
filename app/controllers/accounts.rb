@@ -12,18 +12,16 @@ module ETestament
 
       routing.on 'executors' do
         # GET api/v1/accounts/executors
-        # Sends a request to be executor
-        # TODO: Add unit-test
+        # Get request list for being executors list
         routing.get do
           Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
         end
 
         # POST api/v1/accounts/executors
         # Sends a request to be executor
-        # TODO: Add unit-test
         routing.post do
           executor_data = JSON.parse(routing.body.read)
-          Services::Accounts::CreateExecutorRequest.call(executor_data:)
+          Services::Accounts::CreateExecutorRequest.call(account: @auth_account, executor_data:)
           response.status = 200
           { message: 'Executor Request Sent' }.to_json
         end
@@ -35,7 +33,7 @@ module ETestament
           # Returns the list of executor requests pending to be accepted by the current account
           # TODO: Add unit-test
           routing.get do
-            output = Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
+            output = Services::Accounts::GetExecutorPending.call(id: @auth_account['id'])
             JSON.pretty_generate(output)
           end
         end
@@ -66,7 +64,7 @@ module ETestament
       routing.on String do |username|
         # GET api/v1/accounts/[username]
         routing.get do
-          Services::Accounts::GetAccount.call(username:)
+          Services::Accounts::GetAccount.call(requester: @auth_account, username:)
         end
       end
 

@@ -9,7 +9,7 @@ module ETestament
         def self.call(id:)
           executor_account = Account.first(id:).executor
 
-          raise 'Not executor associated yet' if executor_account.nil?
+          raise Exceptions::NotFoundError, 'Not found associated executor' if executor_account.nil?
 
           executor_account.to_json
         end

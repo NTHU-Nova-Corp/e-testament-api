@@ -3,12 +3,11 @@
 module ETestament
   module Services
     module Accounts
-      # Service object to get the Account Information
+      # Service object to get pending request for being an executor
       # TODO: Handle error
-      class GetExecutorAccount
+      class GetExecutorPending
         def self.call(id:)
-          pending = Account.first(id:).executors_pending
-          { data: pending }
+          Account.first(id:).executors_pending
         end
       end
     end

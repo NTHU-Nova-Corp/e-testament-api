@@ -3,7 +3,7 @@
 module ETestament
   module Services
     module Accounts
-      # Service object to get the Account Information
+      # Service object to reject request for being an executor
       # TODO: Handle error
       class RejectTestorRequest
         def self.call(owner_account_id:, executor_account_id:)

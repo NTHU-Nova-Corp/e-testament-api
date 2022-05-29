@@ -10,11 +10,11 @@ module ETestament
     one_to_many :properties
     one_to_many :heirs
 
-    many_to_one :executor, class: self
-    one_to_many :testator, key: :executor_id, class: self
+    many_to_one :executor, class: :'ETestament::Account'
+    one_to_many :testator, key: :executor_id, class: :'ETestament::Account'
 
-    one_to_many :testators_pending, class: :PendingExecutorAccount, key: :executor_account_id
-    one_to_many :executors_pending, class: :PendingExecutorAccount, key: :owner_account_id
+    one_to_many :testators_pending, class: :'ETestament::PendingExecutorAccount', key: :owner_account_id
+    one_to_many :executors_pending, class: :'ETestament::PendingExecutorAccount', key: :executor_account_id
 
     plugin :association_dependencies, properties: :destroy, heirs: :destroy
 
@@ -49,6 +49,7 @@ module ETestament
         }, options
       )
     end
+
     # rubocop:enable Metrics/MethodLength
   end
 end

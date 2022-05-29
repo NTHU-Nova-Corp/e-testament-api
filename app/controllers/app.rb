@@ -52,7 +52,7 @@ module ETestament
           Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
           routing.halt 400, { message: 'Illegal Attributes' }.to_json
         rescue Exceptions::NotFoundError, Exceptions::BadRequestError,
-               JSON::ParserError => e
+               Exceptions::ForbiddenError, JSON::ParserError => e
           status_code = e.instance_variable_get(:@status_code)
           routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
         rescue StandardError => e

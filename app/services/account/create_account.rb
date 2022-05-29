@@ -3,7 +3,7 @@
 module ETestament
   module Services
     module Accounts
-      # Service object to get the Account Information
+      # Service object to create new account
       class CreateAccount
         def self.call(new_data:)
           raise 'Username exists' unless Account.first(username: new_data['username']).nil?
