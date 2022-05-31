@@ -15,7 +15,8 @@ module ETestament
           end
 
           # execute
-          result = PropertyHeir.new(heir_id: heir_data[:id], property_id: property_data[:id], percentage: new_data['percentage'])
+          result = PropertyHeir.new(heir_id: heir_data[:id], property_id: property_data[:id],
+                                    percentage: new_data['percentage'])
           raise Exceptions::BadRequestError, 'Could not associate the property with the heir' unless result.save
 
           result

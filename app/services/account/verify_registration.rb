@@ -20,7 +20,7 @@ module ETestament
 
         def mail_api_key = ENV.fetch('SENDGRID_API_KEY')
 
-        def mail_url = ENV['SENDGRID_API_URL']
+        def mail_url = ENV.fetch('SENDGRID_API_URL')
 
         def call
           raise Exceptions::BadRequestError, 'Username exists' unless username_available?

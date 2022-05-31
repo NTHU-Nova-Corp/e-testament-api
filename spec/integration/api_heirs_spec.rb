@@ -338,7 +338,8 @@ describe 'Test Heir Handling' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first
-      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property', description: 'property description')
+      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property',
+                                         description: 'property description')
       percentage = 99.9
 
       # when
@@ -356,7 +357,8 @@ describe 'Test Heir Handling' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first
-      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property', description: 'property description')
+      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property',
+                                         description: 'property description')
       percentage = 99.9
       login_account(@executor_account_data)
 
@@ -371,7 +373,8 @@ describe 'Test Heir Handling' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first
-      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property', description: 'property description')
+      new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property',
+                                         description: 'property description')
       percentage = 99.9
       login_account(@other_account_data)
 

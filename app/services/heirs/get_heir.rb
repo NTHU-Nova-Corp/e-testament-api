@@ -8,9 +8,7 @@ module ETestament
         def self.call(requester:, heir_data:)
           # verify
           policy = Policies::Heir.new(requester:, heir_owner_account: heir_data.account)
-          unless policy.can_view?
-            raise Exceptions::ForbiddenError, 'You are not allowed to view the heir'
-          end
+          raise Exceptions::ForbiddenError, 'You are not allowed to view the heir' unless policy.can_view?
 
           # return
           heir_data.to_json

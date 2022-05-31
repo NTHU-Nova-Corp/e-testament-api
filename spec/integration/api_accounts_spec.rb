@@ -113,7 +113,6 @@ describe 'Test Account Handling' do
   end
 
   describe 'POST api/v1/accounts/executors' do
-
     it 'BAD: should not be able to assign the auth account as an executor' do
       # given
       accounts = ETestament::Account.first
@@ -204,8 +203,10 @@ describe 'Test Account Handling' do
         # when then
         post "api/v1/accounts/testors/#{@testor[:id]}/accept"
         _(last_response.status).must_equal 200
-        _(@testor[:executor_id]).must_equal @executor_data[:id]
-        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])
+
+        @testor = ETestament::Account.first(email: @testor[:email])
+        _(@testor[:executor_id]).must_equal @executor[:id]
+        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
       end
     end
 
@@ -222,10 +223,8 @@ describe 'Test Account Handling' do
         post "api/v1/accounts/testors/#{@testor[:id]}/reject"
         _(last_response.status).must_equal 200
         assert_nil @testor[:executor_id]
-        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor_data[:id])
+        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
       end
     end
-
   end
-
 end

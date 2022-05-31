@@ -6,6 +6,7 @@ module ETestament
       # Service object to create request to assigned executor email
       # TODO: Handle error
       class CreateExecutorRequest
+        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(account:, executor_data:)
           raise 'cannot assign account as an executor' if executor_data['email'].eql?(account['email'])
 
@@ -28,10 +29,8 @@ module ETestament
             executor_pending.save
           end
         end
+        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
       end
     end
   end
 end
-
-
-

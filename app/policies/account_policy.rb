@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module ETestament
-
   module Policies
     # Policy to determine if account can view a project
     class Account
