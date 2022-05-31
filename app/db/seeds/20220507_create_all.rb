@@ -59,14 +59,18 @@ def create_heirs
   end
 end
 
+# rubocop:disable Metrics/MethodLength
 def create_property_heirs
   property_heirs = PROPERTY_HEIRS.each
   heirs = ETestament::Heir.all.cycle
   properties = ETestament::Property.all.cycle
   loop do
     property_heir = property_heirs.next
-    heir_id = heirs.next.id
-    property_id = properties.next.id
-    ETestament::Services::Properties::AssociateHeir.call(heir_id:, property_id:, property_heir:)
+    heir_data = heirs.next
+    property_data = properties.next
+    account = JSON.parse(property_data.account.to_json)['data']['attributes']
+    ETestament::Services::PropertyHeirs::AssociatePropertyHeir.call(requester: account, heir_data:, property_data:,
+                                                                    new_data: property_heir)
   end
 end
+# rubocop:enable Metrics/MethodLength

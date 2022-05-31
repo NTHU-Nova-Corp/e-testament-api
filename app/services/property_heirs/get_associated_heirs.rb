@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Properties
+    module PropertyHeirs
       # Service object to create a new property for an account
       class GetAssociatedHeirs
         def self.call(property_id:)

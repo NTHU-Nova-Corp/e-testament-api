@@ -3,7 +3,7 @@
 module ETestament
   # Service object to create a new property for an account
   module Services
-    module Heirs
+    module PropertyHeirs
       # Create heir for account
       class DeleteHeirsFromProperty
         def self.call(requester:, heir_data:)

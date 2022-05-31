@@ -2,9 +2,9 @@
 
 module ETestament
   module Services
-    module Properties
+    module PropertyHeirs
       # Service object to get a specific property
-      class GetHeir
+      class GetPropertyHeir
         def self.call(property_id:, heir_id:)
           property = Property.where(id: property_id)
           raise Exceptions::NotFoundError if property.nil?

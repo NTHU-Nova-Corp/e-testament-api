@@ -2,13 +2,17 @@
 
 module ETestament
   module Services
-    module Heirs
+    module PropertyHeirs
       # Service object to get property list for a heir
-      class GetAssociatedProperties
+      class GetAssociatedPropertiesToHeir
         def self.call(requester:, heir_data:)
           # verify
-          policy = Policies::PropertyHeir.new(requester:, heir_owner_account: heir_data.account)
-          unless policy.can_view_heir_associations?
+          policy = Policies::PropertyHeir.new(requester:,
+                                              heir_owner_id: heir_data.account[:id],
+                                              property_owner_id: nil,
+                                              heir_owner_executor_id: nil,
+                                              property_owner_executor_id: nil)
+          unless policy.can_view_properties_associated_to_heir?
             raise Exceptions::ForbiddenError, 'You are not allowed to view the property'
           end
 
