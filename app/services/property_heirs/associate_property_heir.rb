@@ -5,6 +5,7 @@ module ETestament
     module PropertyHeirs
       # Service object to get the heirs related with an an account
       class AssociatePropertyHeir
+        # rubocop:disable Metrics/MethodLength
         def self.call(requester:, heir_data:, property_data:, new_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,
@@ -23,6 +24,7 @@ module ETestament
 
           result
         end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

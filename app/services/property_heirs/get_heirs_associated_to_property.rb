@@ -4,7 +4,7 @@ module ETestament
   module Services
     module PropertyHeirs
       # Service object to get property list for a heir
-      class GetAssociatedHeirsToProperty
+      class GetHeirsAssociatedToProperty
         def self.call(requester:, property_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,

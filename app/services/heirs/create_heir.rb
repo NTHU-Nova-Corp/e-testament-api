@@ -6,8 +6,8 @@ module ETestament
     module Heirs
       # Create heir for account
       class CreateHeir
-        def self.call(id:, new_data:)
-          account = Account.first(id:)
+        def self.call(account_id:, new_data:)
+          account = Account.first(id: account_id)
           raise Exceptions::NotFoundError, 'Could not find account' if account.nil?
 
           new_heir = account.add_heir(new_data)

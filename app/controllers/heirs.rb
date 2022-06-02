@@ -51,9 +51,9 @@ module ETestament
         end
 
         # POST api/v1/heirs/:heir_id/delete
-        # Nice to have :: Rollback PropertyHeir when deleting Heir wrongly
+        # * Nice to have :: Rollback PropertyHeir when deleting Heir wrongly
         routing.post 'delete' do
-          Services::PropertyHeirs::DeleteHeirsFromProperty.call(requester: @auth_account, heir_data: @heir)
+          Services::Heirs::DeleteHeir.call(requester: @auth_account, heir_data: @heir)
           response.status = 200
           response['Location'] = "#{@heirs_route}/#{heir_id}"
           { message: 'Heir has been deleted' }.to_json
@@ -79,7 +79,7 @@ module ETestament
       # POST api/v1/heirs
       routing.post do
         new_data = JSON.parse(routing.body.read)
-        new_heir = Services::Heirs::CreateHeir.call(id: @auth_account['id'], new_data:)
+        new_heir = Services::Heirs::CreateHeir.call(account_id: @auth_account['id'], new_data:)
 
         response.status = 201
         response['Location'] = "#{@heirs_route}/#{new_heir.id}"

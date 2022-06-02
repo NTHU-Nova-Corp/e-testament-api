@@ -67,14 +67,17 @@ namespace :db do
   end
 
   desc 'Delete database'
-  task :delete do
-    app.DB[:property_heirs].delete
-    app.DB[:heirs].delete
-    app.DB[:relations].delete
-    app.DB[:documents].delete
-    app.DB[:properties].delete
-    app.DB[:property_types].delete
-    app.DB[:accounts].delete
+  task :delete => [:load_models] do
+    require_app(%w[exception lib models policies services])
+    require 'sequel/extensions/seed'
+    Sequel::Seed.setup(:development)
+
+    ETestament::PropertyHeir.map(&:destroy)
+    ETestament::Heir.map(&:destroy)
+    ETestament::Document.map(&:destroy)
+    ETestament::Property.map(&:destroy)
+    ETestament::PendingExecutorAccount.map(&:destroy)
+    ETestament::Account.map(&:destroy)
   end
 
   desc 'Delete dev or test database file'

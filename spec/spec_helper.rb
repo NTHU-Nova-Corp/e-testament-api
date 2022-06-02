@@ -53,7 +53,7 @@ def seed_heirs
     heir = heirs.next
     heir['relation_id'] = relation.id
     account_id = accounts.next.id
-    ETestament::Services::Heirs::CreateHeir.call(id: account_id, new_data: heir)
+    ETestament::Services::Heirs::CreateHeir.call(account_id:, new_data: heir)
   end
 end
 

@@ -74,21 +74,13 @@ module ETestament
             @heir = Heir.first(id: heir_id)
             raise Exceptions::NotFoundError, 'Heir does not found' if @heir.nil?
 
-            # GET api/v1/properties/:property_id/heirs/:heir_id
-            # Get info on a specific heir to a property
-            # TODO: unit-test
-            # ?Do we need this
-            routing.get do
-              Services::PropertyHeirs::GetPropertyHeir.call(heir_id:, property_id:)
-            end
-
             # POST api/v1/properties/:property_id/heirs/:heir_id
             # Associate a heir to a property
             # TODO: unit-test
             routing.post do
               new_data = JSON.parse(routing.body.read)
               new_heir = Services::PropertyHeirs::AssociatePropertyHeir.call(requester: @auth_account, heir_data: @heir,
-                                                                            property_data: @property, new_data:)
+                                                                             property_data: @property, new_data:)
 
               response.status = 201
               response['Location'] = "#{@heirs_route}/#{new_heir.id}"
