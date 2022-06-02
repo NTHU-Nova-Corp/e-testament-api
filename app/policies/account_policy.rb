@@ -4,9 +4,9 @@ module ETestament
   module Policies
     # Policy to determine if account can view a project
     class Account
-      def initialize(requester, account)
+      def initialize(requester, account_requested)
         @requester = requester
-        @account = account
+        @account_requested = account_requested
       end
 
       def can_view?
@@ -32,7 +32,7 @@ module ETestament
       private
 
       def self_request?
-        @requester['id'] == @account[:id]
+        @requester['id'] == @account_requested[:id]
       end
     end
   end
