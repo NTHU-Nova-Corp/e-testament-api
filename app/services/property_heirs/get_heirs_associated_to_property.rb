@@ -18,11 +18,11 @@ module ETestament
 
           # return
           property_heirs = PropertyHeir.where(heir_id: property_data[:id]).all
-          properties = property_heirs.map(&:property)
+          heirs = property_heirs.map(&:heir)
 
-          raise Exceptions::NotFoundError if properties.nil?
+          raise Exceptions::NotFoundError if heirs.nil?
 
-          properties.to_json
+          heirs.to_json
         end
       end
     end

@@ -46,7 +46,7 @@ module ETestament
 
           # GET api/v1/heirs/:heir_id/properties
           routing.get do
-            Services::PropertyHeirs::GetAssociatedPropertiesToHeir.call(requester: @auth_account, heir_data: @heir)
+            Services::PropertyHeirs::GetPropertiesAssociatedToHeir.call(requester: @auth_account, heir_data: @heir)
           end
         end
 
