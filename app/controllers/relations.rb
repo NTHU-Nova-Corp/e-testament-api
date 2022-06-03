@@ -9,6 +9,8 @@ module ETestament
     route('relations') do |routing|
       # Web controller for ETestament API, heirs sub-route
       @heirs_route = "#{@api_root}/relations"
+      unauthorized_message = { message: 'Unauthorized Request' }.to_json
+      routing.halt(403, unauthorized_message) unless @auth_account
 
       # POST api/v1/relations
       # Create new relations

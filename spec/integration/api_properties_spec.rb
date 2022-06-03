@@ -5,35 +5,62 @@ require_relative '../spec_helper'
 describe 'Test Property Handling' do
   include Rack::Test::Methods
 
-  before do
+  def login_account(account)
+    @account_data = account
+
+    @auth = ETestament::Services::Accounts::Authenticate.call(
+      username: @account_data['username'],
+      password: @account_data['password']
+    )
+    header 'AUTHORIZATION', "Bearer #{@auth[:attributes][:auth_token]}"
+    @req_header = { 'CONTENT_TYPE' => 'application/json' }
+  end
+
+  before(:each) do
+    # clear
     wipe_database
+
+    # seed
+    seed_accounts
+    seed_properties
+    seed_heirs
+    seed_property_heirs
+
+    # setup data
+    @owner_account_data = DATA[:accounts][0]
+    @executor_account_data = DATA[:accounts][1]
+    @other_account_data = DATA[:accounts][2]
+
+    # setup account
+    @accounts = ETestament::Account.all.cycle
+    @owner = @accounts.next
+    @executor = @accounts.next
+    @other = @accounts.next
+    @owner.update(executor_id: @executor[:id])
+
+    # setup login account
+    login_account(@owner_account_data)
   end
 
   describe 'Getting properties' do
     describe 'Getting list of properties' do
-      before do
-        @account_data = DATA[:accounts][0]
-        account = ETestament::Account.create(@account_data)
-        property0 = DATA[:properties][0]
-        property0['property_type_id'] = ETestament::PropertyType.first.id
-        account.add_property(property0)
-        property1 = DATA[:properties][1]
-        property1['property_type_id'] = ETestament::PropertyType.first.id
-        account.add_property(property1)
-      end
+      # before do
+      #   @account_data = DATA[:accounts][0]
+      #   account = ETestament::Account.create(@account_data)
+      #   property0 = DATA[:properties][0]
+      #   property0['property_type_id'] = ETestament::PropertyType.first.id
+      #   account.add_property(property0)
+      #   property1 = DATA[:properties][1]
+      #   property1['property_type_id'] = ETestament::PropertyType.first.id
+      #   account.add_property(property1)
+      # end
 
       it 'HAPPY: should be able to get list of all properties' do
-        auth = ETestament::Services::Accounts::Authenticate.call(
-          username: @account_data['username'],
-          password: @account_data['password']
-        )
-
-        header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
         get 'api/v1/properties'
         _(last_response.status).must_equal 200
 
         result = JSON.parse last_response.body
-        _(result['data'].count).must_equal 2
+        _(result['data'].count).must_equal 1
       end
 
       it 'BAD: should not process for unauthorized accounts' do
@@ -48,27 +75,14 @@ describe 'Test Property Handling' do
   end
 
   it 'HAPPY: should be able to get details of a single property' do
-    account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    property0 = DATA[:properties][0]
-    property0['property_type_id'] = property_type.id
-    account.add_property(property0)
+    property = @owner.properties.first
 
-    existing_property = account.properties.first
-
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    get "/api/v1/properties/#{existing_property.id}"
+    get "/api/v1/properties/#{property.id}"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
-    _(result['data']['attributes']['id']).must_equal existing_property.id
-    _(result['data']['attributes']['name']).must_equal existing_property.name
+    _(result['data']['attributes']['id']).must_equal property.id
+    _(result['data']['attributes']['name']).must_equal property.name
   end
 
   it 'SAD: should return error if unknown property requested' do
@@ -78,23 +92,6 @@ describe 'Test Property Handling' do
   end
 
   it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-    account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    property0 = DATA[:properties][0]
-    property0['property_type_id'] = property_type.id
-    property_type = ETestament::PropertyType.first
-    property1 = DATA[:properties][1]
-    property1['property_type_id'] = property_type.id
-    account.add_property(property0)
-    account.add_property(property1)
-
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
     get 'api/v1/properties/2%20or%20TRUE'
 
     # deliberately not reporting error -- don't give attacker information
@@ -103,24 +100,15 @@ describe 'Test Property Handling' do
   end
 
   it 'HAPPY: should be able to create new property' do
-    account_data = DATA[:accounts][0]
-    ETestament::Account.create(account_data)
     property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
+    new_property = DATA[:properties][2]
     new_property['property_type_id'] = property_type.id
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
 
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post '/api/v1/properties', new_property.to_json, req_header
+    post '/api/v1/properties', new_property.to_json, @req_header
     _(last_response.status).must_equal 201
 
     created = JSON.parse(last_response.body)['data']['data']['attributes']
-    property = ETestament::Property.first
+    property = ETestament::Property.first(id: created['id'])
 
     _(created['id']).must_equal property.id
     _(created['name']).must_equal new_property['name']
@@ -128,91 +116,41 @@ describe 'Test Property Handling' do
   end
 
   it 'SAD: should not be able to create two properties with the same name' do
-    account_data = DATA[:accounts][0]
-    ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
-    new_property['property_type_id'] = property_type.id
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
+    property = @owner.properties.first
+    new_property = {}
+    new_property['name'] = property.name
+    new_property['description'] = property.description
+    new_property['property_type_id'] = property.property_type_id
 
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post '/api/v1/properties', new_property.to_json, req_header
-    _(last_response.status).must_equal 201
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post '/api/v1/properties', new_property.to_json, req_header
+    post '/api/v1/properties', new_property.to_json, @req_header
     _(last_response.status).must_equal 400
   end
 
   it 'HAPPY: should be able to delete existing property' do
-    account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
-    new_property['property_type_id'] = property_type.id
-    property = account.add_property(new_property)
+    property = @owner.properties.first
+    ETestament::PropertyHeir.where(property_id: property[:id]).delete
 
-    id = property.id
-
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    get "/api/v1/properties/#{id}"
+    post "/api/v1/properties/#{property.id}/delete"
     _(last_response.status).must_equal 200
 
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post "/api/v1/properties/#{id}/delete"
-    _(last_response.status).must_equal 200
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    get "/api/v1/properties/#{id}"
+    get "/api/v1/properties/#{property.id}"
     _(last_response.status).must_equal 404
   end
 
   it 'HAPPY: should be able to update existing property' do
-    account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
-    new_property['property_type_id'] = property_type.id
-
-    data = account.add_property(new_property)
-    id = data[:id]
+    property = @owner.properties.first
 
     update_request = {}
     update_request[:name] = 'Test update_name'
     update_request[:description] = 'Test description'
 
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    get "/api/v1/properties/#{id}"
-    _(last_response.status).must_equal 200
-    result = JSON.parse(last_response.body)['data']['attributes']
-    _(result['name']).wont_equal update_request[:name]
-    _(result['description']).wont_equal update_request[:description]
-
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post "/api/v1/properties/#{id}", update_request.to_json, req_header
+    post "/api/v1/properties/#{property.id}", update_request.to_json, @req_header
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']
     _(updated['name']).must_equal update_request[:name]
     _(updated['description']).must_equal update_request[:description]
 
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    get "/api/v1/properties/#{id}"
+    get "/api/v1/properties/#{property.id}"
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']['attributes']
     _(updated['name']).must_equal update_request[:name]
@@ -220,34 +158,14 @@ describe 'Test Property Handling' do
   end
 
   it 'SAD: should return 404 when try to update a property that doesnt exists' do
-    account_data = DATA[:accounts][0]
-    ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
-    new_property['property_type_id'] = property_type.id
-
     new_property = DATA[:properties][1]
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
 
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post '/api/v1/properties/122', new_property.to_json, req_header
+    post '/api/v1/properties/122', new_property.to_json, @req_header
     _(last_response.status).must_equal 404
   end
 
   it 'SAD: should prevent edits to unauthorized fields' do
-    account_data = DATA[:accounts][0]
-    account = ETestament::Account.create(account_data)
-    property_type = ETestament::PropertyType.first
-    new_property = DATA[:properties][0]
-    new_property['property_type_id'] = property_type.id
-
-    data = account.add_property(new_property).save
-    id = data[:id]
+    property = @owner.properties.first
 
     update_request = {}
     update_request[:name] = 'Test update_name'
@@ -257,14 +175,7 @@ describe 'Test Property Handling' do
     update_request[:created_at] = '1911-10-10'
 
     # Try to update property with unauthorized field
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    auth = ETestament::Services::Accounts::Authenticate.call(
-      username: account_data['username'],
-      password: account_data['password']
-    )
-
-    header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
-    post "/api/v1/properties/#{id}", update_request.to_json, req_header
+    post "/api/v1/properties/#{property.id}", update_request.to_json, @req_header
     _(last_response.status).must_equal 400
   end
 end

@@ -13,7 +13,7 @@ module ETestament
                                               property_owner_id: property_data.account[:id],
                                               heir_owner_executor_id: nil,
                                               property_owner_executor_id: nil)
-          unless policy.can_remove_association?
+          unless policy.can_delete_association?
             raise Exceptions::ForbiddenError, 'You are not allowed to access that project'
           end
 

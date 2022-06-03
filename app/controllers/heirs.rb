@@ -11,6 +11,8 @@ module ETestament
     # Web controller for ETestament API, heirs sub-route
     route('heirs') do |routing|
       @heirs_route = "#{@api_root}/heirs"
+      unauthorized_message = { message: 'Unauthorized Request' }.to_json
+      routing.halt(403, unauthorized_message) unless @auth_account
 
       routing.on String do |heir_id|
         @heir = Heir.first(id: heir_id)

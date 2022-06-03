@@ -11,7 +11,7 @@ module ETestament
           raise Exceptions::ForbiddenError, 'You are not allowed to view the property' unless policy.can_update?
 
           # execute
-          raise(updated_data.keys.to_s) unless heir_data.update(updated_data)
+          raise Exceptions::BadRequestError unless heir_data.update(updated_data)
         end
       end
     end

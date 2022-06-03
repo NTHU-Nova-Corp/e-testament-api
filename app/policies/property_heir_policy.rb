@@ -2,9 +2,10 @@
 
 module ETestament
   module Policies
-    # Policy to determine if account can view a project
+    # Policy to determine if account can view a relations between properties and heirs
     class PropertyHeir
-      def initialize(requester:, heir_owner_id:, property_owner_id:, heir_owner_executor_id:, property_owner_executor_id:)
+      def initialize(requester:, heir_owner_id:, property_owner_id:,
+                     heir_owner_executor_id:, property_owner_executor_id:)
         @requester = requester
         @heir_owner_id = heir_owner_id
         @property_owner_id = property_owner_id
@@ -24,7 +25,7 @@ module ETestament
         property_owner? || property_executor?
       end
 
-      def can_remove_association?
+      def can_delete_association?
         heir_owner? && property_owner?
       end
 
@@ -33,7 +34,7 @@ module ETestament
           can_create_association: can_create_association?,
           can_view_properties_associated_to_heir: can_view_properties_associated_to_heir?,
           can_view_heirs_associated_to_property: can_view_heirs_associated_to_property?,
-          can_remove_association: can_remove_association?
+          can_delete_association: can_delete_association?
         }
       end
 

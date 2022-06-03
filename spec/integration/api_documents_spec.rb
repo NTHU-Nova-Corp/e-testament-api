@@ -5,14 +5,45 @@ require_relative '../spec_helper'
 describe 'Test Document Handling' do
   include Rack::Test::Methods
 
+  def login_account(account)
+    @account_data = account
+
+    @auth = ETestament::Services::Accounts::Authenticate.call(
+      username: @account_data['username'],
+      password: @account_data['password']
+    )
+    header 'AUTHORIZATION', "Bearer #{@auth[:attributes][:auth_token]}"
+    @req_header = { 'CONTENT_TYPE' => 'application/json' }
+  end
+
   before(:each) do
+    # clear
     wipe_database
+
+    # seed
     seed_accounts
     seed_properties
+    seed_heirs
+    seed_property_heirs
+
+    # setup data
+    @owner_account_data = DATA[:accounts][0]
+    @executor_account_data = DATA[:accounts][1]
+    @other_account_data = DATA[:accounts][2]
+
+    # setup account
+    @accounts = ETestament::Account.all.cycle
+    @owner = @accounts.next
+    @executor = @accounts.next
+    @other = @accounts.next
+    @owner.update(executor_id: @executor[:id])
+
+    # setup login account
+    login_account(@owner_account_data)
   end
 
   it 'HAPPY: should be able to get list of all documents related with a property' do
-    property = ETestament::Property.first
+    property = @owner.properties.first
 
     # Create documents and tie them to the property
     DATA[:documents].each do |document|
@@ -28,7 +59,7 @@ describe 'Test Document Handling' do
 
   it 'HAPPY: should be able to get details of a single document related with a property' do
     # document_data = ETestament::Document.create(DATA[:documents][1]).save
-    property = ETestament::Property.first
+    property = @owner.properties.first
     test_doc = property.add_document(DATA[:documents][1])
 
     get "api/v1/properties/#{property.id}/documents/#{test_doc.id}"
@@ -53,12 +84,6 @@ describe 'Test Document Handling' do
 
     get "api/v1/properties/#{property.id}/documents/#{document2.id}"
     _(last_response.status).must_equal 404
-
-    get "api/v1/properties/#{property2.id}/documents/#{document2.id}"
-    _(last_response.status).must_equal 200
-
-    get "api/v1/properties/#{property2.id}/documents/#{document.id}"
-    _(last_response.status).must_equal 404
   end
 
   it 'SECURITY: should prevent basic SQL injection targeting IDs' do
@@ -66,10 +91,9 @@ describe 'Test Document Handling' do
     new_document = DATA[:documents][0]
     new_document2 = DATA[:documents][1]
 
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties/#{property.id}/documents", new_document.to_json, req_header
+    post "/api/v1/properties/#{property.id}/documents", new_document.to_json, @req_header
     post "/api/v1/properties/#{property.id}/documents", new_document2.to_json,
-         req_header
+         @req_header
 
     get "api/v1/properties/#{property.id}/documents/2%20or%20TRUE"
 
@@ -79,11 +103,10 @@ describe 'Test Document Handling' do
   end
 
   it 'HAPPY: should be able to create new documents' do
-    property = ETestament::Property.first
+    property = @owner.properties.first
     new_document = DATA[:documents][0]
 
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
-    post "/api/v1/properties/#{property.id}/documents", new_document.to_json, req_header
+    post "/api/v1/properties/#{property.id}/documents", new_document.to_json, @req_header
     _(last_response.status).must_equal 201
 
     created = JSON.parse(last_response.body)['data']['data']['attributes']
@@ -137,9 +160,8 @@ describe 'Test Document Handling' do
     _(result['description']).wont_equal update_request[:description]
 
     # Update the document
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
     post "/api/v1/properties/#{property.id}/documents/#{id}", update_request.to_json,
-         req_header
+         @req_header
     _(last_response.status).must_equal 200
     updated = JSON.parse(last_response.body)['data']
     _(updated['file_name']).must_equal update_request[:file_name]
@@ -163,9 +185,8 @@ describe 'Test Document Handling' do
     update_request[:description] = 'Test description'
 
     # Try to update nonexistent document
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
     post "/api/v1/properties/#{property.id}/documents/111c1a38-3477-480f-9f04-9e510e43a864",
-         update_request.to_json, req_header
+         update_request.to_json, @req_header
     _(last_response.status).must_equal 404
   end
 
@@ -185,9 +206,8 @@ describe 'Test Document Handling' do
     update_request[:created_at] = '1911-10-10'
 
     # Try to update document with unauthorized field
-    req_header = { 'CONTENT_TYPE' => 'application/json' }
     post "/api/v1/properties/#{property.id}/documents/#{id}", update_request.to_json,
-         req_header
+         @req_header
     _(last_response.status).must_equal 400
   end
 end

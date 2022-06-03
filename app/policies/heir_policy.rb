@@ -21,7 +21,7 @@ module ETestament
         heir_owner? || heir_executor?
       end
 
-      def can_remove?
+      def can_delete?
         heir_owner?
       end
 
@@ -30,7 +30,7 @@ module ETestament
           can_create: can_create?,
           can_view: can_view?,
           can_update: can_update?,
-          can_remove: can_remove?
+          can_delete: can_delete?
         }
       end
 

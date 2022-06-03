@@ -168,12 +168,12 @@ describe 'Test Heir Handling' do
   describe 'POST api/v1/heirs/:heir_id' do
     it 'HAPPY: should be able to update a heir' do
       # given
-      updated_heir = DATA[:heirs][0]
-      existing_heir = ETestament::Heir.first(email: updated_heir['email'])
+      existing_heir = ETestament::Heir.first
 
-      updated_heir['email'] = 'updated_email@gmail.com'
-      updated_heir['first_name'] = 'updated_email@gmail.com'
-      updated_heir['last_name'] = 'updated_email@gmail.com'
+      updated_heir = {}
+      updated_heir[:email] = 'updated_email@gmail.com'
+      updated_heir[:first_name] = 'first name updated'
+      updated_heir[:last_name] = 'last name updated'
 
       # when
       post "api/v1/heirs/#{existing_heir[:id]}", updated_heir.to_json, @req_header

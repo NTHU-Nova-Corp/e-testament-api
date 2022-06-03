@@ -6,11 +6,16 @@ module ETestament
       # Service object to create a new property for an account
       # Note: Not sure if it should update info from the account object? search account > get property > update
       class UpdateProperty
-        def self.call(property_id:, updated_data:)
-          property = Property.first(id: property_id)
-          raise Exceptions::NotFoundError if property.nil?
+        def self.call(requester:, property_data:, updated_data:)
+          policy = Policies::Property.new(requester:, property_owner_id: property_data.account[:id],
+                                          property_owner_executor_id: property_data.account.executor_id)
 
-          raise(updated_data.keys.to_s) unless property.update(updated_data)
+          unless policy.can_update?
+            raise Exceptions::ForbiddenError,
+                  'You are not allowed to updated property selected.'
+          end
+
+          raise Exceptions::BadRequestError updated_data.keys.to_s unless property_data.update(updated_data)
         end
       end
     end

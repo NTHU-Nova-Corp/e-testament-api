@@ -2,11 +2,12 @@
 
 module ETestament
   module Policies
-    # Policy to determine if account can view a project
+    # Policy to determine if account can view a properties
     class Property
-      def initialize(requester)
-        @requester = requester[:requester]
-        @property_owner_account = requester[:property_owner_account]
+      def initialize(requester:, property_owner_id:, property_owner_executor_id:)
+        @requester = requester
+        @property_owner_id = property_owner_id
+        @property_owner_executor_id = property_owner_executor_id
       end
 
       def can_create?
@@ -21,7 +22,7 @@ module ETestament
         property_owner? || property_executor?
       end
 
-      def can_remove?
+      def can_delete?
         property_owner?
       end
 
@@ -30,18 +31,18 @@ module ETestament
           can_create: can_create?,
           can_view: can_view?,
           can_update: can_update?,
-          can_remove: can_remove?
+          can_delete: can_delete?
         }
       end
 
       private
 
       def property_owner?
-        @property_owner_account.nil? ? false : @requester['id'] == @property_owner_account[:id]
+        @property_owner_id.nil? ? false : @requester['id'] == @property_owner_id
       end
 
       def property_executor?
-        @property_owner_account.nil? ? false : @requester['id'] == @property_owner_account[:executor_id]
+        @property_owner_executor_id.nil? ? false : @requester['id'] == @property_owner_executor_id
       end
     end
   end

@@ -10,6 +10,8 @@ module ETestament
       # Web controller for ETestament API, heirs sub-route
       @properties_route = "#{@account_route}/properties"
       @heirs_route = "#{@api_root}/property_types"
+      unauthorized_message = { message: 'Unauthorized Request' }.to_json
+      routing.halt(403, unauthorized_message) unless @auth_account
 
       # POST api/v1/property_types
       # Hasn't been used yet
