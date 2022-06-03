@@ -81,7 +81,8 @@ module ETestament
       # POST api/v1/heirs
       routing.post do
         new_data = JSON.parse(routing.body.read)
-        new_heir = Services::Heirs::CreateHeir.call(account_id: @auth_account['id'], new_data:)
+        new_heir = Services::Heirs::CreateHeir.call(requester: @auth_account,
+                                                    account_id: @auth_account['id'], new_data:)
 
         response.status = 201
         response['Location'] = "#{@heirs_route}/#{new_heir.id}"
@@ -90,7 +91,7 @@ module ETestament
 
       # GET api/v1/heirs
       routing.get do
-        Services::Heirs::GetHeirs.call(account_id: @auth_account['id'])
+        Services::Heirs::GetHeirs.call(requester: @auth_account, account_id: @auth_account['id'])
       rescue StandardError
         raise Exceptions::NotFoundError('Could not find heirs')
       end

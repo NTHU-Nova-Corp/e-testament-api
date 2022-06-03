@@ -221,7 +221,7 @@ describe 'Test Heir Handling' do
   describe 'POST api/v1/heirs/:heir_id/delete' do
     it 'HAPPY: should be able delete a heir' do
       # given
-      exiting_heir = ETestament::Heir.first
+      exiting_heir = @owner.heirs.first
       ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).delete
 
       # when
@@ -233,8 +233,8 @@ describe 'Test Heir Handling' do
 
     it 'BAD: should not be able delete a heir with other account' do
       # given
+      exiting_heir = @owner.heirs.first
       login_account(@executor_account_data)
-      exiting_heir = ETestament::Heir.first
 
       # when
       post "api/v1/heirs/#{exiting_heir[:id]}/delete"

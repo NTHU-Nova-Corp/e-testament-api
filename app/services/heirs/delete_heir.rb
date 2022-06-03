@@ -8,7 +8,9 @@ module ETestament
       class DeleteHeir
         def self.call(requester:, heir_data:)
           # verify
-          policy = Policies::Heir.new(requester:, heir_owner_account: heir_data.account)
+          policy = Policies::Heir.new(requester:, heir_owner_id: heir_data.account.id,
+                                      heir_owner_executor_id: heir_data.account.executor_id)
+
           raise Exceptions::ForbiddenError, 'You are not allowed to remove the heir selected.' unless policy.can_delete?
 
           # execute

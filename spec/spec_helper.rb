@@ -50,17 +50,21 @@ def seed_documents
   end
 end
 
+# rubocop:disable Metrics/AbcSize
 def seed_heirs
   heirs = DATA[:heirs].each
   relation = ETestament::Relation.first
   accounts = ETestament::Account.all.cycle
+
   loop do
     heir = heirs.next
     heir['relation_id'] = relation.id
-    account_id = accounts.next.id
-    ETestament::Services::Heirs::CreateHeir.call(account_id:, new_data: heir)
+    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+
+    ETestament::Services::Heirs::CreateHeir.call(requester: account, account_id: account['id'], new_data: heir)
   end
 end
+# rubocop:enable Metrics/AbcSize
 
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def seed_property_heirs
