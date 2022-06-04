@@ -5,6 +5,7 @@ require 'rbnacl'
 
 module ShamirEncryption
   # ShamirSecretSharing
+  # rubocop:disable Metrics/ClassLength
   class ShamirSecretSharing
     VERSION = '0.0.1'
 
@@ -34,6 +35,7 @@ module ShamirEncryption
       n
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def self.split(secret, available, needed)
       do_data_checksum = true
       raise ArgumentError, 'needed must be <= available' unless needed <= available
@@ -73,7 +75,9 @@ module ShamirEncryption
       end
       pack(shares)
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def self.combine(shares, do_raise: false, do_data_checksum: true)
       return false if shares.size < 2
 
@@ -97,6 +101,7 @@ module ShamirEncryption
 
       false
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     # Part of the Lagrange interpolation.
     # This is l_j(0), i.e.  # \prod_{x_j \neq x_i} \frac{-x_i}{x_j - x_i}
@@ -110,6 +115,7 @@ module ShamirEncryption
       rejected_shared.inject { |p, f| p.mod_mul(f, prime) }
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
     def self.split_with_sanity_check(secret, available, needed)
       shares = split(secret, available, needed)
       success = true
@@ -129,6 +135,7 @@ module ShamirEncryption
     rescue ShareSanityCheckError
       retry
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/MethodLength
 
     class ShareChecksumError < ::StandardError; end
 
@@ -147,6 +154,7 @@ module ShamirEncryption
         end
       end
 
+      # rubocop:disable Metrics/MethodLength
       def self.unpack(shares)
         shares.map do |i|
           buf = begin
@@ -163,6 +171,7 @@ module ShamirEncryption
           [i[0], i[1], i[2].to_i(16)]
         end
       end
+      # rubocop:enable Metrics/MethodLength
     end
 
     # Base64
@@ -176,4 +185,5 @@ module ShamirEncryption
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

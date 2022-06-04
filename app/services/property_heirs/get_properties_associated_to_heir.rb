@@ -5,6 +5,7 @@ module ETestament
     module PropertyHeirs
       # Service object to get property list for a heir
       class GetPropertiesAssociatedToHeir
+        # rubocop:disable Metrics/MethodLength
         def self.call(requester:, heir_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,
@@ -24,6 +25,7 @@ module ETestament
 
           properties.to_json
         end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

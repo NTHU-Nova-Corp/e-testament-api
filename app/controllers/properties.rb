@@ -75,6 +75,7 @@ module ETestament
 
         routing.on 'heirs' do
           @heirs_route = "#{@properties_route}/#{property_id}/heirs"
+
           routing.on String do |heir_id|
             @heir = Heir.first(id: heir_id)
             raise Exceptions::NotFoundError, 'Heir does not found' if @heir.nil?
@@ -105,7 +106,9 @@ module ETestament
           # Get a list of heirs associated with a property
           # TODO: unit-test
           routing.get do
-            Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account, property_id:)
+            puts @auth_account
+            Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account,
+                                                                       property_data: @property)
           end
         end
 
