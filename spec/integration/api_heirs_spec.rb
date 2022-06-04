@@ -354,7 +354,7 @@ describe 'Test Heir Handling' do
       result = JSON.parse(last_response.body)['data']['data']['attributes']
       _(result['heir_id']).must_equal existing_heir[:id]
       _(result['property_id']).must_equal new_property[:id]
-      _(('%.10f' % result['percentage']).to_f).must_equal percentage
+      _(format('%.10f', result['percentage']).to_f).must_equal percentage
     end
 
     it 'BAD: should not be able to associate property heir by executor' do

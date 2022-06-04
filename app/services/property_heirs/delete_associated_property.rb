@@ -17,9 +17,8 @@ module ETestament
           end
 
           # execute
-          unless PropertyHeir.where(property_id: property_data[:id]).delete
-            raise('Could not disassociate heir from property')
-          end
+          result = PropertyHeir.where(property_id: property_data[:id]).delete
+          raise('Could not disassociate heir from property') unless result
         end
       end
     end
