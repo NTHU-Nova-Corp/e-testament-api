@@ -4,9 +4,10 @@ module ETestament
   module Policies
     # Policy to determine if account can view a project
     class Heir
-      def initialize(requester)
-        @requester = requester[:requester]
-        @heir_owner_account = requester[:heir_owner_account]
+      def initialize(requester:, heir_owner_id:, heir_owner_executor_id:)
+        @requester = requester
+        @heir_owner_id = heir_owner_id
+        @heir_owner_executor_id = heir_owner_executor_id
       end
 
       def can_create?
@@ -21,7 +22,7 @@ module ETestament
         heir_owner? || heir_executor?
       end
 
-      def can_remove?
+      def can_delete?
         heir_owner?
       end
 
@@ -30,18 +31,18 @@ module ETestament
           can_create: can_create?,
           can_view: can_view?,
           can_update: can_update?,
-          can_remove: can_remove?
+          can_delete: can_delete?
         }
       end
 
       private
 
       def heir_owner?
-        @heir_owner_account.nil? ? false : @requester['id'] == @heir_owner_account[:id]
+        @heir_owner_id.nil? ? false : @requester['id'] == @heir_owner_id
       end
 
       def heir_executor?
-        @heir_owner_account.nil? ? false : @requester['id'] == @heir_owner_account[:executor_id]
+        @heir_owner_executor_id.nil? ? false : @requester['id'] == @heir_owner_executor_id
       end
     end
   end

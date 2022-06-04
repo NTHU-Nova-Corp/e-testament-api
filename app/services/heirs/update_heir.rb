@@ -7,11 +7,12 @@ module ETestament
       class UpdateHeir
         def self.call(requester:, heir_data:, updated_data:)
           # verify
-          policy = Policies::Heir.new(requester:, heir_owner_account: heir_data.account)
+          policy = Policies::Heir.new(requester:, heir_owner_id: heir_data.account.id,
+                                      heir_owner_executor_id: heir_data.account.executor_id)
           raise Exceptions::ForbiddenError, 'You are not allowed to view the property' unless policy.can_update?
 
           # execute
-          raise(updated_data.keys.to_s) unless heir_data.update(updated_data)
+          raise Exceptions::BadRequestError unless heir_data.update(updated_data)
         end
       end
     end

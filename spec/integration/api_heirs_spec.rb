@@ -168,12 +168,12 @@ describe 'Test Heir Handling' do
   describe 'POST api/v1/heirs/:heir_id' do
     it 'HAPPY: should be able to update a heir' do
       # given
-      updated_heir = DATA[:heirs][0]
-      existing_heir = ETestament::Heir.first(email: updated_heir['email'])
+      existing_heir = ETestament::Heir.first
 
-      updated_heir['email'] = 'updated_email@gmail.com'
-      updated_heir['first_name'] = 'updated_email@gmail.com'
-      updated_heir['last_name'] = 'updated_email@gmail.com'
+      updated_heir = {}
+      updated_heir[:email] = 'updated_email@gmail.com'
+      updated_heir[:first_name] = 'first name updated'
+      updated_heir[:last_name] = 'last name updated'
 
       # when
       post "api/v1/heirs/#{existing_heir[:id]}", updated_heir.to_json, @req_header
@@ -221,7 +221,8 @@ describe 'Test Heir Handling' do
   describe 'POST api/v1/heirs/:heir_id/delete' do
     it 'HAPPY: should be able delete a heir' do
       # given
-      exiting_heir = ETestament::Heir.first
+      exiting_heir = @owner.heirs.first
+      ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).delete
 
       # when
       post "api/v1/heirs/#{exiting_heir[:id]}/delete"
@@ -232,8 +233,8 @@ describe 'Test Heir Handling' do
 
     it 'BAD: should not be able delete a heir with other account' do
       # given
+      exiting_heir = @owner.heirs.first
       login_account(@executor_account_data)
-      exiting_heir = ETestament::Heir.first
 
       # when
       post "api/v1/heirs/#{exiting_heir[:id]}/delete"
@@ -284,58 +285,6 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
   end
-
-  # describe 'GET api/v1/heirs/:heir_id/properties/:property_id' do
-  #   # ?I Don't think we need this test, method already deleted
-  #   it 'HAPPY: should be able to get properties' do
-  #     # given
-  #     exiting_heir = @owner.heirs.first
-  #     associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
-
-  #     # when
-  #     get "api/v1/heirs/#{exiting_heir[:id]}/properties/#{associated_property[:id]}"
-
-  #     # then
-  #     _(last_response.status).must_equal 200
-  #     result = JSON.parse(last_response.body)['data']['data']['attributes']
-  #     _(result['account_id']).must_equal associated_property.account_id
-  #     _(result['id']).must_equal associated_property.id
-  #     _(result['property_type_id']).must_equal associated_property.property_type_id
-  #     _(result['name']).must_equal associated_property.name
-  #     _(result['description']).must_equal associated_property.description
-  #   end
-
-  #   # ?I Don't think we need this test, method already deleted
-  #   it 'HAPPY: should be able to get properties by executor' do
-  #     # given
-  #     exiting_heir = @owner.heirs.first
-  #     associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
-  #     # when
-  #     login_account(@executor_account_data)
-  #     get "api/v1/heirs/#{exiting_heir[:id]}/properties/#{associated_property[:id]}"
-
-  #     # then
-  #     _(last_response.status).must_equal 200
-  #     result = JSON.parse(last_response.body)['data']['data']['attributes']
-  #     _(result['account_id']).must_equal associated_property.account_id
-  #     _(result['id']).must_equal associated_property.id
-  #     _(result['property_type_id']).must_equal associated_property.property_type_id
-  #     _(result['name']).must_equal associated_property.name
-  #     _(result['description']).must_equal associated_property.description
-  #   end
-
-  #   # ?I Don't think we need this test, method already deleted
-  #   it 'BAD: should not be able to get properties by other' do
-  #     exiting_heir = @owner.heirs.first
-  #     associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
-  #     # when
-  #     login_account(@other_account_data)
-  #     get "api/v1/heirs/#{exiting_heir[:id]}/properties/#{associated_property[:id]}"
-
-  #     # then
-  #     _(last_response.status).must_equal 403
-  #   end
-  # end
 
   describe 'POST api/v1/heirs/:heir_id/properties/:property_id :: Associate property and heir' do
     it 'HAPPY: should be able to associate property heir by owner' do

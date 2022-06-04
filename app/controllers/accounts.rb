@@ -79,10 +79,10 @@ module ETestament
         response['Location'] = "#{@account_route}/#{new_account.username}"
         { message: 'Account saved', data: new_account }.to_json
       rescue Sequel::MassAssignmentRestriction
-        Api.logger.warn "MASS-ASSIGNMENT:: #{new_data.keys}"
+        Api.logger.warn "MASS-ASSIGNMENT:: #{new_data.keys}" if ETestament::Api.environment == :production
         routing.halt 400, { message: 'Illegal Request' }.to_json
       rescue StandardError => e
-        Api.logger.error 'Unknown error saving account'
+        Api.logger.error 'Unknown error saving account' if ETestament::Api.environment == :production
         routing.halt 500, { message: e.message }.to_json
       end
     end

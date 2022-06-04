@@ -4,12 +4,12 @@ module ETestament
   module Services
     module PropertyHeirs
       # Service object to get property list for a heir
-      class GetAssociatedPropertiesToHeir
-        def self.call(requester:, heir_data:)
+      class GetHeirsAssociatedToProperty
+        def self.call(requester:, property_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,
-                                              heir_owner_id: heir_data.account[:id],
-                                              property_owner_id: nil,
+                                              heir_owner_id: nil,
+                                              property_owner_id: property_data.account[:id],
                                               heir_owner_executor_id: nil,
                                               property_owner_executor_id: nil)
           unless policy.can_view_properties_associated_to_heir?
@@ -17,12 +17,12 @@ module ETestament
           end
 
           # return
-          property_heirs = PropertyHeir.where(heir_id: heir_data[:id]).all
-          properties = property_heirs.map(&:property)
+          property_heirs = PropertyHeir.where(heir_id: property_data[:id]).all
+          heirs = property_heirs.map(&:heir)
 
-          raise Exceptions::NotFoundError if properties.nil?
+          raise Exceptions::NotFoundError if heirs.nil?
 
-          properties.to_json
+          heirs.to_json
         end
       end
     end

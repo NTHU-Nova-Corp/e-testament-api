@@ -2,23 +2,27 @@
 
 module ETestament
   module Policies
-    # Policy to determine if account can view a project
+    # Policy to determine if requester can view a project
     class Document
-      def initialize(requester, account)
+      def initialize(requester:, property_owner_id:)
         @requester = requester
-        @account = account
+        @property_owner_id = property_owner_id
+      end
+
+      def can_create?
+        property_owner?
       end
 
       def can_view?
-        owner? || executor?
+        property_owner?
       end
 
       def can_edit?
-        owner?
+        property_owner?
       end
 
       def can_delete?
-        owner?
+        property_owner?
       end
 
       def summary
@@ -31,12 +35,8 @@ module ETestament
 
       private
 
-      def owner?
-        @requester['id'] == @account[:id]
-      end
-
-      def executor?
-        @requester['id'] == @account[:executor_id]
+      def property_owner?
+        @requester['id'] == @property_owner_id
       end
     end
   end

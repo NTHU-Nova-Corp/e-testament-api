@@ -5,11 +5,13 @@ module ETestament
     module Properties
       # Service object to create a new property for an account
       class DeleteDocument
-        def self.call(property_id:, document_id:)
-          property = Property.first(id: property_id)
-          raise Exceptions::NotFoundError if property.nil?
+        def self.call(requester:, property_data:, document_data:)
+          policy = Policies::Document.new(requester:, property_owner_id: property_data.account[:id])
+          unless policy.can_delete?
+            raise Exceptions::ForbiddenError, 'You are not allowed to delete the document selected.'
+          end
 
-          current_document = Document.first(id: document_id, property_id:)
+          current_document = Document.first(id: document_data[:id], property_id: property_data[:id])
           raise Exceptions::NotFoundError if current_document.nil?
           raise('Could not delete document associated with property') unless current_document.delete
         end

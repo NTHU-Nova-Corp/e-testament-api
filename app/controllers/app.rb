@@ -49,7 +49,7 @@ module ETestament
           @api_root = 'api/v1'
           routing.multi_route
         rescue Sequel::MassAssignmentRestriction => e
-          Api.logger.warn "MASS-ASSIGNMENT: #{e.message}"
+          Api.logger.warn "MASS-ASSIGNMENT: #{e.message}" if ETestament::Api.environment == :production
           routing.halt 400, { message: 'Illegal Attributes' }.to_json
         rescue Exceptions::NotFoundError, Exceptions::BadRequestError,
                Exceptions::ForbiddenError, JSON::ParserError => e
@@ -60,11 +60,11 @@ module ETestament
           when Sequel::UniqueConstraintViolation
             status_code = 400
             error_message = e.wrapped_exception
-            Api.logger.error e.message
+            Api.logger.error e.message if ETestament::Api.environment == :production
           else
             error_message = 'Error : Unknown server error'
             status_code = 500
-            Api.logger.error "UNKNOWN ERROR: #{e.message}"
+            Api.logger.error "UNKNOWN ERROR: #{e.message}" if ETestament::Api.environment == :production
           end
           routing.halt status_code, { code: status_code, message: error_message }.to_json
         end

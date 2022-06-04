@@ -11,6 +11,8 @@ module ETestament
     # Web controller for ETestament API, heirs sub-route
     route('heirs') do |routing|
       @heirs_route = "#{@api_root}/heirs"
+      unauthorized_message = { message: 'Unauthorized Request' }.to_json
+      routing.halt(403, unauthorized_message) unless @auth_account
 
       routing.on String do |heir_id|
         @heir = Heir.first(id: heir_id)
@@ -46,14 +48,14 @@ module ETestament
 
           # GET api/v1/heirs/:heir_id/properties
           routing.get do
-            Services::PropertyHeirs::GetAssociatedPropertiesToHeir.call(requester: @auth_account, heir_data: @heir)
+            Services::PropertyHeirs::GetPropertiesAssociatedToHeir.call(requester: @auth_account, heir_data: @heir)
           end
         end
 
         # POST api/v1/heirs/:heir_id/delete
-        # Nice to have :: Rollback PropertyHeir when deleting Heir wrongly
+        # * Nice to have :: Rollback PropertyHeir when deleting Heir wrongly
         routing.post 'delete' do
-          Services::PropertyHeirs::DeleteHeirsFromProperty.call(requester: @auth_account, heir_data: @heir)
+          Services::Heirs::DeleteHeir.call(requester: @auth_account, heir_data: @heir)
           response.status = 200
           response['Location'] = "#{@heirs_route}/#{heir_id}"
           { message: 'Heir has been deleted' }.to_json
@@ -79,7 +81,8 @@ module ETestament
       # POST api/v1/heirs
       routing.post do
         new_data = JSON.parse(routing.body.read)
-        new_heir = Services::Heirs::CreateHeir.call(id: @auth_account['id'], new_data:)
+        new_heir = Services::Heirs::CreateHeir.call(requester: @auth_account,
+                                                    account_id: @auth_account['id'], new_data:)
 
         response.status = 201
         response['Location'] = "#{@heirs_route}/#{new_heir.id}"
@@ -88,7 +91,7 @@ module ETestament
 
       # GET api/v1/heirs
       routing.get do
-        Services::Heirs::GetHeirs.call(account_id: @auth_account['id'])
+        Services::Heirs::GetHeirs.call(requester: @auth_account, account_id: @auth_account['id'])
       rescue StandardError
         raise Exceptions::NotFoundError('Could not find heirs')
       end

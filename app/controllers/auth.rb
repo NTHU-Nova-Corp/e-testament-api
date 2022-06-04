@@ -19,7 +19,7 @@ module ETestament
       rescue Exceptions::EmailProviderError
         routing.halt 500, { message: 'Error sending email' }.to_json
       rescue StandardError => e
-        Api.logger.error "Could not verify registration: #{e.inspect}"
+        Api.logger.error "Could not verify registration: #{e.inspect}" if ETestament::Api.environment == :production
         routing.halt 500
       end
 
@@ -30,7 +30,7 @@ module ETestament
           auth_account = Services::Accounts::Authenticate.call(credentials)
           auth_account.to_json
         rescue Exceptions::UnauthorizedError => e
-          Api.logger.error [e.class, e.message].join ': '
+          Api.logger.error [e.class, e.message].join ': ' if ETestament::Api.environment == :production
           routing.halt 403, { message: 'Invalid credentials' }.to_json
         end
       end
