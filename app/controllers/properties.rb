@@ -106,7 +106,6 @@ module ETestament
           # Get a list of heirs associated with a property
           # TODO: unit-test
           routing.get do
-            puts @auth_account
             Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account,
                                                                        property_data: @property)
           end

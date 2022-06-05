@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './app'
+require 'google/apis/gmail_v1'
 
 # General ETestament module
 module ETestament
@@ -29,6 +30,19 @@ module ETestament
           credentials = JsonRequestBody.parse_symbolize(request.body.read)
           auth_account = Services::Accounts::Authenticate.call(credentials)
           auth_account.to_json
+        rescue Exceptions::UnauthorizedError => e
+          Api.logger.error [e.class, e.message].join ': ' if ETestament::Api.environment == :production
+          routing.halt 403, { message: 'Invalid credentials' }.to_json
+        end
+      end
+
+      routing.is 'authenticate-google' do
+        # POST /api/v1/auth/authenticate
+        routing.post do
+          credentials = JsonRequestBody.parse_symbolize(request.body.read)
+          auth_account = Services::Accounts::AuthenticateGoogle.call(credentials)
+          auth_account.to_json
+
         rescue Exceptions::UnauthorizedError => e
           Api.logger.error [e.class, e.message].join ': ' if ETestament::Api.environment == :production
           routing.halt 403, { message: 'Invalid credentials' }.to_json
