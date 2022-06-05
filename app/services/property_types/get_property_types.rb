@@ -6,8 +6,7 @@ module ETestament
       # Service object to create a new property for an account
       class GetPropertyTypes
         def self.call
-          output = { data: ETestament::PropertyType.all }
-          JSON.pretty_generate(output)
+          ETestament::PropertyType.all 
         end
       end
     end

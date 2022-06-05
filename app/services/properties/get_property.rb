@@ -14,7 +14,7 @@ module ETestament
                   'You are not allowed to view property requested.'
           end
 
-          property_data.to_json
+          property_data
         end
       end
     end

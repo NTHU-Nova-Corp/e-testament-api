@@ -31,23 +31,31 @@ module ETestament
     end
 
     # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          data: {
-            type: 'document',
-            attributes: {
-              id:,
-              file_name:,
-              relative_path:,
-              description:,
-              content:,
-              property_id:
-            }
-          }
-        }, options
-      )
+    def to_h
+      {
+        type: 'document',
+        attributes: {
+          id:,
+          file_name:,
+          relative_path:,
+          description:,
+          content:,
+          property_id:
+        }
+      }
     end
     # rubocop:enable Metrics/MethodLength
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          property:
+        }
+      )
+    end
+
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

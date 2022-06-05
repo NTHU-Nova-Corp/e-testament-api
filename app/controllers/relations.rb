@@ -27,7 +27,8 @@ module ETestament
       # GET api/v1/relations
       # Get all relations
       routing.get do
-        Services::Relations::GetRelations.call
+        output = Services::Relations::GetRelations.call
+        { data: output }.to_json
       end
     end
   end

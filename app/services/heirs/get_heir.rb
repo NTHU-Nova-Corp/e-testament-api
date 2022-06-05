@@ -12,7 +12,7 @@ module ETestament
           raise Exceptions::ForbiddenError, 'You are not allowed to view the heir' unless policy.can_view?
 
           # return
-          heir_data.to_json
+          heir_data
         end
       end
     end

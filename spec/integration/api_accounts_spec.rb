@@ -68,7 +68,7 @@ describe 'Test Account Handling' do
       _(last_response.status).must_equal 201
       _(last_response.header['Location'].size).must_be :>, 0
 
-      created = JSON.parse(last_response.body)['data']['data']['attributes']
+      created = JSON.parse(last_response.body)['data']['attributes']
       account = ETestament::Account.first(id: created['id'])
 
       _(created['username']).must_equal @account_data['username']
@@ -183,10 +183,10 @@ describe 'Test Account Handling' do
         get 'api/v1/accounts/testors/pending-requests'
         _(last_response.status).must_equal 200
 
-        attributes = JSON.parse(last_response.body)
-        _(attributes.length).must_equal 1
+        response = JSON.parse(last_response.body)
+        _(response['data'].length).must_equal 1
 
-        testor = attributes[0]['data']['attributes']
+        testor = response['data'][0]['attributes']
         _(testor['owner_account_id']).must_equal @testor[:id]
       end
     end

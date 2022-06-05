@@ -25,7 +25,8 @@ module ETestament
 
       # GET api/v1/property_types
       routing.get do
-        Services::PropertyType::GetPropertyTypes.call
+        output = Services::PropertyType::GetPropertyTypes.call
+        { data: output }.to_json
       end
     end
   end

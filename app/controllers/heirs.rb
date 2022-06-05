@@ -48,7 +48,9 @@ module ETestament
 
           # GET api/v1/heirs/:heir_id/properties
           routing.get do
-            Services::PropertyHeirs::GetPropertiesAssociatedToHeir.call(requester: @auth_account, heir_data: @heir)
+            output = Services::PropertyHeirs::GetPropertiesAssociatedToHeir.call(requester: @auth_account,
+                                                                                 heir_data: @heir)
+            { data: output }.to_json
           end
         end
 
@@ -74,7 +76,8 @@ module ETestament
 
         # GET api/v1/heirs/:heir_id
         routing.get do
-          Services::Heirs::GetHeir.call(requester: @auth_account, heir_data: @heir)
+          output = Services::Heirs::GetHeir.call(requester: @auth_account, heir_data: @heir)
+          { data: output }.to_json
         end
       end
 
@@ -91,7 +94,8 @@ module ETestament
 
       # GET api/v1/heirs
       routing.get do
-        Services::Heirs::GetHeirs.call(requester: @auth_account, account_id: @auth_account['id'])
+        output = Services::Heirs::GetHeirs.call(requester: @auth_account, account_id: @auth_account['id'])
+        { data: output }.to_json
       rescue StandardError
         raise Exceptions::NotFoundError('Could not find heirs')
       end

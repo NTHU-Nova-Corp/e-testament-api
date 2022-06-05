@@ -54,7 +54,7 @@ describe 'Test Document Handling' do
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
-    _(result.size).must_equal 3
+    _(result['data'].size).must_equal 3
   end
 
   it 'HAPPY: should be able to get details of a single document related with a property' do
@@ -109,7 +109,7 @@ describe 'Test Document Handling' do
     post "/api/v1/properties/#{property.id}/documents", new_document.to_json, @req_header
     _(last_response.status).must_equal 201
 
-    created = JSON.parse(last_response.body)['data']['data']['attributes']
+    created = JSON.parse(last_response.body)['data']['attributes']
     document = ETestament::Document.where(property_id: ETestament::Property.first.id).first
 
     # _(created['id']).is_a(Integer)

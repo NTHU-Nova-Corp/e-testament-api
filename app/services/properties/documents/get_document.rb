@@ -9,7 +9,7 @@ module ETestament
           policy = Policies::Document.new(requester:, property_owner_id: property_data.account[:id])
           raise Exceptions::ForbiddenError, 'You are not allowed view the document requested.' unless policy.can_view?
 
-          document_data.to_json
+          document_data
         end
       end
     end

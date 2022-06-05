@@ -15,22 +15,27 @@ module ETestament
     plugin :whitelist_security
     set_allowed_columns :name, :description
 
-    # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          data: {
-            type: 'relation',
-            attributes: {
-              id:,
-              name:,
-              description:
-            }
-          }
-        }, options
+    def to_h
+      {
+        type: 'relation',
+        attributes: {
+          id:,
+          name:,
+          description:
+        }
+      }
+    end
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          properties:
+        }
       )
     end
 
-    # rubocop:enable Metrics/MethodLength
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

@@ -23,7 +23,7 @@ module ETestament
 
           raise Exceptions::NotFoundError if heirs.nil?
 
-          heirs.to_json
+          heirs
         end
         # rubocop:enable Metrics/MethodLength
       end

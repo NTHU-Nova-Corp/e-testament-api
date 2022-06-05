@@ -14,23 +14,29 @@ module ETestament
     plugin :whitelist_security
     set_allowed_columns :percentage, :property_id, :heir_id
 
-    # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          data: {
-            type: 'property_heir',
-            attributes: {
-              id:,
-              property_id:,
-              heir_id:,
-              percentage:
-            }
-          }
-        }, options
+    def to_h
+      {
+        type: 'property_heir',
+        attributes: {
+          id:,
+          property_id:,
+          heir_id:,
+          percentage:
+        }
+      }
+    end
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          property:,
+          heir:
+        }
       )
     end
 
-    # rubocop:enable Metrics/MethodLength
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

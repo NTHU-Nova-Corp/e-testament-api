@@ -16,8 +16,7 @@ module ETestament
                   'You are not allowed to view heirs requested.'
           end
 
-          output = { data: account.heirs }
-          JSON.pretty_generate(output)
+          account.heirs
         end
       end
     end

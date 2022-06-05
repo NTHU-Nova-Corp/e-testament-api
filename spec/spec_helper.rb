@@ -30,7 +30,7 @@ def seed_properties
   loop do
     property = properties.next
     property['property_type_id'] = property_type.id
-    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+    account = JSON.parse(accounts.next.to_json)['attributes']
 
     ETestament::Services::Properties::CreateProperty.call(requester: account, account_id: account['id'],
                                                           new_data: property)
@@ -44,13 +44,12 @@ def seed_documents
   loop do
     document = documents.next
     property_data = properties.next
-    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+    account = JSON.parse(accounts.next.to_json)['attributes']
 
     ETestament::Services::Properties::CreateDocument.call(requester: account, property_data:, new_data: document)
   end
 end
 
-# rubocop:disable Metrics/AbcSize
 def seed_heirs
   heirs = DATA[:heirs].each
   relation = ETestament::Relation.first
@@ -59,14 +58,13 @@ def seed_heirs
   loop do
     heir = heirs.next
     heir['relation_id'] = relation.id
-    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+    account = JSON.parse(accounts.next.to_json)['attributes']
 
     ETestament::Services::Heirs::CreateHeir.call(requester: account, account_id: account['id'], new_data: heir)
   end
 end
-# rubocop:enable Metrics/AbcSize
 
-# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:disable Metrics/MethodLength
 def seed_property_heirs
   property_heirs = DATA[:property_heirs].each
   heirs = ETestament::Heir.all.cycle
@@ -76,12 +74,12 @@ def seed_property_heirs
 
     heir_data = heirs.next
     property_data = properties.next
-    account = JSON.parse(property_data.account.to_json)['data']['attributes']
+    account = JSON.parse(property_data.account.to_json)['attributes']
     ETestament::Services::PropertyHeirs::AssociatePropertyHeir.call(requester: account, heir_data:, property_data:,
                                                                     new_data: property_heir)
   end
 end
-# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/MethodLength
 
 DATA = {
   accounts: YAML.load(File.read('app/db/seeds/account_seeds.yml')),

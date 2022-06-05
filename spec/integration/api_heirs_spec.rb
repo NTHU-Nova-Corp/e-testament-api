@@ -300,7 +300,7 @@ describe 'Test Heir Handling' do
 
       #  then
       _(last_response.status).must_equal 201
-      result = JSON.parse(last_response.body)['data']['data']['attributes']
+      result = JSON.parse(last_response.body)['data']['attributes']
       _(result['heir_id']).must_equal existing_heir[:id]
       _(result['property_id']).must_equal new_property[:id]
       _(format('%.10f', result['percentage']).to_f).must_equal percentage

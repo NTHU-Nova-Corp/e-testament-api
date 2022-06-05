@@ -11,7 +11,7 @@ module ETestament
     one_to_many :heirs
 
     many_to_one :executor, class: :'ETestament::Account'
-    one_to_many :testator, key: :executor_id, class: :'ETestament::Account'
+    one_to_many :testators, key: :executor_id, class: :'ETestament::Account'
 
     one_to_many :testators_pending, class: :'ETestament::PendingExecutorAccount', key: :owner_account_id
     one_to_many :executors_pending, class: :'ETestament::PendingExecutorAccount', key: :executor_account_id
@@ -32,24 +32,31 @@ module ETestament
       digest.correct?(try_password)
     end
 
-    # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          data: {
-            type: 'account',
-            attributes: {
-              id:,
-              username:,
-              first_name:,
-              last_name:,
-              email:
-            }
-          }
-        }, options
+    def to_h
+      {
+        type: 'account',
+        attributes: {
+          id:,
+          username:,
+          first_name:,
+          last_name:,
+          email:
+        }
+      }
+    end
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          properties:,
+          heirs:,
+          executor:
+        }
       )
     end
 
-    # rubocop:enable Metrics/MethodLength
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

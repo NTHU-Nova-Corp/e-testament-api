@@ -33,7 +33,7 @@ def create_properties
   loop do
     property = properties.next
     property['property_type_id'] = property_type.id
-    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+    account = JSON.parse(accounts.next.to_json)['attributes']
 
     ETestament::Services::Properties::CreateProperty.call(requester: account, account_id: account['id'],
                                                           new_data: property)
@@ -46,7 +46,7 @@ def create_documents
   loop do
     document = documents.next
     property_data = properties.next
-    account = JSON.parse(property_data.account.to_json)['data']['attributes']
+    account = JSON.parse(property_data.account.to_json)['attributes']
 
     ETestament::Services::Properties::CreateDocument.call(requester: account, property_data:, new_data: document)
   end
@@ -59,7 +59,7 @@ def create_heirs
   loop do
     heir = heirs.next
     heir['relation_id'] = relation.id
-    account = JSON.parse(accounts.next.to_json)['data']['attributes']
+    account = JSON.parse(accounts.next.to_json)['attributes']
 
     ETestament::Services::Heirs::CreateHeir.call(requester: account, account_id: account['id'],
                                                  new_data: heir)
@@ -75,7 +75,7 @@ def create_property_heirs
     property_heir = property_heirs.next
     heir_data = heirs.next
     property_data = properties.next
-    account = JSON.parse(property_data.account.to_json)['data']['attributes']
+    account = JSON.parse(property_data.account.to_json)['attributes']
     ETestament::Services::PropertyHeirs::AssociatePropertyHeir.call(requester: account, heir_data:, property_data:,
                                                                     new_data: property_heir)
   end

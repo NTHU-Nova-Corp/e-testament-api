@@ -11,7 +11,7 @@ module ETestament
 
           raise Exceptions::NotFoundError, 'Not found associated executor' if executor_account.nil?
 
-          executor_account.to_json
+          executor_account
         end
       end
     end

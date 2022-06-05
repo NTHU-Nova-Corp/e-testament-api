@@ -16,8 +16,7 @@ module ETestament
                   'You are not allowed to view property requested.'
           end
 
-          output = { data: account.properties }
-          JSON.pretty_generate(output)
+          account.properties
         end
       end
     end

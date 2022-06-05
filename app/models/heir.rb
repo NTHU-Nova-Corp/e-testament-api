@@ -19,23 +19,33 @@ module ETestament
     set_allowed_columns :first_name, :last_name, :email, :password, :relation_id
 
     # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          data: {
-            type: 'heir',
-            attributes: {
-              id:,
-              account_id:,
-              relation_id:,
-              first_name:,
-              last_name:,
-              email:
-            }
-          }
-        }, options
-      )
+    def to_h
+      {
+        type: 'heir',
+        attributes: {
+          id:,
+          account_id:,
+          relation_id:,
+          first_name:,
+          last_name:,
+          email:
+        }
+      }
     end
     # rubocop:enable Metrics/MethodLength
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          account:,
+          relation:,
+          property_heirs:
+        }
+      )
+    end
+
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

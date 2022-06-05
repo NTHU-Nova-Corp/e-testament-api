@@ -12,7 +12,7 @@ module ETestament
           documents = property_data.documents
           raise Exceptions::NotFoundError, 'Documents not found' if documents.nil?
 
-          documents.to_json
+          documents
         end
       end
     end

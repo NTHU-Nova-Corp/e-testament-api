@@ -14,7 +14,8 @@ module ETestament
         # GET api/v1/accounts/executors
         # Get request list for being executors list
         routing.get do
-          Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
+          output = Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
+          { data: output }.to_json
         end
 
         # POST api/v1/accounts/executors
@@ -34,7 +35,7 @@ module ETestament
           # TODO: Add unit-test
           routing.get do
             output = Services::Accounts::GetExecutorPending.call(id: @auth_account['id'])
-            JSON.pretty_generate(output)
+            { data: output }.to_json
           end
         end
 
@@ -64,7 +65,8 @@ module ETestament
       routing.on String do |username|
         # GET api/v1/accounts/[username]
         routing.get do
-          Services::Accounts::GetAccount.call(requester: @auth_account, username:)
+          output = Services::Accounts::GetAccount.call(requester: @auth_account, username:)
+          { data: output }.to_json
         end
       end
 

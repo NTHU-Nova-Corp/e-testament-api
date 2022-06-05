@@ -6,8 +6,7 @@ module ETestament
       # Service object to create a new property for an account
       class GetRelations
         def self.call
-          output = { data: Relation.all }
-          JSON.pretty_generate(output)
+          Relation.all
         end
       end
     end

@@ -107,7 +107,7 @@ describe 'Test Property Handling' do
     post '/api/v1/properties', new_property.to_json, @req_header
     _(last_response.status).must_equal 201
 
-    created = JSON.parse(last_response.body)['data']['data']['attributes']
+    created = JSON.parse(last_response.body)['data']['attributes']
     property = ETestament::Property.first(id: created['id'])
 
     _(created['id']).must_equal property.id

@@ -15,7 +15,7 @@ module ETestament
           raise Exceptions::ForbiddenError, 'You are not allowed to access that project' unless policy.can_view?
 
           # return
-          account.to_json
+          account
         end
       end
     end

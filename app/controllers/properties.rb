@@ -38,8 +38,9 @@ module ETestament
             # GET api/v1/properties/:property_id/documents/:document_id
             # Gets an specific document related with a property
             routing.get do
-              Services::Properties::GetDocument.call(requester: @auth_account, property_data: @property,
-                                                     document_data: @document)
+              output = Services::Properties::GetDocument.call(requester: @auth_account, property_data: @property,
+                                                              document_data: @document)
+              { data: output }.to_json
             end
 
             # PUT api/v1/properties/:property_id/documents/:document_id
@@ -58,7 +59,8 @@ module ETestament
           # GET api/v1/properties/:property_id/documents
           # Gets the list of documents related with a property
           routing.get do
-            Services::Properties::GetDocuments.call(requester: @auth_account, property_data: @property)
+            output = Services::Properties::GetDocuments.call(requester: @auth_account, property_data: @property)
+            { data: output }.to_json
           end
 
           # POST api/v1/properties/:property_id/documents
@@ -106,8 +108,9 @@ module ETestament
           # Get a list of heirs associated with a property
           # TODO: unit-test
           routing.get do
-            Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account,
-                                                                       property_data: @property)
+            output = Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account,
+                                                                                property_data: @property)
+            { data: output }.to_json
           end
         end
 
@@ -123,7 +126,8 @@ module ETestament
         # GET api/v1/properties/:property_id
         # Get a specific property record
         routing.get do
-          Services::Properties::GetProperty.call(requester: @auth_account, property_data: @property)
+          output = Services::Properties::GetProperty.call(requester: @auth_account, property_data: @property)
+          { data: output }.to_json
         end
 
         # POST api/v1/properties/:property_id
@@ -141,7 +145,8 @@ module ETestament
       # GET api/v1/properties/
       # Gets the list of properties
       routing.get do
-        Services::Properties::GetProperties.call(requester: @auth_account, account_id: @auth_account['id'])
+        output = Services::Properties::GetProperties.call(requester: @auth_account, account_id: @auth_account['id'])
+        { data: output }.to_json
       rescue StandardError
         raise Exceptions::ForbiddenError, 'Could not find any properties'
       end
