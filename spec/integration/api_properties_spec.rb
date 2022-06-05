@@ -178,4 +178,64 @@ describe 'Test Property Handling' do
     post "/api/v1/properties/#{property.id}", update_request.to_json, @req_header
     _(last_response.status).must_equal 400
   end
+
+  describe 'GET api/v1/properties/:property_id/heirs' do
+    it 'HAPPY: should be able to get heirs by property id' do
+      # given
+      exiting_property = @owner.properties.first
+
+      # when
+      get "api/v1/properties/#{exiting_property[:id]}/heirs"
+
+      # then
+      _(last_response.status).must_equal 200
+      _(JSON.parse(last_response.body)['data'].length).must_equal 1
+    end
+
+    it 'BAD: should not be able to get heirs by property id from other account' do
+      # given
+      exiting_property = @owner.properties.first
+      login_account(@other_account_data)
+
+      # when
+      get "api/v1/properties/#{exiting_property[:id]}/heirs"
+
+      # then
+      _(last_response.status).must_equal 403
+    end
+  end
+
+  describe 'POST api/v1/properties/:property_id/heirs/:heir_id' do
+    it 'HAPPY: should be able to associate heirs with properties' do
+      # given
+      exiting_property = @owner.properties.first
+      existing_heir = @owner.heirs.first
+      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).delete
+
+      # when
+      post "api/v1/properties/#{exiting_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 5 }.to_json,
+           @req_header
+
+      # then
+      test = ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      _(last_response.status).must_equal 200
+    end
+
+    it 'BAD: should not be able to associate heirs with properties from other account' do
+      # given
+      exiting_property = @owner.properties.first
+      existing_heir = @owner.heirs.first
+      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).delete
+
+      login_account(@other_account_data)
+
+      # when
+      post "api/v1/properties/#{exiting_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 40 }.to_json,
+           @req_header
+
+      # then
+      test = ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      _(last_response.status).must_equal 403
+    end
+  end
 end

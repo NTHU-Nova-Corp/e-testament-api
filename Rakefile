@@ -68,7 +68,7 @@ namespace :db do
 
   desc 'Delete database'
   task :delete => [:load_models] do
-    require_app(%w[exception lib models policies services])
+    require_app(%w[exceptions lib models services policies controllers])
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
 
@@ -94,7 +94,7 @@ namespace :db do
 
   desc 'Seeds the development database'
   task :seed => [:load_models] do
-    require_app(%w[exception lib models policies services])
+    require_app(%w[exceptions lib models services policies controllers])
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
     Sequel.extension :seed

@@ -84,33 +84,34 @@ module ETestament
 
             # POST api/v1/properties/:property_id/heirs/:heir_id
             # Associate a heir to a property
-            # TODO: unit-test
             routing.post do
               new_data = JSON.parse(routing.body.read)
-              new_heir = Services::PropertyHeirs::AssociatePropertyHeir.call(requester: @auth_account, heir_data: @heir,
-                                                                             property_data: @property, new_data:)
+              Services::PropertyHeirs::AssociatePropertyHeir.call(requester: @auth_account, heir_data: @heir,
+                                                                  property_data: @property, new_data:)
 
-              response.status = 201
-              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
-              { message: 'Heir saved', data: new_heir }.to_json
+              response.status = 200
+              { message: 'Heir associated to property' }.to_json
             end
 
             # POST api/v1/properties/:property_id/heirs/:heir_id/delete
             # Disassociate a heir to a property
-            # TODO: unit-test
-            # TODO: Delete pending to be implemented
             routing.post do
+              Services::PropertyHeirs::DeleteAssociatedProperty.call(requester: @auth_account,
+                                                                     heir_data: @heir,
+                                                                     property_data: @property)
+
               response.status = 200
+              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
+              { message: 'Heir deassociated from property' }.to_json
             end
           end
 
           # GET api/v1/properties/:property_id/heirs
           # Get a list of heirs associated with a property
-          # TODO: unit-test
           routing.get do
             output = Services::PropertyHeirs::GetHeirsAssociatedToProperty.call(requester: @auth_account,
                                                                                 property_data: @property)
-            { data: output }.to_json
+            { data: output.map(&:full_details) }.to_json
           end
         end
 

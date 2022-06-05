@@ -5,7 +5,6 @@ module ETestament
     module PropertyHeirs
       # Service object to get property list for a heir
       class GetHeirsAssociatedToProperty
-        # rubocop:disable Metrics/MethodLength
         def self.call(requester:, property_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,
@@ -18,14 +17,8 @@ module ETestament
           end
 
           # return
-          property_heirs = PropertyHeir.where(heir_id: property_data[:id]).all
-          heirs = property_heirs.map(&:heir)
-
-          raise Exceptions::NotFoundError if heirs.nil?
-
-          heirs
+          PropertyHeir.where(property_id: property_data[:id]).all
         end
-        # rubocop:enable Metrics/MethodLength
       end
     end
   end

@@ -56,7 +56,6 @@ module ETestament
           status_code = e.instance_variable_get(:@status_code)
           routing.halt status_code, { code: status_code, message: e.message.to_s }.to_json
         rescue StandardError => e
-          puts 'test'
           case e
           when Sequel::UniqueConstraintViolation
             status_code = 400

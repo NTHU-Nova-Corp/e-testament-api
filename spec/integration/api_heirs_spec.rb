@@ -254,22 +254,8 @@ describe 'Test Heir Handling' do
 
       # then
       _(last_response.status).must_equal 200
-      _(JSON.parse(last_response.body).length).must_equal 1
+      _(JSON.parse(last_response.body)['data'].length).must_equal 1
     end
-
-    # TODO: This should be with a different rout, not the one that pulls the heirs of the main account
-    # it 'HAPPY: should be able to get properties by heir id' do
-    #   # given
-    #   exiting_heir = @owner.heirs.first
-    #   login_account(@executor_account_data)
-
-    #   # when
-    #   get "api/v1/heirs/#{exiting_heir[:id]}/properties"
-
-    #   # then
-    #   _(last_response.status).must_equal 200
-    #   _(JSON.parse(last_response.body).length).must_equal 1
-    # end
 
     it 'BAD: should not be able to get properties by heir id from other account' do
       # given
@@ -340,7 +326,7 @@ describe 'Test Heir Handling' do
   end
 
   describe 'POST api/v1/heirs/:heir_id/properties/:property_id/delete :: Disassociate property from heir' do
-    it 'HAPPY: should be able to get properties by owner' do
+    it 'HAPPY: should be able to delete properties by owner' do
       # given
       exiting_heir = @owner.heirs.first
       associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
@@ -354,7 +340,7 @@ describe 'Test Heir Handling' do
       _(ETestament::Property.where(id: associated_property[:id]).first).wont_be_nil
     end
 
-    it 'BAD: should not be able to get properties by executor' do
+    it 'BAD: should not be able to delete properties by executor' do
       # given
       exiting_heir = @owner.heirs.first
       associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
@@ -367,7 +353,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
 
-    it 'BAD: should not be able to get properties by other' do
+    it 'BAD: should not be able to delete properties by other' do
       # given
       exiting_heir = @owner.heirs.first
       associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
