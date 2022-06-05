@@ -16,8 +16,7 @@ module ETestament
                   'You are not allowed to create properties for the account requested'
           end
 
-          new_property = account.add_property(new_data)
-          raise Exceptions::BadRequestError, 'Could not save property' unless new_property.save
+          raise Exceptions::BadRequestError, 'Could not save property' unless account.add_property(new_data).save
 
           new_property
         end

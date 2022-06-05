@@ -161,8 +161,6 @@ module ETestament
         response.status = 201
         response['Location'] = "#{@properties_route}/#{new_property.id}"
         { message: 'Property saved', data: new_property }.to_json
-      rescue StandardError => e
-        routing.halt 400, { message: e.message }.to_json
       end
     end
   end

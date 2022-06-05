@@ -23,7 +23,7 @@ module ETestament
 
           raise Exceptions::NotFoundError if properties.nil?
 
-          properties.to_json
+          properties
         end
         # rubocop:enable Metrics/MethodLength
       end

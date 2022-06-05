@@ -54,12 +54,13 @@ module ETestament
         rescue Exceptions::NotFoundError, Exceptions::BadRequestError,
                Exceptions::ForbiddenError, JSON::ParserError => e
           status_code = e.instance_variable_get(:@status_code)
-          routing.halt status_code, { code: status_code, message: "Error: #{e.message}" }.to_json
+          routing.halt status_code, { code: status_code, message: e.message.to_s }.to_json
         rescue StandardError => e
+          puts 'test'
           case e
           when Sequel::UniqueConstraintViolation
             status_code = 400
-            error_message = e.wrapped_exception
+            error_message = 'Please enter a valid information'
             Api.logger.error e.message if ETestament::Api.environment == :production
           else
             error_message = 'Error : Unknown server error'

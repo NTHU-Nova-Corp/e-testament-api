@@ -6,7 +6,7 @@ module ETestament
       # Service object to create a new property for an account
       class GetPropertyTypes
         def self.call
-          ETestament::PropertyType.all 
+          ETestament::PropertyType.all
         end
       end
     end
