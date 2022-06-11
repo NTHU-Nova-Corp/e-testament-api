@@ -115,7 +115,6 @@ describe 'Test Document Handling' do
     # _(created['id']).is_a(Integer)
     _(created['id']).must_equal document.id
     _(created['file_name']).must_equal new_document['file_name']
-    _(created['relative_path']).must_equal new_document['relative_path']
   end
 
   it 'HAPPY: should be able to delete existing document' do

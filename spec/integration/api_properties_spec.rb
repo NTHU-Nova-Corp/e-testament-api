@@ -141,8 +141,8 @@ describe 'Test Property Handling' do
     property = @owner.properties.first
 
     update_request = {}
-    update_request[:name] = 'Test update_name'
-    update_request[:description] = 'Test description'
+    update_request[:name] = 'Test update_name 2'
+    update_request[:description] = 'Test description 2'
 
     post "/api/v1/properties/#{property.id}", update_request.to_json, @req_header
     _(last_response.status).must_equal 200

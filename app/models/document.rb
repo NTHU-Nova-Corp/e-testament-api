@@ -11,7 +11,7 @@ module ETestament
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
-    set_allowed_columns :file_name, :relative_path, :description, :content
+    set_allowed_columns :file_name, :type, :description, :content
 
     # Secure getters and setters
     def description
@@ -30,24 +30,24 @@ module ETestament
       self.content_secure = SecureDB.encrypt(plaintext)
     end
 
-    # rubocop:disable Metrics/MethodLength
     def to_h
       {
         type: 'document',
         attributes: {
           id:,
           file_name:,
-          relative_path:,
+          type:,
           description:,
-          content:,
           property_id:
         }
       }
     end
-    # rubocop:enable Metrics/MethodLength
 
     def full_details
       to_h.merge(
+        data: {
+          content:
+        },
         relationships: {
           property:
         }

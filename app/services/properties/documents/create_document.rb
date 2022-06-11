@@ -5,10 +5,16 @@ module ETestament
     module Properties
       # Service object to create a new property for an account
       class CreateDocument
+        # rubocop: disable Metrics/MethodLength
         def self.call(requester:, property_data:, new_data:)
           policy = Policies::Document.new(requester:, property_owner_id: property_data.account[:id])
           unless policy.can_create?
             raise Exceptions::ForbiddenError, 'You are not allowed to create documents for the property selected.'
+          end
+
+          unless property_data.documents.count { |document| document.file_name == new_data['file_name'] }.zero?
+            raise Exceptions::BadRequestError,
+                  'There is already a document with the same name'
           end
 
           new_document = property_data.add_document(new_data)
@@ -16,6 +22,7 @@ module ETestament
 
           new_document
         end
+        # rubocop: enable Metrics/MethodLength
       end
     end
   end

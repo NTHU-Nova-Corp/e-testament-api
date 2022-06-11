@@ -9,7 +9,6 @@ Sequel.migration do
       foreign_key :property_id, table: :properties, type: :uuid, null: false
 
       String :file_name, null: false
-      String :relative_path, unique: true, null: false, default: ''
       String :description_secure
       String :content_secure, null: false, default: ''
 
