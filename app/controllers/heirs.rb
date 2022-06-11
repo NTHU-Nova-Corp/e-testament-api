@@ -51,7 +51,7 @@ module ETestament
           routing.get do
             output = Services::PropertyHeirs::GetPropertiesAssociatedToHeir.call(requester: @auth_account,
                                                                                  heir_data: @heir)
-            { data: output }.to_json
+            { data: output.map(&:full_details) }.to_json
           end
         end
 

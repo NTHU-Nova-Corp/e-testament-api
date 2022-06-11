@@ -19,6 +19,7 @@ module ETestament
     plugin :whitelist_security
     set_allowed_columns :name, :description, :property_type_id
 
+    # rubocop:disable Metrics/MethodLength
     def to_h
       {
         type: 'project',
@@ -27,15 +28,18 @@ module ETestament
           name:,
           description:,
           account_id:,
-          property_type_id:
+          property_type_id:,
+          type: property_type.name
         }
       }
     end
+    # rubocop:enable Metrics/MethodLength
 
     def full_details
       to_h.merge(
         relationships: {
           account:,
+          property_type:,
           documents:,
           property_heirs:
         }
