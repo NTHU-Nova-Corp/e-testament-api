@@ -279,7 +279,7 @@ describe 'Test Heir Handling' do
       existing_heir = @owner.heirs.first
       new_property = @owner.add_property(property_type_id: property_type[:id], name: 'new property',
                                          description: 'property description')
-      percentage = 99.9
+      percentage = 99
 
       # when
       post "api/v1/heirs/#{existing_heir[:id]}/properties/#{new_property[:id]}", { percentage: }.to_json, @req_header

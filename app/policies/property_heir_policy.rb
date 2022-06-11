@@ -29,6 +29,10 @@ module ETestament
         heir_owner? && property_owner?
       end
 
+      def can_update_association?
+        heir_owner? && property_owner?
+      end
+
       def summary
         {
           can_create_association: can_create_association?,

@@ -26,8 +26,9 @@ module ETestament
             @heirs_property_route = "#{@heirs_route}/#{heir_id}/properties/#{property_id}"
             # POST api/v1/heirs/:heir_id/properties/:property_id/delete
             routing.post 'delete' do
-              Services::PropertyHeirs::DeleteAssociatedProperty.call(requester: @auth_account, heir_data: @heir,
-                                                                     property_data: @property)
+              Services::PropertyHeirs::DeleteAssociationBetweenPropertyAndHeir.call(requester: @auth_account,
+                                                                                    heir_data: @heir,
+                                                                                    property_data: @property)
 
               response.status = 200
               response['Location'] = "#{@properties_route}/#{property_id}"

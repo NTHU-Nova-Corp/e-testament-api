@@ -82,6 +82,31 @@ module ETestament
             @heir = Heir.first(id: heir_id)
             raise Exceptions::NotFoundError, 'Heir does not found' if @heir.nil?
 
+            # POST api/v1/properties/:property_id/heirs/:heir_id/delete
+            # Disassociate a heir to a property
+            routing.post 'delete' do
+              Services::PropertyHeirs::DeleteAssociationBetweenPropertyAndHeir.call(requester: @auth_account,
+                                                                                    heir_data: @heir,
+                                                                                    property_data: @property)
+
+              response.status = 200
+              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
+              { message: 'Heir deassociated from property' }.to_json
+            end
+
+            # POST api/v1/properties/:property_id/heirs/:heir_id/update
+            # Update a heir to a property
+            routing.post 'update' do
+              new_data = JSON.parse(routing.body.read)
+              Services::PropertyHeirs::UpdatePropertyHeir.call(requester: @auth_account,
+                                                               heir_data: @heir,
+                                                               property_data: @property, new_data:)
+
+              response.status = 200
+              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
+              { message: 'Heir deassociated from property' }.to_json
+            end
+
             # POST api/v1/properties/:property_id/heirs/:heir_id
             # Associate a heir to a property
             routing.post do
@@ -91,18 +116,6 @@ module ETestament
 
               response.status = 200
               { message: 'Heir associated to property' }.to_json
-            end
-
-            # POST api/v1/properties/:property_id/heirs/:heir_id/delete
-            # Disassociate a heir to a property
-            routing.post do
-              Services::PropertyHeirs::DeleteAssociatedProperty.call(requester: @auth_account,
-                                                                     heir_data: @heir,
-                                                                     property_data: @property)
-
-              response.status = 200
-              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
-              { message: 'Heir deassociated from property' }.to_json
             end
           end
 
