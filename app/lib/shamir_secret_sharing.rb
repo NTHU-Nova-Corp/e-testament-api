@@ -85,10 +85,10 @@ module ShamirEncryption
       num_bytes = shares[0][1]
       prime = smallest_prime_of_bytelength(num_bytes)
 
-      secret = shares.inject(OpenSSL::BN.new('0')) do |secret, (x, _num_bytes, y)|
+      secret = shares.inject(OpenSSL::BN.new('0')) do |s, (x, _num_bytes, y)|
         l_x = l(x, shares, prime)
         summand = OpenSSL::BN.new(y.to_s).mod_mul(l_x, prime)
-        (secret + summand) % prime
+        (s + summand) % prime
       end
       if do_data_checksum
         _, secret = [secret.to_s(16).rjust(num_bytes * 2, '0')].pack('H*').unpack('a2a*')

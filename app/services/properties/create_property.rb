@@ -5,6 +5,7 @@ module ETestament
     module Properties
       # Service object to create a new property for an account
       class CreateProperty
+        # rubocop:disable Metrics/MethodLength
         def self.call(requester:, account_id:, new_data:)
           account = Account.first(id: account_id)
 
@@ -27,6 +28,7 @@ module ETestament
 
           new_property
         end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

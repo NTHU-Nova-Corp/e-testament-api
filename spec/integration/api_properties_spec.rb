@@ -217,7 +217,7 @@ describe 'Test Property Handling' do
            @req_header
 
       # then
-      test = ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
       _(last_response.status).must_equal 200
     end
 
@@ -234,7 +234,7 @@ describe 'Test Property Handling' do
            @req_header
 
       # then
-      test = ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
       _(last_response.status).must_equal 403
     end
   end
