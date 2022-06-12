@@ -20,7 +20,7 @@ gem 'rbnacl', '~>7'
 gem 'hirb', '~>0'
 gem 'sequel', '~>5'
 
-group :development, :production, :staging do
+group :test, :production, :staging do
   gem 'pg'
 end
 
@@ -38,7 +38,7 @@ gem 'pry' # necessary for rake console
 gem 'rack-test'
 
 # Development
-group :test do
+group :development do
   gem 'rerun'
 
   # Quality
@@ -46,7 +46,7 @@ group :test do
   gem 'rubocop-performance'
 end
 
-group :test do
+group :development do
   gem 'sequel-seed'
   gem 'sqlite3'
 end
