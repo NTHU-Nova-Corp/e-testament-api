@@ -40,7 +40,7 @@ module ETestament
             routing.get do
               output = Services::Properties::GetDocument.call(requester: @auth_account, property_data: @property,
                                                               document_data: @document)
-              { data: output }.to_json
+              { data: output.full_details }.to_json
             end
 
             # PUT api/v1/properties/:property_id/documents/:document_id
