@@ -5,15 +5,15 @@ module ETestament
     module Accounts
       # Service object to accept request for being an executor
       # TODO: Handle error
-      class AcceptTestorRequest
+      class AcceptTestatorRequest
         def self.call(owner_account_id:, executor_account_id:)
           pending = PendingExecutorAccount.first(owner_account_id:, executor_account_id:)
-          raise 'Testor not found' if pending.nil?
+          raise 'Testator not found' if pending.nil?
 
-          testor = Account.first(id: pending.owner_account_id)
-          raise 'Owner not found' if testor.nil?
+          testator = Account.first(id: pending.owner_account_id)
+          raise 'Owner not found' if testator.nil?
 
-          testor.update(executor_id: executor_account_id)
+          testator.update(executor_id: executor_account_id)
           pending.delete
         end
       end

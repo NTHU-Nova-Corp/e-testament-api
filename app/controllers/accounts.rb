@@ -28,9 +28,9 @@ module ETestament
         end
       end
 
-      routing.on 'testors' do
+      routing.on 'testators' do
         routing.on 'pending-requests' do
-          # GET api/v1/accounts/testors/pending-requests
+          # GET api/v1/accounts/testators/pending-requests
           # Returns the list of executor requests pending to be accepted by the current account
           # TODO: Add unit-test
           routing.get do
@@ -39,23 +39,23 @@ module ETestament
           end
         end
 
-        routing.on String do |testor_id|
-          # POST api/v1/accounts/testors/:testor_id/accept
-          # Accepts the request to be executor by a testor
+        routing.on String do |testator_id|
+          # POST api/v1/accounts/testators/:testator_id/accept
+          # Accepts the request to be executor by a testator
           # TODO: Add unit-test
           routing.post 'accept' do
-            Services::Accounts::AcceptTestorRequest.call(owner_account_id: testor_id,
-                                                         executor_account_id: @auth_account['id'])
-            { message: 'Testor Request Accepted' }.to_json
+            Services::Accounts::AcceptTestatorRequest.call(owner_account_id: testator_id,
+                                                           executor_account_id: @auth_account['id'])
+            { message: 'Testator Request Accepted' }.to_json
           end
 
-          # POST api/v1/accounts/testors/:testor_id/reject
-          # Rejects the request to be executor by a testor
+          # POST api/v1/accounts/testators/:testator_id/reject
+          # Rejects the request to be executor by a testator
           # TODO: Add unit-test
           routing.post 'reject' do
-            Services::Accounts::RejectTestorRequest.call(owner_account_id: testor_id,
-                                                         executor_account_id: @auth_account['id'])
-            { message: 'Testor Request Rejected' }.to_json
+            Services::Accounts::RejectTestatorRequest.call(owner_account_id: testator_id,
+                                                           executor_account_id: @auth_account['id'])
+            { message: 'Testator Request Rejected' }.to_json
           end
         end
       end

@@ -20,11 +20,11 @@ end
 
 desc 'Rerun tests on live code changes'
 task :respec do
-  sh 'rerun -c rake spec'
+  sh 'rerun -c rake test'
 end
 
 desc 'Runs rubocop on tested code'
-task style: %i[spec audit] do
+task style: %i[test audit] do
   sh 'rubocop .'
 end
 
@@ -34,7 +34,7 @@ task :audit do
 end
 
 desc 'Checks for release'
-task release?: %i[spec style audit] do
+task release?: %i[test style audit] do
   puts "\nReady for release!"
 end
 
