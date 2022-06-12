@@ -60,7 +60,7 @@ module ETestament
           # Gets the list of documents related with a property
           routing.get do
             output = Services::Properties::GetDocuments.call(requester: @auth_account, property_data: @property)
-            { data: output.map(&:full_details) }.to_json
+            { data: output }.to_json
           end
 
           # POST api/v1/properties/:property_id/documents
