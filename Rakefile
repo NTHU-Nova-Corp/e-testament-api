@@ -3,7 +3,7 @@
 require 'rake/testtask'
 require './require_app'
 
-task default: :spec
+task default: :test
 
 desc 'Tests API specs only'
 task :api_spec do
@@ -11,7 +11,7 @@ task :api_spec do
 end
 
 desc 'Test all the specs'
-Rake::TestTask.new(:spec) do |t|
+Rake::TestTask.new(:test) do |t|
   puts "Environment: #{ENV.fetch('RACK_ENV', 'development')}"
 
   t.pattern = 'spec/**/*_spec.rb'
