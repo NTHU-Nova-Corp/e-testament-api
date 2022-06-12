@@ -45,9 +45,7 @@ module ETestament
 
     def full_details
       to_h.merge(
-        data: {
-          content:
-        },
+        content:,
         relationships: {
           property:
         }
