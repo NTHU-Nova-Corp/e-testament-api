@@ -8,7 +8,7 @@ module ETestament
   class Api < Roda
     route('relations') do |routing|
       # Web controller for ETestament API, heirs sub-route
-      @heirs_route = "#{@api_root}/relations"
+      @relations_route = "#{@api_root}/relations"
       unauthorized_message = { message: 'Unauthorized Request' }.to_json
       routing.halt(403, unauthorized_message) unless @auth_account
 
@@ -20,7 +20,7 @@ module ETestament
         new_relation = Services::Relations::CreateRelation.call(new_data:)
 
         response.status = 201
-        response['Location'] = "#{@properties_route}/#{new_relation.id}"
+        response['Location'] = "#{@relations_route}/#{new_relation.id}"
         { message: 'Relation saved', data: new_relation }.to_json
       end
 

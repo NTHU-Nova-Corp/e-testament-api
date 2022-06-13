@@ -14,6 +14,12 @@ def wipe_database
   ETestament::Document.map(&:destroy)
   ETestament::Property.map(&:destroy)
   ETestament::PendingExecutorAccount.map(&:destroy)
+
+  accounts = ETestament::Account.all
+  accounts.each do |acc|
+    acc.update(executor_id: nil)
+  end
+
   ETestament::Account.map(&:destroy)
 end
 
@@ -21,6 +27,17 @@ def seed_accounts
   DATA[:accounts].each do |account|
     ETestament::Account.create(account)
   end
+end
+
+def assign_executors
+  accounts = ETestament::Account.all.cycle
+  executor = accounts.next
+
+  testator1 = accounts.next
+  testator1.update(executor_id: executor[:id])
+
+  testator2 = accounts.next
+  testator2.update(executor_id: executor[:id])
 end
 
 def seed_properties
@@ -79,6 +96,7 @@ def seed_property_heirs
                                                                     new_data: property_heir)
   end
 end
+
 # rubocop:enable Metrics/MethodLength
 
 DATA = {

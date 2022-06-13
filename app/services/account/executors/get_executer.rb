@@ -5,7 +5,7 @@ module ETestament
     module Accounts
       # Service object to get the Account Information
       # TODO: Handle error
-      class GetExecutorAccount
+      class GetExecutor
         def self.call(id:)
           executor_account = Account.first(id:).executor
 

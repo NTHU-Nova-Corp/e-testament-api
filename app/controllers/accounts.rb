@@ -8,13 +8,14 @@ module ETestament
   class Api < Roda
     # api/v1/accounts
     route('accounts') do |routing|
+      @account_id = @auth_account['id']
       @account_route = "#{@api_root}/accounts"
 
       routing.on 'executors' do
         # GET api/v1/accounts/executors
         # Get request list for being executors list
         routing.get do
-          output = Services::Accounts::GetExecutorAccount.call(id: @auth_account['id'])
+          output = Services::Accounts::GetExecutor.call(id: @account_id)
           { data: output }.to_json
         end
 
@@ -34,7 +35,7 @@ module ETestament
           # Returns the list of executor requests pending to be accepted by the current account
           # TODO: Add unit-test
           routing.get do
-            output = Services::Accounts::GetExecutorPending.call(id: @auth_account['id'])
+            output = Services::Accounts::GetExecutorPending.call(id: @account_id)
             { data: output }.to_json
           end
         end
@@ -45,7 +46,7 @@ module ETestament
           # TODO: Add unit-test
           routing.post 'accept' do
             Services::Accounts::AcceptTestatorRequest.call(owner_account_id: testator_id,
-                                                           executor_account_id: @auth_account['id'])
+                                                           executor_account_id: @account_id)
             { message: 'Testator Request Accepted' }.to_json
           end
 
@@ -54,7 +55,7 @@ module ETestament
           # TODO: Add unit-test
           routing.post 'reject' do
             Services::Accounts::RejectTestatorRequest.call(owner_account_id: testator_id,
-                                                           executor_account_id: @auth_account['id'])
+                                                           executor_account_id: @account_id)
             { message: 'Testator Request Rejected' }.to_json
           end
         end
