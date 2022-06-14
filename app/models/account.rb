@@ -32,6 +32,7 @@ module ETestament
       digest.correct?(try_password)
     end
 
+    # rubocop:disable Metrics/MethodLength
     def to_h
       {
         type: 'account',
@@ -45,6 +46,7 @@ module ETestament
         }
       }
     end
+    # rubocop:enable Metrics/MethodLength
 
     def full_details
       to_h.merge(

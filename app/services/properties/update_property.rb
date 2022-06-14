@@ -8,7 +8,8 @@ module ETestament
       class UpdateProperty
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(requester:, property_data:, updated_data:)
-          policy = Policies::Property.new(requester:, property_owner_id: property_data.account[:id],
+          policy = Policies::Property.new(requester:, testament_status: property_data.account[:testament_status],
+                                          property_owner_id: property_data.account[:id],
                                           property_owner_executor_id: property_data.account.executor_id)
           unless policy.can_update?
             raise Exceptions::ForbiddenError,

@@ -4,10 +4,11 @@ module ETestament
   module Policies
     # Policy to determine if account can view a properties
     class Property
-      def initialize(requester:, property_owner_id:, property_owner_executor_id:)
+      def initialize(requester:, testament_status:, property_owner_id:, property_owner_executor_id:)
         @requester = requester
         @property_owner_id = property_owner_id
         @property_owner_executor_id = property_owner_executor_id
+        @testament_status = testament_status
       end
 
       def can_create?
@@ -19,7 +20,7 @@ module ETestament
       end
 
       def can_view?
-        property_owner? || property_executor?
+        property_owner? || (property_executor? && testament_read?)
       end
 
       def can_delete?
@@ -43,6 +44,10 @@ module ETestament
 
       def property_executor?
         @property_owner_executor_id.nil? ? false : @requester['id'] == @property_owner_executor_id
+      end
+
+      def testament_read?
+        @testament_status == 'Read'
       end
     end
   end
