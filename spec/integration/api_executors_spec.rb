@@ -121,4 +121,33 @@ describe 'Test Executors Handling' do
       _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
     end
   end
+
+  describe 'GET api/v1/executors/pending' do
+    before(:each) do
+      assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
+
+      login_account(@testator_data)
+      post 'api/v1/executors', { email: @executor[:email] }.to_json, @req_header
+    end
+
+    it 'HAPPY: should be able to get pending list' do
+      # given
+      login_account(@testator_data)
+
+      # when
+      get 'api/v1/executors/pending'
+
+      # then
+      _(last_response.status).must_equal 200
+
+      response = JSON.parse(last_response.body)
+
+      executor = response['data']['attributes']
+      _(executor['id']).must_equal @executor[:id]
+      _(executor['username']).must_equal @executor[:username]
+      _(executor['first_name']).must_equal @executor[:first_name]
+      _(executor['last_name']).must_equal @executor[:last_name]
+      _(executor['email']).must_equal @executor[:email]
+    end
+  end
 end

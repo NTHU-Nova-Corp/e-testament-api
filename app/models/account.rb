@@ -13,8 +13,8 @@ module ETestament
     many_to_one :executor, class: :'ETestament::Account'
     one_to_many :testators, key: :executor_id, class: :'ETestament::Account'
 
-    one_to_many :testators_pending, class: :'ETestament::PendingExecutorAccount', key: :owner_account_id
-    one_to_many :executors_pending, class: :'ETestament::PendingExecutorAccount', key: :executor_account_id
+    one_to_many :request_testators, class: :'ETestament::PendingExecutorAccount', key: :executor_account_id
+    one_to_many :pending_executors, class: :'ETestament::PendingExecutorAccount', key: :owner_account_id
 
     plugin :association_dependencies, properties: :destroy, heirs: :destroy
 
