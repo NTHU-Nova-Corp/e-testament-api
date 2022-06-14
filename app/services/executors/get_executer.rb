@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Accounts
+    module Executors
       # Service object to get the Account Information
       # TODO: Handle error
       class GetExecutor

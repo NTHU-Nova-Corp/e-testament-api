@@ -11,56 +11,6 @@ module ETestament
       @account_id = @auth_account['id']
       @account_route = "#{@api_root}/accounts"
 
-      routing.on 'executors' do
-        # GET api/v1/accounts/executors
-        # Get request list for being executors list
-        routing.get do
-          output = Services::Accounts::GetExecutor.call(id: @account_id)
-          { data: output }.to_json
-        end
-
-        # POST api/v1/accounts/executors
-        # Sends a request to be executor
-        routing.post do
-          executor_data = JSON.parse(routing.body.read)
-          Services::Accounts::CreateExecutorRequest.call(account: @auth_account, executor_data:)
-          response.status = 200
-          { message: 'Executor Request Sent' }.to_json
-        end
-      end
-
-      routing.on 'testators' do
-        routing.on 'pending-requests' do
-          # GET api/v1/accounts/testators/pending-requests
-          # Returns the list of executor requests pending to be accepted by the current account
-          # TODO: Add unit-test
-          routing.get do
-            output = Services::Accounts::GetExecutorPending.call(id: @account_id)
-            { data: output }.to_json
-          end
-        end
-
-        routing.on String do |testator_id|
-          # POST api/v1/accounts/testators/:testator_id/accept
-          # Accepts the request to be executor by a testator
-          # TODO: Add unit-test
-          routing.post 'accept' do
-            Services::Accounts::AcceptTestatorRequest.call(owner_account_id: testator_id,
-                                                           executor_account_id: @account_id)
-            { message: 'Testator Request Accepted' }.to_json
-          end
-
-          # POST api/v1/accounts/testators/:testator_id/reject
-          # Rejects the request to be executor by a testator
-          # TODO: Add unit-test
-          routing.post 'reject' do
-            Services::Accounts::RejectTestatorRequest.call(owner_account_id: testator_id,
-                                                           executor_account_id: @account_id)
-            { message: 'Testator Request Rejected' }.to_json
-          end
-        end
-      end
-
       # GET api/v1/accounts/:username
       # Get account profile by username
       routing.on String do |username|

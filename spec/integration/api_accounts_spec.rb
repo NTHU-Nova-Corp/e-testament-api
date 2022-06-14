@@ -38,7 +38,10 @@ describe 'Test Account Handling' do
 
   describe 'GET /api/v1/accounts/:username :: Account information' do
     it 'HAPPY: should be able to get details of a single account' do
+      # when
       get "/api/v1/accounts/#{@testator_data['username']}"
+
+      # then
       _(last_response.status).must_equal 200
 
       attributes = JSON.parse(last_response.body)['data']['attributes']
@@ -50,21 +53,29 @@ describe 'Test Account Handling' do
     end
 
     it 'BAD: should not be able to get details of an account with another account' do
+      # when
       get "/api/v1/accounts/#{@executor_data['username']}"
+
+      # then
       _(last_response.status).must_equal 403
     end
   end
 
   describe 'POST api/v1/accounts :: Account Creation' do
     before do
+      # clear
       wipe_database
 
+      # setup
       @req_header = { 'CONTENT_TYPE' => 'application/json' }
       @account_data = DATA[:accounts][1]
     end
 
     it 'HAPPY: should be able to create new accounts' do
+      # when
       post 'api/v1/accounts', @account_data.to_json, @req_header
+
+      # then
       _(last_response.status).must_equal 201
       _(last_response.header['Location'].size).must_be :>, 0
 
@@ -78,153 +89,16 @@ describe 'Test Account Handling' do
     end
 
     it 'SECURITY: should not create account with illegal attributes' do
+      # given
       bad_data = @account_data.clone
       bad_data['created_at'] = '1900-01-01'
+
+      # when
       post 'api/v1/accounts', bad_data.to_json, @req_header
 
+      # then
       _(last_response.status).must_equal 400
       assert_nil last_response.header['Location']
-    end
-  end
-
-  describe 'GET api/v1/accounts/executors' do
-    it 'BAD: should not found executor' do
-      get '/api/v1/accounts/executors'
-      _(last_response.status).must_equal 404
-    end
-
-    it 'should be able to get executor' do
-      # given
-
-      @testator.update(executor_id: @executor.id)
-
-      # when
-      get '/api/v1/accounts/executors'
-
-      # then
-      _(last_response.status).must_equal 200
-      attributes = JSON.parse(last_response.body)['data']['attributes']
-      _(attributes['id']).must_equal @executor[:id]
-      _(attributes['username']).must_equal @executor[:username]
-      _(attributes['first_name']).must_equal @executor[:first_name]
-      _(attributes['last_name']).must_equal @executor[:last_name]
-      _(attributes['email']).must_equal @executor[:email]
-    end
-  end
-
-  describe 'POST api/v1/accounts/executors' do
-    it 'BAD: should not be able to assign the auth account as an executor' do
-      # given
-      accounts = ETestament::Account.first
-      # when
-      post 'api/v1/accounts/executors', { email: accounts[:email] }.to_json, @req_header
-      # then
-      _(last_response.status).must_equal 500
-    end
-
-    it 'HAPPY: should be able to assign the other account as an executor' do
-      # when
-      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
-
-      # then
-      assert_nil pending_executor_account
-
-      # when
-      post 'api/v1/accounts/executors', { email: @executor[:email] }.to_json, @req_header
-
-      # then
-      _(last_response.status).must_equal 200
-
-      #  when
-      pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
-
-      # then
-      _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
-      _(pending_executor_account_result[:executor_account_id]).must_equal @executor[:id]
-    end
-
-    it 'HAPPY: should be able to send email request to non-account email' do
-      # given
-      executor_email = 'test_executor_email@gmail.com'
-
-      # when
-      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
-
-      # then
-      assert_nil pending_executor_account
-
-      # when
-      post 'api/v1/accounts/executors', { email: executor_email }.to_json, @req_header
-
-      # then
-      _(last_response.status).must_equal 200
-
-      #  when
-      pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email:)
-
-      # then
-      _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
-    end
-  end
-
-  describe 'Testator flow' do
-    before(:each) do
-      assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
-
-      post 'api/v1/accounts/executors', { email: @executor[:email] }.to_json, @req_header
-    end
-
-    describe 'GET api/v1/accounts/testators/pending-requests' do
-      it 'HAPPY: should be able to get pending list' do
-        # given
-        login_account(@executor_data)
-
-        # when
-        get 'api/v1/accounts/testators/pending-requests'
-        _(last_response.status).must_equal 200
-
-        response = JSON.parse(last_response.body)
-        _(response['data'].length).must_equal 1
-
-        testator = response['data'][0]['attributes']
-        _(testator['owner_account_id']).must_equal @testator[:id]
-      end
-    end
-
-    describe 'POST api/v1/accounts/testators/:testator_id/accept' do
-      it 'HAPPY: should be able to accept' do
-        # given
-        login_account(@executor_data)
-
-        # when then
-        assert_nil @testator[:executor_id]
-        _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
-
-        # when then
-        post "api/v1/accounts/testators/#{@testator[:id]}/accept"
-        _(last_response.status).must_equal 200
-
-        @testator = ETestament::Account.first(email: @testator[:email])
-        _(@testator[:executor_id]).must_equal @executor[:id]
-        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
-      end
-    end
-
-    describe 'POST api/v1/accounts/testators/:testator_id/reject' do
-      it 'HAPPY: should be able to reject' do
-        # given
-        login_account(@executor_data)
-
-        # when then
-        assert_nil @testator[:executor_id]
-        _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
-
-        # when then
-        post "api/v1/accounts/testators/#{@testator[:id]}/reject"
-        _(last_response.status).must_equal 200
-        assert_nil @testator[:executor_id]
-        assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
-      end
     end
   end
 end

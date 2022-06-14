@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Accounts
+    module Testators
       # Service object to accept request for being an executor
       # TODO: Handle error
       class AcceptTestatorRequest
