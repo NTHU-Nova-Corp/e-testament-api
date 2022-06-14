@@ -14,11 +14,11 @@ module ETestament
 
       @account_id = @auth_account['id']
 
-      routing.on 'pending-requests' do
-        # GET api/v1/testators/pending-requests
+      routing.on 'request' do
+        # GET api/v1/testators/request
         # Returns the list of executor requests pending to be accepted by the current account
         routing.get do
-          output = Services::Executors::GetExecutorPending.call(id: @account_id)
+          output = Services::Testators::GetRequestTestator.call(id: @account_id)
           { data: output }.to_json
         end
       end

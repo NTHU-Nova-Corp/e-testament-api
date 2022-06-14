@@ -2,12 +2,11 @@
 
 module ETestament
   module Services
-    module Executors
+    module Testators
       # Service object to get pending request for being an executor
-      # TODO: Handle error
-      class GetPendingExecutor
+      class GetRequestTestator
         def self.call(id:)
-          Account.first(id:).pending_executors.first.executor_account
+          Account.first(id:).request_testators.first.testator_account
         end
       end
     end
