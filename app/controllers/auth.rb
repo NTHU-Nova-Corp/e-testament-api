@@ -8,10 +8,16 @@ module ETestament
   # Web controller for ETestament API, auth sub-route
   class Api < Roda
     route('auth') do |routing|
+      # All requests in this route require signed requests
+      begin
+        @request_data = SignedRequest.new(Api.config).parse(request.body.read)
+      rescue SignedRequest::VerificationError
+        routing.halt '403', { message: 'Must sign request' }.to_json
+      end
+
       # POST api/v1/auth/register
       routing.post 'register' do
-        reg_data = JsonRequestBody.parse_symbolize(request.body.read)
-        Services::Accounts::VerifyRegistration.new(reg_data).call
+        Services::Accounts::VerifyRegistration.new(@request_data).call
 
         response.status = 202
         { message: 'Verification email sent' }.to_json
@@ -27,20 +33,18 @@ module ETestament
       routing.is 'authenticate' do
         # POST api/v1/auth/authenticate
         routing.post do
-          credentials = JsonRequestBody.parse_symbolize(request.body.read)
-          auth_account = Services::Accounts::Authenticate.call(credentials)
+          auth_account = Services::Accounts::Authenticate.call(@request_data)
           { data: auth_account }.to_json
         rescue Exceptions::UnauthorizedError => e
           Api.logger.error [e.class, e.message].join ': ' if ETestament::Api.environment == :production
-          routing.halt 403, { message: 'Invalid credentials' }.to_json
+          routing.halt '401', { message: 'Invalid credentials' }.to_json
         end
       end
 
       routing.is 'authenticate-google' do
         # POST /api/v1/auth/authenticate-google
         routing.post do
-          credentials = JsonRequestBody.parse_symbolize(request.body.read)
-          auth_account = Services::Accounts::AuthenticateGoogle.call(credentials)
+          auth_account = Services::Accounts::AuthenticateGoogle.call(@request_data[:access_token])
           { data: auth_account }.to_json
 
         rescue Exceptions::UnauthorizedError => e
