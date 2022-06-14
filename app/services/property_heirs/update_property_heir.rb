@@ -12,8 +12,8 @@ module ETestament
                                               testament_status: heir_data.account[:testament_status],
                                               heir_owner_id: heir_data.account[:id],
                                               property_owner_id: property_data.account[:id],
-                                              heir_owner_executor_id: heir_data.account[:executor_account_id],
-                                              property_owner_executor_id: property_data.account[:executor_account_id])
+                                              heir_owner_executor_id: heir_data.account[:executor_id],
+                                              property_owner_executor_id: property_data.account[:executor_id])
 
           unless policy.can_update_association?
             raise Exceptions::ForbiddenError, 'You are not allowed to edit the property'

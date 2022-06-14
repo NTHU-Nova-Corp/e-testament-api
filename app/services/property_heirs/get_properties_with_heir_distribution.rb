@@ -13,8 +13,8 @@ module ETestament
                                               testament_status: account[:testament_status],
                                               heir_owner_id: account_id,
                                               property_owner_id: account_id,
-                                              heir_owner_executor_id: account[:executor_account_id],
-                                              property_owner_executor_id: account[:executor_account_id])
+                                              heir_owner_executor_id: account[:executor_id],
+                                              property_owner_executor_id: account[:executor_id])
 
           unless policy.can_view_associations_between_heirs_and_properties?
             raise Exceptions::ForbiddenError,
