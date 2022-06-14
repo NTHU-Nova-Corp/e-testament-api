@@ -5,9 +5,12 @@ module ETestament
     module Properties
       # Service object to create a new property for an account
       class CreateDocument
-        # rubocop: disable Metrics/MethodLength
+        # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(requester:, property_data:, new_data:)
-          policy = Policies::Document.new(requester:, property_owner_id: property_data.account[:id])
+          policy = Policies::Document.new(requester:,
+                                          testament_status: property_data.account[:testament_status],
+                                          property_owner_id: property_data.account[:id],
+                                          property_owner_executor_id: property_data.account[:executor_account_id])
           unless policy.can_create?
             raise Exceptions::ForbiddenError, 'You are not allowed to create documents for the property selected.'
           end
@@ -22,7 +25,7 @@ module ETestament
 
           new_document
         end
-        # rubocop: enable Metrics/MethodLength
+        # rubocop: enable Metrics/MethodLength, Metrics/AbcSize
       end
     end
   end

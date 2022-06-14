@@ -8,11 +8,12 @@ module ETestament
         def self.call(requester:, heir_data:)
           # verify
           policy = Policies::PropertyHeir.new(requester:,
+                                              testament_status: heir_data.account[:testament_status],
                                               heir_owner_id: heir_data.account[:id],
                                               property_owner_id: nil,
-                                              heir_owner_executor_id: nil,
+                                              heir_owner_executor_id: heir_data.account[:executor_account_id],
                                               property_owner_executor_id: nil)
-          unless policy.can_view_properties_associated_to_heir?
+          unless policy.can_view_associations_between_heirs_and_properties?
             raise Exceptions::ForbiddenError, 'You are not allowed to view the property'
           end
 

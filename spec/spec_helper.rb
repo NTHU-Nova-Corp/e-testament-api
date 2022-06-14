@@ -15,8 +15,7 @@ def wipe_database
   ETestament::Property.map(&:destroy)
   ETestament::PendingExecutorAccount.map(&:destroy)
 
-  accounts = ETestament::Account.all
-  accounts.each do |acc|
+  ETestament::Account.all.each do |acc|
     acc.update(executor_id: nil)
   end
 

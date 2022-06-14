@@ -4,13 +4,16 @@
   username: ernesto
   email: ernesto.sst@mail.com
   password: admin
+  testament_status: Under Edition
 - first_name: Cesar
   last_name: Garcia
   username: cesar.garcia
   email: cesar.garcia@mail.com
   password: mypa$$w0rd2
+  testament_status: Under Edition
 - first_name: Daniel
   last_name: Kong
   username: daniel.kong
   email: daniel.kong@mail.com
   password: mypa$$w0rd3
+  testament_status: Under Edition

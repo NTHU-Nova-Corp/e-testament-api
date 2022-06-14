@@ -77,6 +77,10 @@ namespace :db do
     ETestament::Document.map(&:destroy)
     ETestament::Property.map(&:destroy)
     ETestament::PendingExecutorAccount.map(&:destroy)
+
+    ETestament::Account.map do |acc|
+      acc.update(executor_id: nil)
+    end
     ETestament::Account.map(&:destroy)
   end
 
