@@ -26,7 +26,7 @@ module ETestament
       routing.get do
         output = Services::PropertyHeirs::GetPropertiesWithHeirsDistribution.call(requester: @auth_account,
                                                                                   account_id: @account_id)
-        { data: output }.to_json
+        JSON({ data: output }, {})
       end
     end
   end

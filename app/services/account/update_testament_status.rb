@@ -24,7 +24,7 @@ module ETestament
 
           # Checks if all the properties have the 100% of its distribution
           properties_pending = account.properties.count do |property|
-            property.heir_distribution.sum { |heir| heir[:percentage] } != 100
+            property.heir_distribution.sum { |heir| heir[:attributes][:percentage] } != 100
           end
 
           if new_status == 'Completed' && properties_pending.positive?

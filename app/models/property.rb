@@ -53,9 +53,12 @@ module ETestament
     def heir_distribution
       property_heirs.map do |property_heir|
         {
-          id: property_heir.heir.id, first_name: property_heir.heir.first_name,
-          last_name: property_heir.heir.last_name, email: property_heir.heir.email,
-          percentage: property_heir.percentage
+          type: 'heir_distribution',
+          attributes: {
+            id: property_heir.heir.id, first_name: property_heir.heir.first_name,
+            last_name: property_heir.heir.last_name, email: property_heir.heir.email,
+            percentage: property_heir.percentage
+          }
         }
       end
     end
