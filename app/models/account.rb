@@ -20,7 +20,7 @@ module ETestament
 
     plugin :uuid, field: :id
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password, :username, :executor_id
+    set_allowed_columns :first_name, :last_name, :email, :password, :username, :executor_id, :testament_status
     plugin :timestamps, update_on_create: true
 
     def password=(new_password)
@@ -40,7 +40,8 @@ module ETestament
           username:,
           first_name:,
           last_name:,
-          email:
+          email:,
+          testament_status:
         }
       }
     end
