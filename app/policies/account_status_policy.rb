@@ -13,7 +13,7 @@ module ETestament
       end
 
       def can_edit?
-        self_request? && executor_request?
+        self_request? || executor_request?
       end
 
       def summary
@@ -25,13 +25,13 @@ module ETestament
       private
 
       def self_request?
-        @requester['id'] == owner_id &&
+        @requester['id'] == @owner_id &&
           @previous_status == 'Under Edition' &&
           @new_status == 'Completed'
       end
 
       def executor_request?
-        @requester['id'] == executor_id &&
+        @requester['id'] == @executor_id &&
           (@previous_status == 'Completed' || @previous_status == 'Released') &&
           (@new_status == 'Completed' || @new_status == 'Read')
       end

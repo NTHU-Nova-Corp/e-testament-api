@@ -107,3 +107,11 @@ DATA = {
   heirs: YAML.load(File.read('app/db/seeds/heir_seeds.yml')),
   property_heirs: YAML.load(File.read('app/db/seeds/property_heir_seeds.yml'))
 }.freeze
+
+## SSO fixtures
+# TODO: Get actual Google SSO JSON for fixtures
+# GOOGLE_ACCOUNT_RESPONSE = YAML.load(
+#   File.read('spec/fixtures/google_token_response.yml')
+# )
+# GOOD_GOOGLE_ACCESS_TOKEN = GOOGLE_ACCOUNT_RESPONSE.keys.first
+# SSO_ACCOUNT = YAML.load(File.read('spec/fixtures/sso_account.yml'))

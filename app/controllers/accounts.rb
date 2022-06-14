@@ -25,18 +25,21 @@ module ETestament
       # Create new account
       # TODO: Update unittest
       routing.post do
-        new_data = JSON.parse(routing.body.read)
-        new_account = Services::Accounts::CreateAccount.call(new_data:)
+        #new_data = JSON.parse(routing.body.read)
+        account_data = SignedRequest.new(Api.config).parse(request.body.read)
+        new_account = Services::Accounts::CreateAccount.call(account_data:)
 
         response.status = 201
         response['Location'] = "#{@account_route}/#{new_account.username}"
         { message: 'Account saved', data: new_account }.to_json
       rescue Sequel::MassAssignmentRestriction
-        Api.logger.warn "MASS-ASSIGNMENT:: #{new_data.keys}" if ETestament::Api.environment == :production
+        Api.logger.warn "MASS-ASSIGNMENT:: #{account_data.keys}" if ETestament::Api.environment == :production
         routing.halt 400, { message: 'Illegal Request' }.to_json
+      rescue SignedRequest::VerificationError
+        routing.halt 403, { message: 'Must sign request' }.to_json
       rescue StandardError => e
         Api.logger.error 'Unknown error saving account' if ETestament::Api.environment == :production
-        routing.halt 500, { message: e.message }.to_json
+        routing.halt 500, { message: 'Error creating account' }.to_json
       end
     end
   end
