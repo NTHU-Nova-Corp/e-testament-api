@@ -98,28 +98,28 @@ describe 'Test Executors Handling' do
       _(pending_executor_account_result[:executor_account_id]).must_equal @executor[:id]
     end
 
-    it 'HAPPY: should be able to send email request to non-account email' do
-      # given
-      executor_email = 'test_executor_email@gmail.com'
-
-      # when
-      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
-
-      # then
-      assert_nil pending_executor_account
-
-      # when
-      post 'api/v1/executors', { email: executor_email }.to_json, @req_header
-
-      # then
-      _(last_response.status).must_equal 200
-
-      #  when
-      pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email:)
-
-      # then
-      _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
-    end
+    # it 'HAPPY: should be able to send email request to non-account email' do
+    #   # given
+    #   executor_email = 'test_executor_email@gmail.com'
+    #
+    #   # when
+    #   pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
+    #
+    #   # then
+    #   assert_nil pending_executor_account
+    #
+    #   # when
+    #   post 'api/v1/executors', { email: executor_email }.to_json, @req_header
+    #
+    #   # then
+    #   _(last_response.status).must_equal 200
+    #
+    #   #  when
+    #   pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email:)
+    #
+    #   # then
+    #   _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
+    # end
   end
 
   describe 'GET api/v1/executors/pending' do

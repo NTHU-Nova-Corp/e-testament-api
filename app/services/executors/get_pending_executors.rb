@@ -7,7 +7,7 @@ module ETestament
       # TODO: Handle error
       class GetPendingExecutor
         def self.call(id:)
-          Account.first(id:).pending_executors.first.executor_account
+          Account.first(id:).executor_request_sent.first.executor_account
         end
       end
     end
