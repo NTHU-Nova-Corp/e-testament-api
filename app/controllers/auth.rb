@@ -44,7 +44,7 @@ module ETestament
       routing.is 'authenticate-google' do
         # POST /api/v1/auth/authenticate-google
         routing.post do
-          auth_account = Services::Accounts::AuthenticateGoogle.call(@request_data[:access_token])
+          auth_account = Services::Accounts::AuthenticateGoogle.call(@request_data)
           { data: auth_account }.to_json
 
         rescue Exceptions::UnauthorizedError => e

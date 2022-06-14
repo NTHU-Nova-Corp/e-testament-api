@@ -122,7 +122,7 @@ describe 'Test Executors Handling' do
     # end
   end
 
-  describe 'GET api/v1/executors/pending' do
+  describe 'GET api/v1/executors/sent' do
     before(:each) do
       assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
 
@@ -135,7 +135,7 @@ describe 'Test Executors Handling' do
       login_account(@testator_data)
 
       # when
-      get 'api/v1/executors/pending'
+      get 'api/v1/executors/sent'
 
       # then
       _(last_response.status).must_equal 200
