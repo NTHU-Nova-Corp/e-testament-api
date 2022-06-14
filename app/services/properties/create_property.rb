@@ -9,7 +9,7 @@ module ETestament
         def self.call(requester:, account_id:, new_data:)
           account = Account.first(id: account_id)
 
-          policy = Policies::Property.new(requester:, testament_status: account[:testament_status],
+          policy = Policies::Property.new(requester:, testament_status: account.testament_status,
                                           property_owner_id: account_id,
                                           property_owner_executor_id: account.executor_id)
 

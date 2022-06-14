@@ -11,7 +11,7 @@ module ETestament
                                           testament_status: property_data.account[:testament_status],
                                           property_owner_id: property_data.account[:id],
                                           property_owner_executor_id: property_data.account[:executor_account_id])
-                                          
+
           unless policy.can_edit?
             raise Exceptions::ForbiddenError,
                   'You are not allowed to update the document selected.'

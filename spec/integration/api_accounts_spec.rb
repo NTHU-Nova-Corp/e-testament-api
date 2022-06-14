@@ -22,6 +22,9 @@ describe 'Test Account Handling' do
 
     # seed
     seed_accounts
+    seed_properties
+    seed_heirs
+    seed_property_heirs
 
     # setup data
     @testator_data = DATA[:accounts][0]
@@ -109,6 +112,32 @@ describe 'Test Account Handling' do
       _(attributes['first_name']).must_equal @executor[:first_name]
       _(attributes['last_name']).must_equal @executor[:last_name]
       _(attributes['email']).must_equal @executor[:email]
+    end
+  end
+
+  describe 'GET api/v1/testaments' do
+    it 'GOOD: should be able to view the testament details of its own account' do
+      get 'api/v1/testaments', @req_header
+      response = JSON.parse(last_response.body)
+
+      _(response['data'].length).must_equal 1
+      _(last_response.status).must_equal 200
+    end
+  end
+
+  describe 'POST api/v1/testaments/complete' do
+    it 'GOOD: should be able to complete a testament details of its own account that has all the properties distributed' do
+      get 'api/v1/testaments', @req_header
+      response = JSON.parse(last_response.body)
+
+      _(response['data'].length).must_equal 1
+      _(last_response.status).must_equal 200
+    end
+
+    it 'BAD: should not be able to complete a testament details of its own account that has all the properties distributed' do
+      post 'api/v1/testaments/complete', @req_header
+
+      _(last_response.status).must_equal 404
     end
   end
 

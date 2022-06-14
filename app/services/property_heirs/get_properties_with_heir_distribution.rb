@@ -21,7 +21,11 @@ module ETestament
                   'You are not allowed to view property requested.'
           end
 
-          account.properties
+          account.properties.map do |property|
+            { type: 'property_distribution',
+              attributes: { id: property.id, name: property.name, description: property.description,
+                            heirs: property.heir_distribution } }
+          end
         end
         # rubocop:enable Metrics/MethodLength
       end

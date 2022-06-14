@@ -74,7 +74,7 @@ describe 'Test Testators Handling' do
     end
   end
 
-  describe 'GET /api/v1/testator/:testator_id/heirs :: heirs of a testator ' do
+  describe 'GET /api/v1/testators/:testator_id/heirs :: heirs of a testator ' do
     it 'HAPPY: should be able to get heirs details of a testator' do
       # when
       get "/api/v1/testators/#{@testator1[:id]}/heirs"
