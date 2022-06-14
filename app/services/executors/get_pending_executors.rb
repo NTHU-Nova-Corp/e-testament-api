@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Accounts
+    module Executors
       # Service object to get pending request for being an executor
       # TODO: Handle error
       class GetExecutorPending

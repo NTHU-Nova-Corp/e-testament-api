@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Accounts
+    module Testators
       # Service object to reject request for being an executor
       class GetTestators
         def self.call(id:)

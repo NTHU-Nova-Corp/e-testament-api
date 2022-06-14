@@ -2,7 +2,7 @@
 
 module ETestament
   module Services
-    module Accounts
+    module Executors
       # Service object to create request to assigned executor email
       # TODO: Handle error
       class CreateExecutorRequest

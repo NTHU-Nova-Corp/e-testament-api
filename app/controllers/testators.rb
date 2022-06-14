@@ -14,6 +14,15 @@ module ETestament
 
       @account_id = @auth_account['id']
 
+      routing.on 'pending-requests' do
+        # GET api/v1/testators/pending-requests
+        # Returns the list of executor requests pending to be accepted by the current account
+        routing.get do
+          output = Services::Executors::GetExecutorPending.call(id: @account_id)
+          { data: output }.to_json
+        end
+      end
+
       routing.on String do |testator_id|
         # GET api/v1/testator/:testator_id/heirs
         # Get all heirs of a testator
@@ -25,14 +34,30 @@ module ETestament
         # GET api/v1/testator/:testator_id
         # Get testator's info
         routing.get do
-          output = Services::Accounts::GetTestator.call(id: @account_id, testator_id:)
+          output = Services::Testators::GetTestator.call(id: @account_id, testator_id:)
           { data: output }.to_json
+        end
+
+        # POST api/v1/testators/:testator_id/accept
+        # Accepts the request to be executor by a testator
+        routing.post 'accept' do
+          Services::Testators::AcceptTestatorRequest.call(owner_account_id: testator_id,
+                                                          executor_account_id: @account_id)
+          { message: 'Testator Request Accepted' }.to_json
+        end
+
+        # POST api/v1/testators/:testator_id/reject
+        # Rejects the request to be executor by a testator
+        routing.post 'reject' do
+          Services::Testators::RejectTestatorRequest.call(owner_account_id: testator_id,
+                                                          executor_account_id: @account_id)
+          { message: 'Testator Request Rejected' }.to_json
         end
       end
 
       #  GET api/v1/testators :: Get all testators
       routing.get do
-        output = Services::Accounts::GetTestators.call(id: @account_id)
+        output = Services::Testators::GetTestators.call(id: @account_id)
         { data: output }.to_json
       end
     end
