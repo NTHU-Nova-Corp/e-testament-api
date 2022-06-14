@@ -7,11 +7,7 @@ module ETestament
       # TODO: Handle error
       class GetExecutor
         def self.call(id:)
-          executor_account = Account.first(id:).executor
-
-          raise Exceptions::NotFoundError, 'Not found associated executor' if executor_account.nil?
-
-          executor_account
+          Account.first(id:).executor
         end
       end
     end
