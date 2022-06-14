@@ -12,19 +12,19 @@ module ETestament
           raise Exceptions::NotFoundError, 'Account not found' if account.nil?
 
           # verify
-          policy = Policies::Account.new(requester:,
-                                         owner_id: account.id,
-                                         executor_id: account.executor_id,
-                                         previous_status: account.testament_status, new_status:)
+          policy = Policies::AccountStatus.new(requester:,
+                                               owner_id: account.id,
+                                               executor_id: account.executor_id,
+                                               previous_status: account.testament_status, new_status:)
 
           unless policy.can_edit?
-            raise Exceptions::ForbiddenError,
+            raise Exceptions::BadRequestError,
                   'You are not allowed to set the status selected for this testament'
           end
 
           # Checks if all the properties have the 100% of its distribution
           properties_pending = account.properties.count do |property|
-            property.heir_distribution.sum { |heir| heir[:percentage] } < 100
+            property.heir_distribution.sum { |heir| heir[:percentage] } != 100
           end
 
           if new_status == 'Completed' && properties_pending.positive?
