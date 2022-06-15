@@ -12,11 +12,11 @@ module ETestament
       end
 
       def can_create?
-        property_owner?
+        property_owner? && testament_under_edition?
       end
 
       def can_update?
-        property_owner?
+        property_owner? && testament_under_edition?
       end
 
       def can_view?
@@ -24,7 +24,7 @@ module ETestament
       end
 
       def can_delete?
-        property_owner?
+        property_owner? && testament_under_edition?
       end
 
       def summary
@@ -48,6 +48,10 @@ module ETestament
 
       def testament_read?
         @testament_status == 'Read'
+      end
+
+      def testament_under_edition?
+        @testament_status == 'Under Edition'
       end
     end
   end
