@@ -7,6 +7,8 @@ module ETestament
       class GetSentExecutor
         def self.call(id:)
           sent_executor = Account.first(id:).executor_request_sent.first
+          return sent_executor if sent_executor.nil?
+
           sent_executor_account = sent_executor.executor_account
 
           sent_executor_account.nil? ? sent_executor : sent_executor_account
