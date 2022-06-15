@@ -17,7 +17,7 @@ module ETestament
       # rubocop: enable Metrics/ParameterLists
 
       def can_create_association?
-        heir_owner? && property_owner?
+        heir_owner? && property_owner? && testament_under_edition?
       end
 
       def can_view_associations_between_heirs_and_properties?
@@ -25,11 +25,11 @@ module ETestament
       end
 
       def can_delete_association?
-        heir_owner? && property_owner?
+        heir_owner? && property_owner? && testament_under_edition?
       end
 
       def can_update_association?
-        heir_owner? && property_owner?
+        heir_owner? && property_owner? && testament_under_edition?
       end
 
       def summary
@@ -61,6 +61,10 @@ module ETestament
 
       def testament_read?
         @testament_status == 'Read'
+      end
+
+      def testament_under_edition?
+        @testament_status == 'Under Edition'
       end
     end
   end

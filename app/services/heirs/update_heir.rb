@@ -8,7 +8,9 @@ module ETestament
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(requester:, heir_data:, updated_data:)
           # verify
-          policy = Policies::Heir.new(requester:, heir_owner_id: heir_data.account.id,
+          policy = Policies::Heir.new(requester:,
+                                      testament_status: heir_data.account.testament_status,
+                                      heir_owner_id: heir_data.account.id,
                                       heir_owner_executor_id: heir_data.account.executor_id)
           raise Exceptions::ForbiddenError, 'You are not allowed to view the heir' unless policy.can_update?
 

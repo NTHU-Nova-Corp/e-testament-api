@@ -8,7 +8,9 @@ module ETestament
         def self.call(requester:, account_id:)
           account = Account.first(id: account_id)
 
-          policy = Policies::Heir.new(requester:, heir_owner_id: account_id,
+          policy = Policies::Heir.new(requester:,
+                                      testament_status: account.testament_status,
+                                      heir_owner_id: account_id,
                                       heir_owner_executor_id: account.executor_id)
 
           unless policy.can_view?

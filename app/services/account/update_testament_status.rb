@@ -31,7 +31,7 @@ module ETestament
             raise Exceptions::BadRequestError, 'The distribution of all properties should be 100%'
           end
 
-          account.update(testament_status: new_status)
+          account.update(testament_status: new_status).save
 
           # return
           Account.first(id: account_id)

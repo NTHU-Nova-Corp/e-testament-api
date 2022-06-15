@@ -4,18 +4,19 @@ module ETestament
   module Policies
     # Policy to determine if account can view a project
     class Heir
-      def initialize(requester:, heir_owner_id:, heir_owner_executor_id:)
+      def initialize(requester:, testament_status:, heir_owner_id:, heir_owner_executor_id:)
         @requester = requester
+        @testament_status = testament_status
         @heir_owner_id = heir_owner_id
         @heir_owner_executor_id = heir_owner_executor_id
       end
 
       def can_create?
-        heir_owner?
+        heir_owner? && testament_under_edition?
       end
 
       def can_update?
-        heir_owner?
+        heir_owner? && testament_under_edition?
       end
 
       def can_view?
@@ -23,7 +24,7 @@ module ETestament
       end
 
       def can_delete?
-        heir_owner?
+        heir_owner? && testament_under_edition?
       end
 
       def summary
@@ -43,6 +44,10 @@ module ETestament
 
       def heir_executor?
         @heir_owner_executor_id.nil? ? false : @requester['id'] == @heir_owner_executor_id
+      end
+
+      def testament_under_edition?
+        @testament_status == 'Under Edition'
       end
     end
   end
