@@ -26,8 +26,8 @@ module ETestament
 
       def self_request?
         @requester['id'] == @owner_id &&
-          @previous_status == 'Under Edition' &&
-          @new_status == 'Completed'
+          (@previous_status == 'Completed' || @previous_status == 'Under Edition') &&
+          (@new_status == 'Completed' || @new_status == 'Under Edition')
       end
 
       def executor_request?

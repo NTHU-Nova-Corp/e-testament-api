@@ -22,6 +22,14 @@ module ETestament
         { data: output }.to_json
       end
 
+      #  POST api/v1/testaments/enable-edition :: Sets the status of the testament as completed
+      routing.post 'enable-edition' do
+        output = Services::Accounts::UpdateTestamentStatus.call(requester: @auth_account,
+                                                                account_id: @account_id,
+                                                                new_status: 'Under Edition')
+        { data: output }.to_json
+      end
+
       #  GET api/v1/testaments :: Get the testament distribution report
       routing.get do
         output = Services::PropertyHeirs::GetPropertiesWithHeirsDistribution.call(requester: @auth_account,
