@@ -17,7 +17,7 @@ class SignedRequest
     verify_key = signing_key.verify_key
 
     { signing_key: Base64.strict_encode64(signing_key),
-      verify_key:  Base64.strict_encode64(verify_key) }
+      verify_key: Base64.strict_encode64(verify_key) }
   end
 
   def parse(signed_json)
@@ -32,7 +32,7 @@ class SignedRequest
                                   .sign(message.to_json)
                                   .then { |sig| Base64.strict_encode64(sig) }
 
-    { data: message, signature: signature }
+    { data: message, signature: }
   end
 
   private

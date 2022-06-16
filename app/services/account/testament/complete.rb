@@ -32,7 +32,7 @@ module ETestament
               raise Exceptions::BadRequestError, 'The distribution of all properties should be 100%'
             end
 
-            if min_amount_heirs.nil? or min_amount_heirs.zero?
+            if min_amount_heirs.nil? || min_amount_heirs.zero?
               raise Exceptions::BadRequestError,
                     'Please enter the minimum amount of heirs needed to read your testament.'
             end
