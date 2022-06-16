@@ -28,7 +28,7 @@ module ETestament
         def html_email
           <<~END_EMAIL
             <H1>E-Testament Invitation</H1>
-            <p>#{@owner_full_name} send you a request to be his/her Executor, Please <a href=\"#{app_url}\">click here</a>
+            <p>#{@owner_full_name} sent you a request to be his/her Executor, Please <a href=\"#{app_url}\">click here</a>
             to accept the request.</p>
           END_EMAIL
         end

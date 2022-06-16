@@ -28,7 +28,7 @@ module ETestament
         def html_email
           <<~END_EMAIL
             <H1>E-Testament Request Reject</H1>
-            <p>#{@executor_full_name} have rejected for your request, please contact the person for more information</p>
+            <p>#{@executor_full_name} has rejected for your request, please contact the person for more information</p>
           END_EMAIL
         end
 

@@ -28,7 +28,7 @@ module ETestament
         def html_email
           <<~END_EMAIL
             <H1>E-Testament Cancellation</H1>
-            <p>#{@owner_full_name} cancel a request to be his/her Executor</p>
+            <p>#{@owner_full_name} cancelled a request to be his/her Executor</p>
           END_EMAIL
         end
 
