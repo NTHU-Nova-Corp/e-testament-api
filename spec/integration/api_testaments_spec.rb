@@ -45,13 +45,14 @@ describe 'Test Testaments Handling' do
   end
 
   describe 'POST api/v1/testaments/complete' do
-    it 'GOOD: should be able to complete a testament details of its own account that has all the properties distributed' do
+    it 'GOOD: should be able to complete a testament details of its own account
+    that has all the properties distributed' do
       @owner.properties.map do |property|
         property.property_heirs.map do |property_heir|
-          property_heir.update(percentage: 100)
+          property_heir.update(percentage: 100).save
         end
       end
-      post 'api/v1/testaments/complete', @req_header
+      post 'api/v1/testaments/complete', { min_amount_heirs: 2 }.to_json, @req_header
 
       _(last_response.status).must_equal 200
 
@@ -59,8 +60,9 @@ describe 'Test Testaments Handling' do
       _(account_val.testament_status).must_equal('Completed')
     end
 
-    it 'BAD: should not be able to complete a testament details of its own account that has all the properties distributed' do
-      post 'api/v1/testaments/complete', @req_header
+    it 'BAD: should not be able to complete a testament details of its own account that
+      has all the properties distributed' do
+      post 'api/v1/testaments/complete', { min_amount_heirs: 1 }.to_json, @req_header
 
       _(last_response.status).must_equal 400
     end

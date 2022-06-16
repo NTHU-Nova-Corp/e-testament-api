@@ -37,7 +37,7 @@ module ETestament
       rescue SignedRequest::VerificationError
         routing.halt 403, { message: 'Must sign request' }.to_json
       rescue StandardError => e
-        Api.logger.error 'Unknown error saving account' if ETestament::Api.environment == :production
+        Api.logger.error e.message if ETestament::Api.environment == :production
         routing.halt 500, { message: 'Error creating account' }.to_json
       end
     end

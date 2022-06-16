@@ -16,17 +16,17 @@ module ETestament
 
       #  POST api/v1/testaments/complete :: Sets the status of the testament as completed
       routing.post 'complete' do
-        output = Services::Accounts::UpdateTestamentStatus.call(requester: @auth_account,
-                                                                account_id: @account_id,
-                                                                new_status: 'Completed')
+        new_data = JSON.parse(routing.body.read)
+        output = Services::Accounts::Testament::Complete.call(requester: @auth_account,
+                                                              account_id: @account_id,
+                                                              min_amount_heirs: new_data['min_amount_heirs'])
         { data: output }.to_json
       end
 
       #  POST api/v1/testaments/enable-edition :: Sets the status of the testament as completed
       routing.post 'enable-edition' do
-        output = Services::Accounts::UpdateTestamentStatus.call(requester: @auth_account,
-                                                                account_id: @account_id,
-                                                                new_status: 'Under Edition')
+        output = Services::Accounts::Testament::SetUnderEdition.call(requester: @auth_account,
+                                                                     account_id: @account_id)
         { data: output }.to_json
       end
 
