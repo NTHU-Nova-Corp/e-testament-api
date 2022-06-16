@@ -6,9 +6,18 @@ module ETestament
       # Service object to reject request for being an executor
       # TODO: Handle error
       class ReleaseTestatorTestament
+        extend Securable
+
         def self.call(requester:, testator_id:)
+          key = generate_key
+          current_account = ETestament::Accounts.first(account_id: testator_id)
+          shamir = ShamirEncryption::ShamirSecretSharing
+          shares = shamir::Base64.split(key, current_account.heirs.count, current_account.min_amount_heirs)
+
+          
+
           # Update the status of the testament to Released
-          Services::Accounts::UpdateTestamentStatus.call(requester:, account_id: testator_id, new_status: 'Released')
+          Service::Accounts::UpdateTestamentStatus.call(requester:, account_id: testator_id, new_status: 'Released')
 
           # Generate the unique key of the testament
 
