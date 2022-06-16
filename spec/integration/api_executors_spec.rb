@@ -109,7 +109,7 @@ describe 'Test Executors Handling' do
     #   assert_nil pending_executor_account
     #
     #   # when
-    #   post 'api/v1/executors', { email: executor_email }.to_json, @req_header
+    #   post 'api/v1/executors', {email: executor_email }.to_json, @req_header
     #
     #   # then
     #   _(last_response.status).must_equal 200
@@ -165,6 +165,30 @@ describe 'Test Executors Handling' do
       _(last_response.status).must_equal 200
       pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
       assert_nil pending_executor_account
+    end
+
+    it 'BAD: should not be able to cancel non exist executor email' do
+      # when
+      post "api/v1/executors/#{@executor[:email]}/cancel", @req_header
+
+      # then
+      _(last_response.status).must_equal 404
+    end
+  end
+  describe 'POST api/v1/executors/:executor_email/unassign' do
+    it 'HAPPY: should be able to unassign executor request' do
+      # given
+      @testator.update(executor_id: @executor[:id])
+      @testator.refresh
+      _(@testator[:executor_id]).wont_be_nil
+
+      #  when
+      post "api/v1/executors/#{@executor[:email]}/unassign", @req_header
+
+      # then
+      _(last_response.status).must_equal 200
+      @testator.refresh
+      assert_nil @testator[:executor_id]
     end
 
     it 'BAD: should not be able to cancel non exist executor email' do
