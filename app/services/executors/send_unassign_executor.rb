@@ -11,7 +11,7 @@ module ETestament
       #   :username
       #   :email
       #   :verification_url
-      class SendInvitation
+      class SendUnassignExecutor
         def initialize(executor_email, owner_full_name)
           @owner_full_name = owner_full_name
           @executor_email = executor_email
@@ -27,9 +27,8 @@ module ETestament
 
         def html_email
           <<~END_EMAIL
-            <H1>E-Testament Invitation</H1>
-            <p>#{@owner_full_name} sent you a request to be his/her Executor, Please <a href=\"#{app_url}\">click here</a>
-            to accept the request.</p>
+            <H1>E-Testament Unassigned</H1>
+            <p>#{@owner_full_name} unassigned you as his/her Executor, please contact testator for more information</p>
           END_EMAIL
         end
 
@@ -39,7 +38,7 @@ module ETestament
               to: [{ 'email' => @executor_email }]
             }],
             from: { 'email' => from_email },
-            subject: 'E-Testament Invitation',
+            subject: 'E-Testament Unassigned from Testator',
             content: [
               { type: 'text/html',
                 value: html_email }

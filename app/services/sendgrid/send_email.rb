@@ -14,9 +14,11 @@ module ETestament
         def mail_url = ENV.fetch('SENDGRID_API_URL')
 
         def call(mail_json:)
-          res = HTTP.auth("Bearer #{mail_api_key}")
-                    .post(mail_url, json: mail_json)
-          raise Exceptions::EmailProviderError if res.status >= 300
+          unless ETestament::Api.environment == :test
+            res = HTTP.auth("Bearer #{mail_api_key}")
+                      .post(mail_url, json: mail_json)
+            raise Exceptions::EmailProviderError if res.status >= 300
+          end
         rescue StandardError
           raise(Exceptions::BadRequestError,
                 'Could not send verification email; please check email address')

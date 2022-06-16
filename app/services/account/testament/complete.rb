@@ -6,7 +6,7 @@ module ETestament
       module Testament
         # Service object to get the Account Information
         class Complete
-          # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+          # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def self.call(requester:, account_id:, min_amount_heirs:)
             # retrieve
             account = Account.first(id: account_id)
@@ -46,7 +46,7 @@ module ETestament
             # return
             Account.first(id: account_id)
           end
-          # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+          # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         end
       end
     end

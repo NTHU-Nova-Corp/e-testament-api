@@ -60,7 +60,7 @@ describe 'Test Property Handling' do
         _(last_response.status).must_equal 200
 
         result = JSON.parse last_response.body
-        _(result['data'].count).must_equal 1
+        _(result['data'].count).must_equal 2
       end
 
       it 'BAD: should not process for unauthorized accounts' do

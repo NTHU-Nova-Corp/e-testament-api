@@ -26,9 +26,16 @@ module ETestament
       routing.on String do |executor_email|
         # POST api/v1/executors/:executor_email/cancel
         routing.post 'cancel' do
-          Services::Executors::CancelExecutorRequest.call(owner_account_id: @account_id,
+          Services::Executors::CancelExecutorRequest.call(account: @auth_account,
                                                           executor_email:)
           { message: 'Executor Request Cancelled' }.to_json
+        end
+
+        # POST api/v1/executors/:executor_email/unassign
+        routing.post 'unassign' do
+          Services::Executors::UnassignExecutor.call(account_id: @account_id, executor_email:)
+
+          { message: 'Executor has been unassigned' }.to_json
         end
       end
 
