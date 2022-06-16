@@ -53,6 +53,14 @@ module ETestament
                                                           executor_account_id: @account_id)
           { message: 'Testator Request Rejected' }.to_json
         end
+
+        # POST api/v1/testators/:testator_id/release
+        # Releases the request to be executor by a testator
+        routing.post 'release' do
+          Services::Testators::ReleaseTestatorTestament.call(owner_account_id: testator_id,
+                                                             executor_account_id: @account_id)
+          { message: 'Testator Testament Released' }.to_json
+        end
       end
 
       #  GET api/v1/testators :: Get all testators
