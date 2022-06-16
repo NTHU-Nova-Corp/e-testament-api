@@ -7,7 +7,7 @@ module ETestament
         # Service object to get the Account Information
         class Release
           # rubocop:disable Metrics/MethodLength
-          def self.call(requester:, account_id:)
+          def self.call(requester:, account_id:, combined_key:)
             # retrieve
             account = Account.first(id: account_id)
             raise Exceptions::NotFoundError, 'Account not found' if account.nil?
@@ -23,7 +23,7 @@ module ETestament
                     'You are not allowed to release testament'
             end
 
-            account.update(testament_status: 'Released').save
+            account.update(testament_status: 'Released', combined_key:).save
 
             # return
             Account.first(id: account_id)

@@ -12,8 +12,12 @@ module ETestament
           # Generate the unique key of the testament
           key = generate_key
           current_account = ETestament::Accounts.first(account_id: testator_id)
+
           shamir = ShamirEncryption::ShamirSecretSharing
           shares = shamir::Base64.split(key, current_account.heirs.count, current_account.min_amount_heirs)
+
+          # Update the status of the testament to Released
+          Service::Accounts::Release.call(requester:, account_id: testator_id, combined_key: key)
 
           # Get the list of heirs
           Services::Heirs::GetHeirs(requester:, account_id:).each_with_index do |heir, index|
@@ -21,9 +25,6 @@ module ETestament
 
             # TODO: Code for crafting link and sending out emails
           end
-
-          # Update the status of the testament to Released
-          Service::Accounts::Release.call(requester:, account_id: testator_id)
         end
       end
     end

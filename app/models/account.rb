@@ -20,7 +20,7 @@ module ETestament
 
     plugin :uuid, field: :id
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password, :username, :executor_id, :testament_status,
+    set_allowed_columns :first_name, :last_name, :email, :password, :combined_key, :username, :executor_id, :testament_status,
                         :min_amount_heirs
     plugin :timestamps, update_on_create: true
 
@@ -31,6 +31,15 @@ module ETestament
     def password?(try_password)
       digest = ETestament::Password.from_digest(password_digest)
       digest.correct?(try_password)
+    end
+
+    def combined_key=(new_combined_key)
+      self.combined_key_digest = ETestament::Password.digest(new_combined_key)
+    end
+
+    def combined_key?(try_combined_key)
+      digest = ETestament::Password.from_digest(combined_key_digest)
+      digest.correct?(try_combined_key)
     end
 
     # rubocop:disable Metrics/MethodLength
