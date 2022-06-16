@@ -23,6 +23,15 @@ module ETestament
         end
       end
 
+      routing.on String do |executor_email|
+        # POST api/v1/executors/:executor_email/cancel
+        routing.post 'cancel' do
+          Services::Executors::CancelExecutorRequest.call(owner_account_id: @account_id,
+                                                          executor_email:)
+          { message: 'Executor Request Cancelled' }.to_json
+        end
+      end
+
       # GET api/v1/executors
       # Get request list for being executors list
       routing.get do
