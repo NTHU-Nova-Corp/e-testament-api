@@ -67,8 +67,8 @@ module ETestament
         # POST api/v1/testators/:testator_id/read
         # Releases the request to be executor by a testator
         routing.post 'read' do
-          Services::Testators::ReadTestatorTestament.call(owner_account_id: testator_id,
-                                                          executor_account_id: @account_id)
+          Services::Testators::ReadTestatorTestament.call(requester: @auth_account,
+                                                          testator_id:)
           { message: 'Testator Testament Read' }.to_json
         end
 

@@ -7,16 +7,16 @@ module ETestament
       # TODO: Handle error
       class ReadTestatorTestament
         def self.call(requester:, testator_id:)
-          current_account = ETestament::Accounts.first(account_id: testator_id)
+          current_account = Account.first(id: testator_id)
 
-          raise Exceptions::BadRequestError, 'No testor found' if current_account.nil?
+          raise Exceptions::BadRequestError, 'No testator found' if current_account.nil?
 
-          if current_account.heirs.count(:key_submitted?) < current_account.min_amount_heirs
+          if current_account.heirs.count(&:key_submitted?) < current_account.min_amount_heirs
             raise Exceptions::BadRequestError, 'There are not enough keys to release the testament'
           end
 
           # Update the status of the testament to Read
-          Service::Accounts::Read.call(requester:, account_id: testator_id, combined_key: key)
+          Services::Accounts::Testament::Read.call(requester:, account_id: testator_id)
         end
       end
     end
