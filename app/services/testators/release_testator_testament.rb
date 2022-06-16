@@ -15,17 +15,15 @@ module ETestament
           shamir = ShamirEncryption::ShamirSecretSharing
           shares = shamir::Base64.split(key, current_account.heirs.count, current_account.min_amount_heirs)
 
-          # TODO: Code for crafting link and sending out emails
-
-          # Update the status of the testament to Released
-          Service::Accounts::UpdateTestamentStatus.call(requester:, account_id: testator_id, new_status: 'Released')
-
           # Get the list of heirs
-          Services::Heirs::GetHeirs(requester:, account_id:).map do |heir|
+          Services::Heirs::GetHeirs(requester:, account_id:).each_with_index do |heir, index|
+            # TODO: Store the key of the heir hashed in the database
+
+            # TODO: Code for crafting link and sending out emails
           end
 
-          # For each heir:  - create a shamir unique key (Done, just map to each share)
-          #                 - send and email with the shamir unique key
+          # Update the status of the testament to Released
+          Service::Accounts::Release.call(requester:, account_id: testator_id)
         end
       end
     end
