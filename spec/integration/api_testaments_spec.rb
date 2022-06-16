@@ -40,7 +40,7 @@ describe 'Test Testaments Handling' do
       _(last_response.status).must_equal 200
 
       response = JSON.parse(last_response.body)
-      _(response['data'].length).must_equal 1
+      _(response['data'].length).must_equal 2
     end
   end
 
