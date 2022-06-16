@@ -8,6 +8,7 @@ module ETestament
       class ReleaseTestatorTestament
         extend Securable
 
+        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(requester:, testator_id:)
           # retrieve
           executor = Account.first(id: requester['id'])
@@ -34,12 +35,13 @@ module ETestament
           Services::Accounts::Testament::Release.call(requester:, account_id: testator_id, combined_key:)
 
           # Get the list of heirs
-          heirs.each_with_index do |heir_data, _index|
-            individual_key = shared_keys[_index]
+          heirs.each_with_index do |heir_data, index|
+            individual_key = shared_keys[index]
             Services::Heirs::UpdateIndividualKey.call(requester:, heir_data:, individual_key:)
             Services::Heirs::SendKeyUrl.new(account, executor, heir_data, individual_key).call
           end
         end
+        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
       end
     end
   end

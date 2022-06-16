@@ -68,6 +68,7 @@ def seed_documents
   end
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def seed_heirs
   heirs = DATA[:heirs].each
   relation = ETestament::Relation.first
@@ -88,7 +89,6 @@ def seed_heirs
   ETestament::Services::Heirs::CreateHeir.call(requester: account2, account_id: account2['id'], new_data: heir2)
 end
 
-# rubocop:disable Metrics/MethodLength
 def seed_property_heirs
   property_heirs = DATA[:property_heirs].each
   heirs = ETestament::Heir.all.cycle
@@ -103,8 +103,7 @@ def seed_property_heirs
                                                                     new_data: property_heir)
   end
 end
-
-# rubocop:enable Metrics/MethodLength
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 DATA = {
   accounts: YAML.load(File.read('app/db/seeds/account_seeds.yml')),
@@ -113,11 +112,3 @@ DATA = {
   heirs: YAML.load(File.read('app/db/seeds/heir_seeds.yml')),
   property_heirs: YAML.load(File.read('app/db/seeds/property_heir_seeds.yml'))
 }.freeze
-
-## SSO fixtures
-# TODO: Get actual Google SSO JSON for fixtures
-# GOOGLE_ACCOUNT_RESPONSE = YAML.load(
-#   File.read('spec/fixtures/google_token_response.yml')
-# )
-# GOOD_GOOGLE_ACCESS_TOKEN = GOOGLE_ACCOUNT_RESPONSE.keys.first
-# SSO_ACCOUNT = YAML.load(File.read('spec/fixtures/sso_account.yml'))
