@@ -20,7 +20,11 @@ module ETestament
                         :individual_key
 
     def key_content_submitted
-      SecureDB.decrypt(key_content_submitted_secure)
+      if key_content_submitted_secure.nil? || key_content_submitted_secure == ''
+        ''
+      else
+        SecureDB.decrypt(key_content_submitted_secure)
+      end
     end
 
     def key_content_submitted=(plaintext)
@@ -36,6 +40,10 @@ module ETestament
       digest.correct?(try_individual_key)
     end
 
+    def key_submitted?
+      !key_content_submitted.nil? && key_content_submitted != ''
+    end
+
     # rubocop:disable Metrics/MethodLength
     def to_h
       {
@@ -47,7 +55,8 @@ module ETestament
           first_name:,
           last_name:,
           email:,
-          relation: relation.name
+          relation: relation.name,
+          key_submitted: key_submitted?
         }
       }
     end
