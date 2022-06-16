@@ -52,7 +52,7 @@ describe 'Test Testaments Handling' do
           property_heir.update(percentage: 100).save
         end
       end
-      post 'api/v1/testaments/complete', { min_amount_heirs: 1 }.to_json, @req_header
+      post 'api/v1/testaments/complete', { min_amount_heirs: 2 }.to_json, @req_header
 
       _(last_response.status).must_equal 200
 

@@ -80,6 +80,12 @@ def seed_heirs
 
     ETestament::Services::Heirs::CreateHeir.call(requester: account, account_id: account['id'], new_data: heir)
   end
+
+  heir2 = DATA[:heirs][2]
+  heir2['relation_id'] = relation.id
+  account2 = JSON.parse(ETestament::Account.first.to_json)['attributes']
+
+  ETestament::Services::Heirs::CreateHeir.call(requester: account2, account_id: account2['id'], new_data: heir2)
 end
 
 # rubocop:disable Metrics/MethodLength
