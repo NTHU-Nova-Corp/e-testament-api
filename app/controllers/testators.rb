@@ -9,6 +9,16 @@ module ETestament
     route('testators') do |routing|
       # Web controller for ETestament API, heirs sub-route
       @testators_route = "#{@api_root}/testators"
+
+      routing.on 'submit-key' do
+        routing.post do
+          key_data = JSON.parse(routing.body.read)
+          output = Services::Testators::SubmitHeirKey.call(heir_id: key_data['heir_id'],
+                                                           key_content_submitted: key_data['heir_key'])
+          { data: output }.to_json
+        end
+      end
+
       unauthorized_message = { message: 'Unauthorized Request' }.to_json
       routing.halt(403, unauthorized_message) unless @auth_account
 
