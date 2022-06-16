@@ -41,13 +41,6 @@ module ETestament
           { data: output }.to_json
         end
 
-        # GET api/v1/testator/:testator_id
-        # Get testator's info
-        routing.get do
-          output = Services::Testators::GetTestator.call(id: @account_id, testator_id:)
-          { data: output }.to_json
-        end
-
         # POST api/v1/testators/:testator_id/accept
         # Accepts the request to be executor by a testator
         routing.post 'accept' do
@@ -70,6 +63,29 @@ module ETestament
           Services::Testators::ReleaseTestatorTestament.call(owner_account_id: testator_id,
                                                              executor_account_id: @account_id)
           { message: 'Testator Testament Released' }.to_json
+        end
+
+        # POST api/v1/testators/:testator_id/read
+        # Releases the request to be executor by a testator
+        routing.post 'read' do
+          Services::Testators::ReadTestatorTestament.call(owner_account_id: testator_id,
+                                                          executor_account_id: @account_id)
+          { message: 'Testator Testament Read' }.to_json
+        end
+
+        # GET api/v1/testator/:testator_id/testament
+        # Get testator's testament info
+        routing.get 'testament' do
+          output = Services::PropertyHeirs::GetPropertiesWithHeirsDistribution.call(requester: @auth_account,
+                                                                                    account_id: testator_id)
+          JSON({ data: output }, {})
+        end
+
+        # GET api/v1/testator/:testator_id
+        # Get testator's info
+        routing.get do
+          output = Services::Testators::GetTestator.call(id: @account_id, testator_id:)
+          { data: output }.to_json
         end
       end
 

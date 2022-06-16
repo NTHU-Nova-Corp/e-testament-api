@@ -20,8 +20,8 @@ module ETestament
 
     plugin :uuid, field: :id
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password, :combined_key, :username, :executor_id, :testament_status,
-                        :min_amount_heirs
+    set_allowed_columns :first_name, :last_name, :email, :password, :combined_key, :username, :executor_id,
+                        :testament_status, :min_amount_heirs
     plugin :timestamps, update_on_create: true
 
     def password=(new_password)
