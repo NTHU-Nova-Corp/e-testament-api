@@ -12,7 +12,7 @@ Sequel.migration do
       String :first_name, null: false
       String :last_name, null: false
       String :password, null: false
-      String :email, null: false, unique: true
+      String :email, null: false
 
       DateTime :created_at
       DateTime :updated_at
