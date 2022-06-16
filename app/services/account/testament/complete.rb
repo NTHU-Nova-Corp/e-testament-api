@@ -37,8 +37,8 @@ module ETestament
                     'Please enter the minimum number of heirs needed to read your testament.'
             end
 
-            if min_amount_heirs.to_i > account.heirs.count
-              raise Exceptions::BadRequestError, "The max number of heirs needed is #{account.heirs.count}."
+            if min_amount_heirs.to_i > account.heirs.count || min_amount_heirs.to_i < 2
+              raise Exceptions::BadRequestError, "The number of heirs needs to be between 2 and #{account.heirs.count}."
             end
 
             account.update(testament_status: 'Completed', min_amount_heirs: min_amount_heirs.to_i).save
