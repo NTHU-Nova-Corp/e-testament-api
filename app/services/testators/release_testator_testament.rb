@@ -8,10 +8,14 @@ module ETestament
       class ReleaseTestatorTestament
         def self.call(requester:, testator_id:)
           # Update the status of the testament to Released
-          Service::Accounts::UpdateTestamentStatus.call(requester:, account_id: testator_id, new_status: 'Released')
+          Services::Accounts::UpdateTestamentStatus.call(requester:, account_id: testator_id, new_status: 'Released')
 
           # Generate the unique key of the testament
+
           # Get the list of heirs
+          Services::Heirs::GetHeirs(requester:, account_id:).map do |heir|
+          end
+
           # For each heir:  - create a shamier unique key
           #                 - send and email with the shamier unique key
         end
