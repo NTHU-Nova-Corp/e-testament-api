@@ -9,7 +9,9 @@ module ETestament
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def self.call(account:, executor_data:)
           # verify
-          raise 'cannot assign account as an executor' if executor_data['email'].eql?(account['email'])
+          if executor_data['email'].eql?(account['email'])
+            raise Exceptions::BadRequestError, 'cannot assign account as an executor'
+          end
 
           # clear
           PendingExecutorAccount.where(owner_account_id: account['id']).delete
