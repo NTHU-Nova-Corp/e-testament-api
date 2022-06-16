@@ -28,7 +28,7 @@ module ETestament
         def html_email
           <<~END_EMAIL
             <H1>E-Testament Request Acceptance</H1>
-            <p>#{@executor_full_name} have accepted for your request, now he officially is your executor!</p>
+            <p>#{@executor_full_name} has accepted for your request, now he officially is your executor!</p>
           END_EMAIL
         end
 
