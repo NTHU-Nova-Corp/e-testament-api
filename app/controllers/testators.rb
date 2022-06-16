@@ -72,12 +72,42 @@ module ETestament
           { message: 'Testator Testament Read' }.to_json
         end
 
-        # GET api/v1/testator/:testator_id/testament
-        # Get testator's testament info
-        routing.get 'testament' do
-          output = Services::PropertyHeirs::GetPropertiesWithHeirsDistribution.call(requester: @auth_account,
-                                                                                    account_id: testator_id)
-          JSON({ data: output }, {})
+        routing.on 'testament' do
+          routing.on 'properties' do
+            routing.on String do |property_id|
+              @property = Property.first(id: property_id)
+              routing.on 'documents' do
+                # GET api/v1/testators/:testator_id/testament/properties/:property_id/documents/:document_id
+                routing.get String do |document_id|
+                  @document = Document.first(id: document_id, property_id: @property.id)
+                  raise Exceptions::NotFoundError, 'Document not found' if @document.nil?
+
+                  output = Services::Properties::GetDocument.call(requester: @auth_account, property_data: @property,
+                                                                  document_data: @document)
+                  { data: output.full_details }.to_json
+                end
+
+                # GET api/v1/testators/:testator_id/testament/properties/:property_id/documents
+                routing.get do
+                  output = Services::Properties::GetDocuments.call(requester: @auth_account, property_data: @property)
+                  { data: output }.to_json
+                end
+              end
+
+              routing.get do
+                output = Services::Properties::GetProperty.call(requester: @auth_account, property_data: @property)
+                { data: output }.to_json
+              end
+            end
+          end
+
+          # GET api/v1/testator/:testator_id/testament
+          # Get testator's testament info
+          routing.get do
+            output = Services::PropertyHeirs::GetPropertiesWithHeirsDistribution.call(requester: @auth_account,
+                                                                                      account_id: testator_id)
+            JSON({ data: output }, {})
+          end
         end
 
         # GET api/v1/testator/:testator_id
