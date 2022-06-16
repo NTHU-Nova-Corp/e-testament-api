@@ -6,7 +6,7 @@ require 'json'
 module ETestament
   # PendingExecutorAccount model
   class PendingExecutorAccount < Sequel::Model
-    many_to_one :owner_account, class: :'ETestament::Account', key: :owner_account_id
+    many_to_one :testator_account, class: :'ETestament::Account', key: :owner_account_id
     many_to_one :executor_account, class: :'ETestament::Account', key: :executor_account_id
 
     plugin :uuid, field: :id

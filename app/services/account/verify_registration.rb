@@ -18,15 +18,11 @@ module ETestament
 
         def from_email = ENV.fetch('SENDGRID_FROM_EMAIL')
 
-        def mail_api_key = ENV.fetch('SENDGRID_API_KEY')
-
-        def mail_url = ENV.fetch('SENDGRID_API_URL')
-
         def call
           raise Exceptions::BadRequestError, 'Username exists' unless username_available?
           raise Exceptions::BadRequestError, 'Email already used' unless email_available?
 
-          send_email_verification
+          Services::SendGrid::SendEmail.new.call(mail_json:)
         end
 
         def username_available?
@@ -58,15 +54,6 @@ module ETestament
                 value: html_email }
             ]
           }
-        end
-
-        def send_email_verification
-          res = HTTP.auth("Bearer #{mail_api_key}")
-                    .post(mail_url, json: mail_json)
-          raise Exceptions::EmailProviderError if res.status >= 300
-        rescue StandardError
-          raise(Exceptions::BadRequestError,
-                'Could not send verification email; please check email address')
         end
       end
     end

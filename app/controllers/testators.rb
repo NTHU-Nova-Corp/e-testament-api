@@ -14,11 +14,11 @@ module ETestament
 
       @account_id = @auth_account['id']
 
-      routing.on 'pending-requests' do
-        # GET api/v1/testators/pending-requests
+      routing.on 'request' do
+        # GET api/v1/testators/request
         # Returns the list of executor requests pending to be accepted by the current account
         routing.get do
-          output = Services::Executors::GetExecutorPending.call(id: @account_id)
+          output = Services::Testators::GetRequestTestator.call(id: @account_id)
           { data: output }.to_json
         end
       end
@@ -52,6 +52,14 @@ module ETestament
           Services::Testators::RejectTestatorRequest.call(owner_account_id: testator_id,
                                                           executor_account_id: @account_id)
           { message: 'Testator Request Rejected' }.to_json
+        end
+
+        # POST api/v1/testators/:testator_id/release
+        # Releases the request to be executor by a testator
+        routing.post 'release' do
+          Services::Testators::ReleaseTestatorTestament.call(owner_account_id: testator_id,
+                                                             executor_account_id: @account_id)
+          { message: 'Testator Testament Released' }.to_json
         end
       end
 

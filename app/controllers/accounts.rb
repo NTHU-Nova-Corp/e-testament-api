@@ -25,9 +25,8 @@ module ETestament
       # Create new account
       # TODO: Update unittest
       routing.post do
-        #new_data = JSON.parse(routing.body.read)
-        account_data = SignedRequest.new(Api.config).parse(request.body.read)
-        new_account = Services::Accounts::CreateAccount.call(account_data:)
+        new_data = SignedRequest.new(Api.config).parse(request.body.read)
+        new_account = Services::Accounts::CreateAccount.call(new_data:)
 
         response.status = 201
         response['Location'] = "#{@account_route}/#{new_account.username}"

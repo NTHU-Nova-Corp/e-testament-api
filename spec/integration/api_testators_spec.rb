@@ -26,12 +26,12 @@ describe 'Test Testators Handling' do
 
     # setup data
     @executor_data = DATA[:accounts][0]
-    @testator1_data = DATA[:accounts][1]
+    @testator_data = DATA[:accounts][1]
 
     # setup account
     @accounts = ETestament::Account.all.cycle
     @executor = @accounts.next
-    @testator1 = @accounts.next
+    @testator = @accounts.next
 
     # setup login account
     login_account(@executor_data)
@@ -52,34 +52,34 @@ describe 'Test Testators Handling' do
         _(data.length).must_equal 2
 
         attributes = data[0]['attributes']
-        _(attributes['id']).must_equal @testator1[:id]
-        _(attributes['username']).must_equal @testator1[:username]
-        _(attributes['first_name']).must_equal @testator1[:first_name]
-        _(attributes['last_name']).must_equal @testator1[:last_name]
-        _(attributes['email']).must_equal @testator1[:email]
+        _(attributes['id']).must_equal @testator[:id]
+        _(attributes['username']).must_equal @testator[:username]
+        _(attributes['first_name']).must_equal @testator[:first_name]
+        _(attributes['last_name']).must_equal @testator[:last_name]
+        _(attributes['email']).must_equal @testator[:email]
       end
     end
 
     describe 'GET /api/v1/testators/:testator_id :: testator information' do
       it 'should be able to get testator information' do
         # when
-        get "/api/v1/testators/#{@testator1[:id]}"
+        get "/api/v1/testators/#{@testator[:id]}"
 
         # then
         _(last_response.status).must_equal 200
         attributes = JSON.parse(last_response.body)['data']['attributes']
-        _(attributes['id']).must_equal @testator1[:id]
-        _(attributes['username']).must_equal @testator1[:username]
-        _(attributes['first_name']).must_equal @testator1[:first_name]
-        _(attributes['last_name']).must_equal @testator1[:last_name]
-        _(attributes['email']).must_equal @testator1[:email]
+        _(attributes['id']).must_equal @testator[:id]
+        _(attributes['username']).must_equal @testator[:username]
+        _(attributes['first_name']).must_equal @testator[:first_name]
+        _(attributes['last_name']).must_equal @testator[:last_name]
+        _(attributes['email']).must_equal @testator[:email]
       end
     end
 
     describe 'GET /api/v1/testator/:testator_id/heirs :: heirs of a testator ' do
       it 'HAPPY: should be able to get heirs details of a testator' do
         # when
-        get "/api/v1/testators/#{@testator1[:id]}/heirs"
+        get "/api/v1/testators/#{@testator[:id]}/heirs"
 
         # then
         _(last_response.status).must_equal 200
@@ -94,7 +94,7 @@ describe 'Test Testators Handling' do
       end
 
       it 'BAD: should not be able to get details of heir list from other executor' do
-        login_account(@testator1_data)
+        login_account(@testator_data)
 
         get "/api/v1/testators/#{@executor[:id]}/heirs"
 
@@ -107,26 +107,27 @@ describe 'Test Testators Handling' do
     before(:each) do
       assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
 
-      login_account(@testator1_data)
+      login_account(@testator_data)
       post 'api/v1/executors', { email: @executor[:email] }.to_json, @req_header
     end
 
-    describe 'GET api/v1/testators/pending-requests' do
-      it 'HAPPY: should be able to get pending list' do
+    describe 'GET api/v1/testators/request' do
+      it 'HAPPY: should be able to get testator request list' do
         # given
         login_account(@executor_data)
 
         # when
-        get 'api/v1/testators/pending-requests'
+        get 'api/v1/testators/request'
 
         # then
         _(last_response.status).must_equal 200
+        attributes = JSON.parse(last_response.body)['data']['attributes']
 
-        response = JSON.parse(last_response.body)
-        _(response['data'].length).must_equal 1
-
-        testator = response['data'][0]['attributes']
-        _(testator['owner_account_id']).must_equal @testator1[:id]
+        _(attributes['id']).must_equal @testator[:id]
+        _(attributes['username']).must_equal @testator[:username]
+        _(attributes['first_name']).must_equal @testator[:first_name]
+        _(attributes['last_name']).must_equal @testator[:last_name]
+        _(attributes['email']).must_equal @testator[:email]
       end
     end
 
@@ -136,14 +137,14 @@ describe 'Test Testators Handling' do
         login_account(@executor_data)
 
         # when then
-        assert_nil @testator1[:executor_id]
+        assert_nil @testator[:executor_id]
         _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
 
         # when then
-        post "api/v1/testators/#{@testator1[:id]}/accept"
+        post "api/v1/testators/#{@testator[:id]}/accept"
         _(last_response.status).must_equal 200
 
-        testator = ETestament::Account.first(email: @testator1[:email])
+        testator = ETestament::Account.first(email: @testator[:email])
         _(testator[:executor_id]).must_equal @executor[:id]
         assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
       end
@@ -155,15 +156,15 @@ describe 'Test Testators Handling' do
         login_account(@executor_data)
 
         # pre-verify
-        assert_nil @testator1[:executor_id]
+        assert_nil @testator[:executor_id]
         _(ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])).wont_be_nil
 
         # when
-        post "api/v1/testators/#{@testator1[:id]}/reject"
+        post "api/v1/testators/#{@testator[:id]}/reject"
 
         # then
         _(last_response.status).must_equal 200
-        assert_nil @testator1[:executor_id]
+        assert_nil @testator[:executor_id]
         assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
       end
     end

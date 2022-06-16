@@ -74,7 +74,7 @@ describe 'Test Executors Handling' do
       post 'api/v1/executors', { email: accounts[:email] }.to_json, @req_header
 
       # then
-      _(last_response.status).must_equal 500
+      _(last_response.status).must_equal 400
     end
 
     it 'HAPPY: should be able to assign the other account as an executor' do
@@ -98,27 +98,81 @@ describe 'Test Executors Handling' do
       _(pending_executor_account_result[:executor_account_id]).must_equal @executor[:id]
     end
 
-    it 'HAPPY: should be able to send email request to non-account email' do
+    # it 'HAPPY: should be able to send email request to non-account email' do
+    #   # given
+    #   executor_email = 'test_executor_email@gmail.com'
+    #
+    #   # when
+    #   pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
+    #
+    #   # then
+    #   assert_nil pending_executor_account
+    #
+    #   # when
+    #   post 'api/v1/executors', { email: executor_email }.to_json, @req_header
+    #
+    #   # then
+    #   _(last_response.status).must_equal 200
+    #
+    #   #  when
+    #   pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email:)
+    #
+    #   # then
+    #   _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
+    # end
+  end
+
+  describe 'GET api/v1/executors/sent' do
+    before(:each) do
+      assert_nil ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
+
+      login_account(@testator_data)
+      post 'api/v1/executors', { email: @executor[:email] }.to_json, @req_header
+    end
+
+    it 'HAPPY: should be able to get pending list' do
       # given
-      executor_email = 'test_executor_email@gmail.com'
+      login_account(@testator_data)
 
       # when
-      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email:)
-
-      # then
-      assert_nil pending_executor_account
-
-      # when
-      post 'api/v1/executors', { email: executor_email }.to_json, @req_header
+      get 'api/v1/executors/sent'
 
       # then
       _(last_response.status).must_equal 200
 
+      response = JSON.parse(last_response.body)
+
+      executor = response['data']['attributes']
+      _(executor['id']).must_equal @executor[:id]
+      _(executor['username']).must_equal @executor[:username]
+      _(executor['first_name']).must_equal @executor[:first_name]
+      _(executor['last_name']).must_equal @executor[:last_name]
+      _(executor['email']).must_equal @executor[:email]
+    end
+  end
+
+  describe 'POST api/v1/executors/:executor_email/cancel' do
+    it 'HAPPY: should be able to cancel executor request' do
+      # given
+      post 'api/v1/executors', { email: @executor[:email] }.to_json, @req_header
+      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
+      _(pending_executor_account[:executor_email]).must_equal @executor[:email]
+
       #  when
-      pending_executor_account_result = ETestament::PendingExecutorAccount.first(executor_email:)
+      post "api/v1/executors/#{@executor[:email]}/cancel", @req_header
 
       # then
-      _(pending_executor_account_result[:owner_account_id]).must_equal @testator[:id]
+      _(last_response.status).must_equal 200
+      pending_executor_account = ETestament::PendingExecutorAccount.first(executor_email: @executor[:email])
+      assert_nil pending_executor_account
+    end
+
+    it 'BAD: should not be able to cancel non exist executor email' do
+      # when
+      post "api/v1/executors/#{@executor[:email]}/cancel", @req_header
+
+      # then
+      _(last_response.status).must_equal 404
     end
   end
 end

@@ -10,7 +10,7 @@ module ETestament
           policy = Policies::Document.new(requester:,
                                           testament_status: property_data.account[:testament_status],
                                           property_owner_id: property_data.account[:id],
-                                          property_owner_executor_id: property_data.account[:executor_account_id])
+                                          property_owner_executor_id: property_data.account[:executor_id])
           unless policy.can_create?
             raise Exceptions::ForbiddenError, 'You are not allowed to create documents for the property selected.'
           end

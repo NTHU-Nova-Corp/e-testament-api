@@ -9,7 +9,7 @@ module ETestament
           policy = Policies::Document.new(requester:,
                                           testament_status: property_data.account[:testament_status],
                                           property_owner_id: property_data.account[:id],
-                                          property_owner_executor_id: property_data.account[:executor_account_id])
+                                          property_owner_executor_id: property_data.account[:executor_id])
 
           raise Exceptions::ForbiddenError, 'You are not allowed view the document requested.' unless policy.can_view?
 

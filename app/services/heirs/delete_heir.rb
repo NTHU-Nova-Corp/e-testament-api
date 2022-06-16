@@ -6,9 +6,12 @@ module ETestament
     module Heirs
       # Create heir for account
       class DeleteHeir
+        # rubocop:disable Metrics/AbcSize
         def self.call(requester:, heir_data:)
           # verify
-          policy = Policies::Heir.new(requester:, heir_owner_id: heir_data.account.id,
+          policy = Policies::Heir.new(requester:,
+                                      testament_status: heir_data.account.testament_status,
+                                      heir_owner_id: heir_data.account.id,
                                       heir_owner_executor_id: heir_data.account.executor_id)
 
           raise Exceptions::ForbiddenError, 'You are not allowed to remove the heir selected.' unless policy.can_delete?
@@ -19,6 +22,7 @@ module ETestament
           end
           raise Exceptions::BadRequestError, 'Could not delete heir' unless Heir.where(id: heir_data[:id]).delete
         end
+        # rubocop:enable Metrics/AbcSize
       end
     end
   end

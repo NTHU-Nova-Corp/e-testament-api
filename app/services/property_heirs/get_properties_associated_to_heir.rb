@@ -11,7 +11,7 @@ module ETestament
                                               testament_status: heir_data.account[:testament_status],
                                               heir_owner_id: heir_data.account[:id],
                                               property_owner_id: nil,
-                                              heir_owner_executor_id: heir_data.account[:executor_account_id],
+                                              heir_owner_executor_id: heir_data.account[:executor_id],
                                               property_owner_executor_id: nil)
           unless policy.can_view_associations_between_heirs_and_properties?
             raise Exceptions::ForbiddenError, 'You are not allowed to view the property'

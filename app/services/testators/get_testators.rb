@@ -7,10 +7,7 @@ module ETestament
       class GetTestators
         def self.call(id:)
           testators = Account.first(id:).testators
-
-          raise Exceptions::NotFoundError, 'Not found associated testators' if testators.nil?
-
-          testators
+          testators.nil? ? [] : testators
         end
       end
     end

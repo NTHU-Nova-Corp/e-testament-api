@@ -20,8 +20,8 @@ describe 'Test Authentication Routes' do
       credentials = { username: @account_data['username'],
                       password: @account_data['password'] }
       post 'api/v1/auth/authenticate',
-            SignedRequest.new(app.config).sign(credentials).to_json,
-            @req_header
+           SignedRequest.new(app.config).sign(credentials).to_json,
+           @req_header
 
       auth_account = JSON.parse(last_response.body)['data']
       account = auth_account['attributes']['account']['attributes']
@@ -36,8 +36,8 @@ describe 'Test Authentication Routes' do
                       password: 'fakepassword' }
 
       post 'api/v1/auth/authenticate',
-            SignedRequest.new(app.config).sign(credentials).to_json,
-            @req_header
+           SignedRequest.new(app.config).sign(credentials).to_json,
+           @req_header
       result = JSON.parse(last_response.body)
 
       _(last_response.status).must_equal 401

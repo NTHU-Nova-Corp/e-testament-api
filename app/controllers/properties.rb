@@ -90,7 +90,6 @@ module ETestament
                                                                                     property_data: @property)
 
               response.status = 200
-              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
               { message: 'Heir deassociated from property' }.to_json
             end
 
@@ -103,7 +102,6 @@ module ETestament
                                                                property_data: @property, new_data:)
 
               response.status = 200
-              response['Location'] = "#{@heirs_route}/#{new_heir.id}"
               { message: 'Heir deassociated from property' }.to_json
             end
 

@@ -54,6 +54,9 @@ describe 'Test Testaments Handling' do
       post 'api/v1/testaments/complete', @req_header
 
       _(last_response.status).must_equal 200
+
+      account_val = ETestament::Account.first
+      _(account_val.testament_status).must_equal('Completed')
     end
 
     it 'BAD: should not be able to complete a testament details of its own account that has all the properties distributed' do
