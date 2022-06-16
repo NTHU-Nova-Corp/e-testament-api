@@ -16,7 +16,8 @@ module ETestament
     plugin :uuid, field: :id
     plugin :timestamps, update_on_create: true
     plugin :whitelist_security
-    set_allowed_columns :first_name, :last_name, :email, :password, :relation_id, :key_content_submitted
+    set_allowed_columns :first_name, :last_name, :email, :password, :relation_id, :key_content_submitted,
+                        :individual_key
 
     def key_content_submitted
       SecureDB.decrypt(key_content_submitted_secure)
@@ -24,6 +25,15 @@ module ETestament
 
     def key_content_submitted=(plaintext)
       self.key_content_submitted_secure = SecureDB.encrypt(plaintext)
+    end
+
+    def individual_key=(new_individual_key)
+      self.individual_key_digest = ETestament::Password.digest(new_individual_key)
+    end
+
+    def individual_key?(try_individual_key)
+      digest = ETestament::Password.from_digest(individual_key_digest)
+      digest.correct?(try_individual_key)
     end
 
     # rubocop:disable Metrics/MethodLength
