@@ -32,12 +32,16 @@ module ETestament
               raise Exceptions::BadRequestError, 'The distribution of all properties should be 100%'
             end
 
-            if min_amount_heirs.nil? || min_amount_heirs.zero?
+            if min_amount_heirs.nil? || min_amount_heirs.to_i.zero?
               raise Exceptions::BadRequestError,
-                    'Please enter the minimum amount of heirs needed to read your testament.'
+                    'Please enter the minimum number of heirs needed to read your testament.'
             end
 
-            account.update(testament_status: 'Completed').save
+            if min_amount_heirs.to_i > account.heirs.count
+              raise Exceptions::BadRequestError, "The max number of heirs needed is #{account.heirs.count}."
+            end
+
+            account.update(testament_status: 'Completed', min_amount_heirs: min_amount_heirs.to_i).save
 
             # return
             Account.first(id: account_id)
