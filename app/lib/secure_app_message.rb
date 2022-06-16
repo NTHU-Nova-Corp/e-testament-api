@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'securable'
+require 'cgi'
 
 # Encrypt and Decrypt from Database
 class SecureAppMessage
@@ -11,7 +12,7 @@ class SecureAppMessage
     return nil unless plaintext
 
     ciphertext = base_encrypt(plaintext)
-    Base64.strict_encode64(ciphertext)
+    CGI.escape(Base64.strict_encode64(ciphertext))
   end
 
   # Decrypt or else return nil if database value is nil already

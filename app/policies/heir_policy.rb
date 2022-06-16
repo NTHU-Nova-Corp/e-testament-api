@@ -15,6 +15,10 @@ module ETestament
         heir_owner? && testament_under_edition?
       end
 
+      def can_set_individual_key?
+        heir_executor?
+      end
+
       def can_update?
         heir_owner? && testament_under_edition?
       end
@@ -32,7 +36,8 @@ module ETestament
           can_create: can_create?,
           can_view: can_view?,
           can_update: can_update?,
-          can_delete: can_delete?
+          can_delete: can_delete?,
+          can_set_individual_key: can_set_individual_key?
         }
       end
 

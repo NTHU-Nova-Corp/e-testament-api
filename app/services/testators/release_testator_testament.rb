@@ -9,21 +9,35 @@ module ETestament
         extend Securable
 
         def self.call(requester:, testator_id:)
-          # Generate the unique key of the testament
-          key = generate_key
-          current_account = ETestament::Accounts.first(account_id: testator_id)
+          # retrieve
+          executor = Account.first(id: requester['id'])
+          account = Account.first(id: testator_id)
+          raise Exceptions::NotFoundError, 'Account not found' if account.nil?
 
-          shamir = ShamirEncryption::ShamirSecretSharing
-          shares = shamir::Base64.split(key, current_account.heirs.count, current_account.min_amount_heirs)
+          # verify
+          policy = Policies::Testament.new(requester:,
+                                           owner_id: testator_id,
+                                           executor_id: account.executor_id,
+                                           previous_status: account.testament_status)
+
+          unless policy.can_release?
+            raise Exceptions::BadRequestError, 'You are not allowed set this testament to be released'
+          end
+
+          # Generate the unique key of the testament
+          combined_key = generate_key
+          heirs = account.heirs
+          shared_keys = ShamirEncryption::ShamirSecretSharing::Base64.split(combined_key, heirs.count,
+                                                                            account.min_amount_heirs)
 
           # Update the status of the testament to Released
-          Service::Accounts::Release.call(requester:, account_id: testator_id, combined_key: key)
+          Services::Accounts::Testament::Release.call(requester:, account_id: testator_id, combined_key:)
 
           # Get the list of heirs
-          Services::Heirs::GetHeirs(requester:, account_id:).each_with_index do |heir, index|
-            # TODO: Store the key of the heir hashed in the database
-
-            # TODO: Code for crafting link and sending out emails
+          heirs.each_with_index do |heir_data, _index|
+            individual_key = shared_keys[_index]
+            Services::Heirs::UpdateIndividualKey.call(requester:, heir_data:, individual_key:)
+            Services::Heirs::SendKeyUrl.new(account, executor, heir_data, individual_key).call
           end
         end
       end

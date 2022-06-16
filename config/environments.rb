@@ -32,8 +32,8 @@ module ETestament
 
       # Load crypto keys
       SecureDB.setup(ENV.delete('DB_KEY'))
-      SecureAppMessage.setup(ENV.delete('APP_MSG_KEY'))
-      AuthToken.setup(ENV.delete('MSG_KEY'))
+      SecureAppMessage.setup(ENV.fetch('APP_MSG_KEY'))
+      AuthToken.setup(ENV.fetch('MSG_KEY'))
     end
     # rubocop:enable Lint/ConstantDefinitionInBlock
 

@@ -168,5 +168,56 @@ describe 'Test Testators Handling' do
         assert_nil ETestament::PendingExecutorAccount.first(executor_account_id: @executor[:id])
       end
     end
+
+    describe 'POST api/v1/testators/:testator_id/release' do
+      before(:each) do
+        # clear
+        wipe_database
+
+        # seed
+        seed_accounts
+        seed_properties
+        seed_heirs
+        seed_property_heirs
+
+        @testator_data = DATA[:accounts][0]
+        @executor_data = DATA[:accounts][1]
+        @accounts = ETestament::Account.all.cycle
+        @testator = @accounts.next
+        @executor = @accounts.next
+
+        @testator.properties.map do |property|
+          property.property_heirs.map do |property_heir|
+            property_heir.update(percentage: 100).save
+          end
+        end
+
+        # testator complete testament
+        login_account(@testator_data)
+        post 'api/v1/testaments/complete', { min_amount_heirs: 2 }.to_json, @req_header
+        _(last_response.status).must_equal 200
+
+        # testator request executor
+        post 'api/v1/executors', { email: @executor[:email] }.to_json, @req_header
+        _(last_response.status).must_equal 200
+
+        # executor accept request
+        login_account(@executor_data)
+        post "api/v1/testators/#{@testator[:id]}/accept"
+        _(last_response.status).must_equal 200
+
+        @testator.refresh
+        @executor.refresh
+      end
+
+      it 'HAPPY: executor should be able to release the testament' do
+        # given
+        login_account(@executor_data)
+
+        # when
+        post "api/v1/testators/#{@testator[:id]}/release", @req_header
+        _(last_response.status).must_equal 200
+      end
+    end
   end
 end
