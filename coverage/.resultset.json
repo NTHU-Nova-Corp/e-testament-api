@@ -6140,50 +6140,6 @@
           null
         ]
       },
-      "/Users/code/NTHU/2022_Spring/Service-Security/Nova-Corp/e-testament-api/spec/integration/service_add_heir_spec.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          null,
-          1,
-          1,
-          0,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
       "/Users/code/NTHU/2022_Spring/Service-Security/Nova-Corp/e-testament-api/spec/integration/service_authenticate_account_spec.rb": {
         "lines": [
           null,
@@ -6334,6 +6290,6 @@
         ]
       }
     },
-    "timestamp": 1655572689
+    "timestamp": 1655574090
   }
 }

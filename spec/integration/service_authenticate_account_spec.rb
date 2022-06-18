@@ -19,7 +19,7 @@ describe 'Test Authenticate service' do
     _(account).wont_be_nil
   end
 
-  it 'SAD: will not authenticate with invalid password' do
+  it 'BAD AUTHORIZATION: will not authenticate with invalid password' do
     credentials = DATA[:accounts].first
     _(proc {
       ETestament::Services::Accounts::Authenticate.call(
@@ -28,7 +28,7 @@ describe 'Test Authenticate service' do
     }).must_raise ETestament::Exceptions::UnauthorizedError
   end
 
-  it 'BAD: will not authenticate with invalid credentials' do
+  it 'BAD AUTHORIZATION: will not authenticate with invalid credentials' do
     _(proc {
       ETestament::Services::Accounts::Authenticate.call(
         username: 'maluser', password: 'malword'

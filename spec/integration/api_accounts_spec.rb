@@ -55,7 +55,7 @@ describe 'Test Account Handling' do
       assert_nil attributes['salt']
     end
 
-    it 'BAD: should not be able to get details of an account with another account' do
+    it 'BAD AUTHORIZATION: should not be able to get details of an account with another account' do
       # when
       get "/api/v1/accounts/#{@executor_data['username']}"
 
@@ -93,7 +93,7 @@ describe 'Test Account Handling' do
       _(account.password?('not_really_the_password')).must_equal false
     end
 
-    it 'SECURITY_MASS_ASSIGNMENT: should not create account with illegal attributes' do
+    it 'BAD MASS_ASSIGNMENT: should not create account with illegal attributes' do
       # given
       bad_data = @account_data.clone
       bad_data['created_at'] = '1900-01-01'
@@ -108,7 +108,7 @@ describe 'Test Account Handling' do
       assert_nil last_response.header['Location']
     end
 
-    it 'SECURITY_UNSIGNED_REQUEST: should not accept unsigned requests' do
+    it 'BAD AUTHORIZATION: should not accept unsigned requests' do
       # when
       post 'api/v1/accounts', @account_data.to_json
 

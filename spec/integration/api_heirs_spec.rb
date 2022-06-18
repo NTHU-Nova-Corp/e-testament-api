@@ -90,7 +90,7 @@ describe 'Test Heir Handling' do
       _(result['data']['attributes']['first_name']).must_equal existing_heir.first_name
     end
 
-    it 'BAD: should be able to get details of a single heir' do
+    it 'BAD AUTHORIZATION: should not be able to get information of a heir related with another account' do
       # given
       existing_heir = @owner.heirs.first
 
@@ -150,7 +150,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 201
     end
 
-    it 'BAD: should not be able to add a heir with existing heir email' do
+    it 'SAD: should not be able to add a heir with existing heir email' do
       # given
       new_heir = DATA[:heirs][0]
 
@@ -182,7 +182,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 200
     end
 
-    it 'BAD: should not be able to update a heir with other account' do
+    it 'BAD AUTHORIZATION: should not be able to update a heir with other account' do
       # given
       login_account(@executor_account_data)
 
@@ -200,7 +200,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
 
-    it 'BAD: should not be able to update existing email' do
+    it 'SAD: should not be able to update heirs with the email of a heir that already exists' do
       # given
       dummy_heir = DATA[:heirs][1]
       post 'api/v1/heirs', dummy_heir.to_json, @req_header
@@ -231,7 +231,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 200
     end
 
-    it 'BAD: should not be able delete a heir with other account' do
+    it 'BAD AUTHORIZATION: should not be able delete a heir related with other account' do
       # given
       exiting_heir = @owner.heirs.first
       login_account(@executor_account_data)
@@ -257,7 +257,7 @@ describe 'Test Heir Handling' do
       _(JSON.parse(last_response.body)['data'].length).must_equal 1
     end
 
-    it 'BAD: should not be able to get properties by heir id from other account' do
+    it 'BAD AUTHORIZATION: should not be able to get properties by heir id from other account' do
       # given
       exiting_heir = @owner.heirs.first
       ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first
@@ -292,7 +292,7 @@ describe 'Test Heir Handling' do
       _(format('%.10f', result['percentage']).to_f).must_equal percentage
     end
 
-    it 'BAD: should not be able to associate property heir by executor' do
+    it 'BAD AUTHORIZATION: should not be able to associate property heir by executor' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first
@@ -308,7 +308,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
 
-    it 'BAD: should not be able to associate property heir by other' do
+    it 'BAD AUTHORIZATION: should not be able to associate property and heir with an account that does not own the property and the heir' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first
@@ -340,7 +340,7 @@ describe 'Test Heir Handling' do
       _(ETestament::Property.where(id: associated_property[:id]).first).wont_be_nil
     end
 
-    it 'BAD: should not be able to delete properties by executor' do
+    it 'BAD AUTHORIZATION: should not be able to delete properties by executor' do
       # given
       exiting_heir = @owner.heirs.find { |heir| heir.email = 'ernesto.sst@mail.com' }
       associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property
@@ -353,7 +353,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
 
-    it 'BAD: should not be able to delete properties by other' do
+    it 'BAD AUTHORIZATION: should not be able to delete properties by other' do
       # given
       exiting_heir = @owner.heirs.find { |heir| heir.email = 'ernesto.sst@mail.com' }
       associated_property = ETestament::PropertyHeir.where(heir_id: exiting_heir[:id]).first.property

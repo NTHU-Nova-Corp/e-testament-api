@@ -63,7 +63,7 @@ describe 'Test Property Handling' do
         _(result['data'].count).must_equal 2
       end
 
-      it 'BAD: should not process for unauthorized accounts' do
+      it 'BAD AUTHORIZATION: should not process for unauthorized accounts' do
         header 'AUTHORIZATION', 'Bearer bad_token'
         get 'api/v1/properties'
         _(last_response.status).must_equal 403
@@ -91,7 +91,7 @@ describe 'Test Property Handling' do
     _(last_response.status).must_equal 404
   end
 
-  it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+  it 'BAD SQL_INJECTION: should prevent basic SQL injection targeting IDs' do
     get 'api/v1/properties/2%20or%20TRUE'
 
     # deliberately not reporting error -- don't give attacker information
@@ -164,7 +164,7 @@ describe 'Test Property Handling' do
     _(last_response.status).must_equal 404
   end
 
-  it 'SAD: should prevent edits to unauthorized fields' do
+  it 'SAD MASS_ASSIGNMENT: should prevent edits to unauthorized fields' do
     property = @owner.properties.first
 
     update_request = {}
@@ -192,7 +192,7 @@ describe 'Test Property Handling' do
       _(JSON.parse(last_response.body)['data'].length).must_equal 1
     end
 
-    it 'BAD: should not be able to get heirs by property id from other account' do
+    it 'BAD AUTHORIZATION: should not be able to get heirs by property id from other account' do
       # given
       exiting_property = @owner.properties.first
       login_account(@other_account_data)
@@ -221,7 +221,7 @@ describe 'Test Property Handling' do
       _(last_response.status).must_equal 200
     end
 
-    it 'BAD: should not be able to associate heirs with properties from other account' do
+    it 'BAD AUTHORIZATION: should not be able to associate heirs with properties from other account' do
       # given
       exiting_property = @owner.properties.first
       existing_heir = @owner.heirs.first

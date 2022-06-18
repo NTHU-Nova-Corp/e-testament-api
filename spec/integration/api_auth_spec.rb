@@ -31,7 +31,7 @@ describe 'Test Authentication Routes' do
       _(account['id']).wont_be_nil
     end
 
-    it 'BAD: should not authenticate invalid password' do
+    it 'BAD AUTHORIZATION: should not authenticate invalid password' do
       credentials = { username: @account_data['username'],
                       password: 'fakepassword' }
 

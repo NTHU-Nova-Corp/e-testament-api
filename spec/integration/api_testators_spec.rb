@@ -42,7 +42,7 @@ describe 'Test Testators Handling' do
       assign_executors
     end
     describe 'GET /api/v1/testators :: testators of an executor' do
-      it 'should be able to get testators' do
+      it 'HAPPY: should be able to get testators' do
         # when
         get '/api/v1/testators'
 
@@ -61,7 +61,7 @@ describe 'Test Testators Handling' do
     end
 
     describe 'GET /api/v1/testators/:testator_id :: testator information' do
-      it 'should be able to get testator information' do
+      it 'HAPPY: should be able to get testator information' do
         # when
         get "/api/v1/testators/#{@testator[:id]}"
 
@@ -93,7 +93,7 @@ describe 'Test Testators Handling' do
         _(attributes['relation']).wont_be_nil
       end
 
-      it 'BAD: should not be able to get details of heir list from other executor' do
+      it 'BAD AUTHORIZATION: should not be able to get details of heir list from other executor' do
         login_account(@testator_data)
 
         get "/api/v1/testators/#{@executor[:id]}/heirs"

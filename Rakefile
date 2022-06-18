@@ -11,14 +11,6 @@ task :api_spec do
 end
 
 desc 'Test all the specs'
-Rake::TestTask.new(:test) do |t|
-  puts "Environment: #{ENV.fetch('RACK_ENV', 'development')}"
-
-  t.pattern = 'spec/**/*_spec.rb'
-  t.warning = false
-end
-
-desc 'Test all the specs'
 Rake::TestTask.new(:spec) do |t|
   puts "Environment: #{ENV.fetch('RACK_ENV', 'development')}"
 

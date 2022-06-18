@@ -37,7 +37,7 @@ describe 'Test Executors Handling' do
   end
 
   describe 'GET api/v1/executors' do
-    it 'BAD: should not found executor' do
+    it 'Happy: The list of executors should be empty when there is no executor assign' do
       # when
       get '/api/v1/executors'
 
@@ -46,7 +46,7 @@ describe 'Test Executors Handling' do
       _(last_response.status).must_equal 200
     end
 
-    it 'should be able to get executor' do
+    it 'Happy: should be able to get executor givin a valid Id' do
       # given
 
       @testator.update(executor_id: @executor.id)
@@ -66,7 +66,7 @@ describe 'Test Executors Handling' do
   end
 
   describe 'POST api/v1/executors' do
-    it 'BAD: should not be able to assign the auth account as an executor' do
+    it 'BAD AUTHORIZATION: should not be able to assign the auth account as an executor' do
       # given
       accounts = ETestament::Account.first
 
@@ -167,7 +167,7 @@ describe 'Test Executors Handling' do
       assert_nil pending_executor_account
     end
 
-    it 'BAD: should not be able to cancel non exist executor email' do
+    it 'SAD: should not be able to cancel non exist executor email' do
       # when
       post "api/v1/executors/#{@executor[:email]}/cancel", @req_header
 
@@ -191,7 +191,7 @@ describe 'Test Executors Handling' do
       assert_nil @testator[:executor_id]
     end
 
-    it 'BAD: should not be able to cancel non exist executor email' do
+    it 'SAD: should not be able to cancel non exist executor email' do
       # when
       post "api/v1/executors/#{@executor[:email]}/cancel", @req_header
 

@@ -70,7 +70,7 @@ describe 'Test Document Handling' do
     _(result['data']['attributes']['property_id']).must_equal property.id
   end
 
-  it 'SAD: should return 404 if unknown document is requested or is not related with the property indicated' do
+  it 'SAD AUTHORIZATION: should return 404 if unknown document is requested or is not related with the property indicated' do
     properties = ETestament::Property.all.cycle
 
     property = properties.next
@@ -86,7 +86,7 @@ describe 'Test Document Handling' do
     _(last_response.status).must_equal 404
   end
 
-  it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+  it 'BAD SQL_INJECTION: should prevent basic SQL injection targeting IDs' do
     property = ETestament::Property.first
     new_document = DATA[:documents][0]
     new_document2 = DATA[:documents][1]
@@ -189,7 +189,7 @@ describe 'Test Document Handling' do
     _(last_response.status).must_equal 404
   end
 
-  it 'SECURITY: should prevent edits to unauthorized fields' do
+  it 'BAD MASS_ASSIGNMENT:: should prevent edits to unauthorized fields' do
     # Set up properties and documents
     property = ETestament::Property.first
     request = DATA[:documents][0]
