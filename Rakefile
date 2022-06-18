@@ -18,6 +18,14 @@ Rake::TestTask.new(:test) do |t|
   t.warning = false
 end
 
+desc 'Test all the specs'
+Rake::TestTask.new(:spec) do |t|
+  puts "Environment: #{ENV.fetch('RACK_ENV', 'development')}"
+
+  t.pattern = 'spec/**/*_spec.rb'
+  t.warning = false
+end
+
 desc 'Rerun tests on live code changes'
 task :respec do
   sh 'rerun -c rake test'
