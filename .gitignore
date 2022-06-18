@@ -64,3 +64,6 @@ build-iPhoneSimulator/
 
 
 *.bkp
+
+coverage/*
+!coverage/.resultset.json

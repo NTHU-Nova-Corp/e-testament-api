@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'simplecov'
+SimpleCov.start
+
 ENV['RACK_ENV'] = 'test'
 
 require 'minitest/autorun'
@@ -22,6 +25,7 @@ def wipe_database
 
   ETestament::Account.map(&:destroy)
 end
+
 # rubocop:enable Metrics/CyclomaticComplexity
 
 def seed_accounts
@@ -103,6 +107,7 @@ def seed_property_heirs
                                                                     new_data: property_heir)
   end
 end
+
 # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 DATA = {
