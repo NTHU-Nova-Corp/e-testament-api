@@ -76,7 +76,7 @@ describe 'Test Testators Handling' do
       end
     end
 
-    describe 'GET /api/v1/testator/:testator_id/heirs :: heirs of a testator ' do
+    describe 'GET /api/v1/testator/:testator_id/heirs :: heirs of a testator' do
       it 'HAPPY: should be able to get heirs details of a testator' do
         # when
         get "/api/v1/testators/#{@testator[:id]}/heirs"
@@ -99,6 +99,139 @@ describe 'Test Testators Handling' do
         get "/api/v1/testators/#{@executor[:id]}/heirs"
 
         _(last_response.status).must_equal 403
+      end
+    end
+
+    describe 'POST api/v1/testators/:testator_id/read :: read testament of a testator' do
+      it 'SAD: should not be able to read testament with non-existing id' do
+        # when
+        post "/api/v1/testators/#{@testator[:id]}-wrong/read"
+
+        # then
+        _(last_response.status).must_equal 400
+        _(JSON.parse(last_response.body)['message']).must_equal 'No testator found'
+      end
+
+      it 'SAD: should not be able to read testament when min amount heir is invalid' do
+        # given
+        @testator.update(min_amount_heirs: 1).save
+
+        # when
+        post "/api/v1/testators/#{@testator[:id]}/read"
+
+        # then
+        _(last_response.status).must_equal 400
+        _(JSON.parse(last_response.body)['message']).must_equal 'There are not enough keys to release the testament'
+      end
+
+      it 'SAD: should be not able to read testament if combined keys are wrong' do
+        # given
+        # combined_key & shared keys
+        min_amount_heirs = 2
+        extend Securable
+        combined_key = generate_key
+        shamir = ShamirEncryption::ShamirSecretSharing
+        shares = shamir::Base64.split(combined_key, 2, min_amount_heirs)
+
+        # set up account
+        ETestament::Heir.map(&:destroy)
+        @testator.add_heir(DATA[:heirs][1])
+        @testator.add_heir(DATA[:heirs][2])
+        @testator.update(min_amount_heirs:).save
+        @testator.update(combined_key:).save
+        heirs = @testator.heirs.cycle
+        heirs.next.update(key_content_submitted: "12323#{shares[0]}").save
+        heirs.next.update(key_content_submitted: shares[1]).save
+
+        # when
+        post "/api/v1/testators/#{@testator[:id]}/read"
+
+        # then
+        _(last_response.status).must_equal 500
+      end
+      it 'SAD: should be not able to read testament if the status is not released' do
+        # given
+        # combined_key & shared keys
+        min_amount_heirs = 2
+        extend Securable
+        combined_key = generate_key
+        shamir = ShamirEncryption::ShamirSecretSharing
+        shares = shamir::Base64.split(combined_key, 2, min_amount_heirs)
+
+        # set up account
+        ETestament::Heir.map(&:destroy)
+        @testator.add_heir(DATA[:heirs][1])
+        @testator.add_heir(DATA[:heirs][2])
+        @testator.update(min_amount_heirs:).save
+        @testator.update(combined_key:).save
+        heirs = @testator.heirs.cycle
+        heirs.next.update(key_content_submitted: shares[0]).save
+        heirs.next.update(key_content_submitted: shares[1]).save
+
+        # when
+        post "/api/v1/testators/#{@testator[:id]}/read"
+
+        # then
+        _(last_response.status).must_equal 400
+        _(JSON.parse(last_response.body)['message']).must_equal 'You are not allowed to read this testament'
+      end
+
+      it 'SAD: should be not able to read testament if reader is not executor of testator' do
+        # given
+        # combined_key & shared keys
+        min_amount_heirs = 2
+        extend Securable
+        combined_key = generate_key
+        testament_status = 'Released'
+        shamir = ShamirEncryption::ShamirSecretSharing
+        shares = shamir::Base64.split(combined_key, 2, min_amount_heirs)
+
+        # set up account
+        ETestament::Heir.map(&:destroy)
+        @testator.add_heir(DATA[:heirs][1])
+        @testator.add_heir(DATA[:heirs][2])
+        @testator.update(min_amount_heirs:).save
+        @testator.update(testament_status:).save
+        @testator.update(combined_key:).save
+        heirs = @testator.heirs.cycle
+        heirs.next.update(key_content_submitted: shares[0]).save
+        heirs.next.update(key_content_submitted: shares[1]).save
+
+        # when
+        post "/api/v1/testators/#{@testator[:id]}/read"
+
+        # then
+        _(last_response.status).must_equal 400
+        _(JSON.parse(last_response.body)['message']).must_equal 'You are not allowed to read this testament'
+      end
+
+      it 'HAPPY: should be able to read testament if the status is released' do
+        # given
+        # combined_key & shared keys
+        min_amount_heirs = 2
+        extend Securable
+        combined_key = generate_key
+        testament_status = 'Released'
+        shamir = ShamirEncryption::ShamirSecretSharing
+        shares = shamir::Base64.split(combined_key, 2, min_amount_heirs)
+
+        # set up account
+        ETestament::Heir.map(&:destroy)
+        @testator.add_heir(DATA[:heirs][1])
+        @testator.add_heir(DATA[:heirs][2])
+        @testator.update(executor_id: @executor[:id])
+        @testator.update(min_amount_heirs:).save
+        @testator.update(testament_status:).save
+        @testator.update(combined_key:).save
+        heirs = @testator.heirs.cycle
+        heirs.next.update(key_content_submitted: shares[0]).save
+        heirs.next.update(key_content_submitted: shares[1]).save
+
+        # when
+        post "/api/v1/testators/#{@testator[:id]}/read"
+
+        # then
+        _(last_response.status).must_equal 200
       end
     end
   end

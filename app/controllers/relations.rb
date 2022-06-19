@@ -12,18 +12,6 @@ module ETestament
       unauthorized_message = { message: 'Unauthorized Request' }.to_json
       routing.halt(403, unauthorized_message) unless @auth_account
 
-      # POST api/v1/relations
-      # Create new relations
-      # Hasn't been used yet
-      routing.post do
-        new_data = JSON.parse(routing.body.read)
-        new_relation = Services::Relations::CreateRelation.call(new_data:)
-
-        response.status = 201
-        response['Location'] = "#{@relations_route}/#{new_relation.id}"
-        { message: 'Relation saved', data: new_relation }.to_json
-      end
-
       # GET api/v1/relations
       # Get all relations
       routing.get do
