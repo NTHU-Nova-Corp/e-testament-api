@@ -182,10 +182,10 @@ describe 'Test Property Handling' do
   describe 'GET api/v1/properties/:property_id/heirs' do
     it 'HAPPY: should be able to get heirs by property id' do
       # given
-      exiting_property = @owner.properties.first
+      existing_property = @owner.properties.first
 
       # when
-      get "api/v1/properties/#{exiting_property[:id]}/heirs"
+      get "api/v1/properties/#{existing_property[:id]}/heirs"
 
       # then
       _(last_response.status).must_equal 200
@@ -194,11 +194,11 @@ describe 'Test Property Handling' do
 
     it 'BAD AUTHORIZATION: should not be able to get heirs by property id from other account' do
       # given
-      exiting_property = @owner.properties.first
+      existing_property = @owner.properties.first
       login_account(@other_account_data)
 
       # when
-      get "api/v1/properties/#{exiting_property[:id]}/heirs"
+      get "api/v1/properties/#{existing_property[:id]}/heirs"
 
       # then
       _(last_response.status).must_equal 403
@@ -208,34 +208,62 @@ describe 'Test Property Handling' do
   describe 'POST api/v1/properties/:property_id/heirs/:heir_id' do
     it 'HAPPY: should be able to associate heirs with properties' do
       # given
-      exiting_property = @owner.properties.first
+      existing_property = @owner.properties.first
       existing_heir = @owner.heirs.first
-      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).delete
+      ETestament::PropertyHeir.where(property_id: existing_property[:id]).delete
 
       # when
-      post "api/v1/properties/#{exiting_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 5 }.to_json,
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 5 }.to_json,
            @req_header
 
       # then
-      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      ETestament::PropertyHeir.where(property_id: existing_property[:id]).first
       _(last_response.status).must_equal 200
     end
 
     it 'BAD AUTHORIZATION: should not be able to associate heirs with properties from other account' do
       # given
-      exiting_property = @owner.properties.first
+      existing_property = @owner.properties.first
       existing_heir = @owner.heirs.first
-      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).delete
+      ETestament::PropertyHeir.where(property_id: existing_property[:id]).delete
 
       login_account(@other_account_data)
 
       # when
-      post "api/v1/properties/#{exiting_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 40 }.to_json,
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}", { percentage: 40 }.to_json,
            @req_header
 
       # then
-      ETestament::PropertyHeir.where(property_id: exiting_property[:id]).first
+      ETestament::PropertyHeir.where(property_id: existing_property[:id]).first
       _(last_response.status).must_equal 403
+    end
+
+    it 'HAPPY: should be able to update heirs associated with a property' do
+      # given
+      existing_property = @owner.properties.first
+      existing_heir = @owner.heirs.first
+
+      # when
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}/update", { percentage: 10 }.to_json,
+           @req_header
+
+      # then
+      _(last_response.status).must_equal 200
+      assert_equal 10, ETestament::PropertyHeir.where(property_id: existing_property[:id], heir_id: existing_heir[:id]).first.percentage
+    end
+
+    it 'HAPPY: should be able to dissociate an heir from a property' do
+      # given
+      existing_property = @owner.properties.first
+      existing_heir = @owner.heirs.first
+
+      # when
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}/delete",
+           @req_header
+
+      # then
+      _(last_response.status).must_equal 200
+      assert_nil ETestament::PropertyHeir.first(property_id: existing_property[:id], heir_id: existing_heir[:id])
     end
   end
 end
