@@ -308,7 +308,7 @@ describe 'Test Heir Handling' do
       _(last_response.status).must_equal 403
     end
 
-    it 'BAD AUTHORIZATION: should not be able to associate property and heir with an account that does not own the property and the heir' do
+    it 'BAD AUTHORIZATION: should not be able to associate property and heir with an non-owner account' do
       # given
       property_type = ETestament::PropertyType.first
       existing_heir = @owner.heirs.first

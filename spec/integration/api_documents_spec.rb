@@ -70,7 +70,7 @@ describe 'Test Document Handling' do
     _(result['data']['attributes']['property_id']).must_equal property.id
   end
 
-  it 'SAD AUTHORIZATION: should return 404 if unknown document is requested or is not related with the property indicated' do
+  it 'SAD AUTHORIZATION: should return 404 if unknown document is requested' do
     properties = ETestament::Property.all.cycle
 
     property = properties.next
