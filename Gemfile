@@ -53,3 +53,6 @@ end
 
 # OAuth
 gem 'google-api-client'
+
+# Test coverage
+gem 'simplecov'

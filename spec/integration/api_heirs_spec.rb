@@ -90,7 +90,7 @@ describe 'Test Heir Handling' do
       _(result['data']['attributes']['first_name']).must_equal existing_heir.first_name
     end
 
-    it 'BAD: should be able to get details of a single heir' do
+    it 'BAD: should not be able to get details of a single heir from another account' do
       # given
       existing_heir = @owner.heirs.first
 
