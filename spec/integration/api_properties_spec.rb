@@ -244,12 +244,12 @@ describe 'Test Property Handling' do
       existing_heir = @owner.heirs.first
 
       # when
-      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}/update", { percentage: 1 }.to_json,
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}/update", { percentage: 10 }.to_json,
            @req_header
 
       # then
       _(last_response.status).must_equal 200
-      _(ETestament::PropertyHeir.where(property_id: existing_property[:id]).first.percentage).must_equal 1
+      assert_equal 10, ETestament::PropertyHeir.where(property_id: existing_property[:id], heir_id: existing_heir[:id]).first.percentage
     end
 
     it 'HAPPY: should be able to dissociate an heir from a property' do
@@ -263,7 +263,7 @@ describe 'Test Property Handling' do
 
       # then
       _(last_response.status).must_equal 200
-      # _(ETestament::PropertyHeir.where(property_id: existing_property[:id]).all).assert_empty
+      assert_nil ETestament::PropertyHeir.first(property_id: existing_property[:id], heir_id: existing_heir[:id])
     end
   end
 end
