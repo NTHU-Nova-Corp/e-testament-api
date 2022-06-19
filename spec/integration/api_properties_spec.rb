@@ -237,7 +237,9 @@ describe 'Test Property Handling' do
       ETestament::PropertyHeir.where(property_id: existing_property[:id]).first
       _(last_response.status).must_equal 403
     end
+  end
 
+  describe 'POST api/v1/properties/existing_property/heirs/existing_heir.id/update' do
     it 'HAPPY: should be able to update heirs associated with a property' do
       # given
       existing_property = @owner.properties.first
@@ -249,9 +251,13 @@ describe 'Test Property Handling' do
 
       # then
       _(last_response.status).must_equal 200
-      assert_equal 10, ETestament::PropertyHeir.where(property_id: existing_property[:id], heir_id: existing_heir[:id]).first.percentage
+      assert_equal 10,
+                   ETestament::PropertyHeir.where(property_id: existing_property[:id],
+                                                  heir_id: existing_heir[:id]).first.percentage
     end
+  end
 
+  describe 'POST api/v1/properties/existing_property/heirs/existing_heir.id/delete' do
     it 'HAPPY: should be able to dissociate an heir from a property' do
       # given
       existing_property = @owner.properties.first
