@@ -243,17 +243,17 @@ describe 'Test Property Handling' do
     it 'HAPPY: should be able to update heirs associated with a property' do
       # given
       existing_property = @owner.properties.first
-      existing_heir = @owner.heirs.first
+      existing_heir_id = existing_property.property_heirs.first[:heir_id]
 
       # when
-      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir[:id]}/update", { percentage: 10 }.to_json,
+      post "api/v1/properties/#{existing_property[:id]}/heirs/#{existing_heir_id}/update", { percentage: 50 }.to_json,
            @req_header
 
       # then
       _(last_response.status).must_equal 200
-      assert_equal 10,
+      assert_equal 50,
                    ETestament::PropertyHeir.where(property_id: existing_property[:id],
-                                                  heir_id: existing_heir[:id]).first.percentage
+                                                  heir_id: existing_heir_id).first.percentage
     end
   end
 
