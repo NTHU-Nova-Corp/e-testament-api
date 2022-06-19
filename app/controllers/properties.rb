@@ -80,7 +80,7 @@ module ETestament
 
           routing.on String do |heir_id|
             @heir = Heir.first(id: heir_id)
-            raise Exceptions::NotFoundError, 'Heir does not found' if @heir.nil?
+            raise Exceptions::NotFoundError, 'Heir not found' if @heir.nil?
 
             # POST api/v1/properties/:property_id/heirs/:heir_id/delete
             # Disassociate a heir to a property
