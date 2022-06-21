@@ -37,7 +37,7 @@ describe 'Test Executors Handling' do
   end
 
   describe 'GET api/v1/executors' do
-    it 'Happy: The list of executors should be empty when there is no executor assign' do
+    it 'HAPPY: The list of executors should be empty when there is no executor assign' do
       # when
       get '/api/v1/executors'
 
@@ -46,7 +46,7 @@ describe 'Test Executors Handling' do
       _(last_response.status).must_equal 200
     end
 
-    it 'Happy: should be able to get executor givin a valid Id' do
+    it 'HAPPY: should be able to get executor givin a valid Id' do
       # given
 
       @testator.update(executor_id: @executor.id)
