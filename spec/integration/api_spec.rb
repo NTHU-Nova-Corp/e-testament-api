@@ -16,7 +16,7 @@ end
 describe 'Test ETestament Web API' do
   include Rack::Test::Methods
 
-  it 'should find the root route' do
+  it 'HAPPY: should find the root route' do
     get '/'
     _(last_response.status).must_equal 200
   end
